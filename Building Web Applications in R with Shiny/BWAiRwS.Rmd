@@ -1,0 +1,165 @@
+---
+title: "Building Web Apps with Shiny"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+# {.tabset .tabset-fade}
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+#install.packages("tidyverse") # run this line once in console to get package
+library(tidyverse)
+library(shiny)
+theme_set(theme_bw())
+```
+
+```{r load_data}
+# Use this R-Chunk to import all your datasets!
+load(url("http://s3.amazonaws.com/assets.datacamp.com/production/course_4850/datasets/movies.Rdata"))
+```
+
+## Background
+
+https://campus.datacamp.com/courses/building-web-applications-in-r-with-shiny/introduction-and-shiny-basics?ex=3
+
+## Module 1
+
+```{r 1}
+
+library(shiny)
+library(ggplot2)
+load(url("http://s3.amazonaws.com/assets.datacamp.com/production/course_4850/datasets/movies.Rdata"))
+
+# Define UI for application that plots features of movies
+ui <- fluidPage(
+  
+  # Sidebar layout with a input and output definitions
+  sidebarLayout(
+    
+    # Inputs
+    sidebarPanel(
+      
+      # Select variable for y-axis
+      selectInput(inputId = "y", 
+                  label = "Y-axis:",
+                  choices = c("IMDB rating" = "imdb_rating", 
+                              "IMDB number of votes" = "imdb_num_votes", 
+                              "Critics score"        = "critics_score", 
+                              "Audience score"       = "audience_score", 
+                              "Runtime"              = "runtime"), 
+                  selected = "audience_score"),
+      
+      # Select variable for x-axis
+      selectInput(inputId = "x", 
+                  label = "X-axis:",
+                  choices = c("IMDB rating" = "imdb_rating", 
+                              "IMDB number of votes" = "imdb_num_votes", 
+                              "Critics score" = "critics_score", 
+                              "Audience score" = "audience_score", 
+                              "Runtime" = "runtime"), 
+                  selected = "critics_score"),
+      
+      # Select variable for color
+      selectInput(inputId = "z", 
+                  label = "Color by:",
+                  choices = c("Title type" = "title_type", 
+                              "Genre" = "genre", 
+                              "MPAA rating" = "mpaa_rating", 
+                              "Critics rating" = "critics_rating", 
+                              "Audience rating" = "audience_rating"),
+                  selected = "mpaa_rating")
+    ),
+    
+    # Outputs
+    mainPanel(
+      plotOutput(outputId = "scatterplot")
+    )
+  )
+)
+
+# Define server function required to create the scatterplot
+server <- function(input, output) {
+  
+  # Create the scatterplot object the plotOutput function is expecting
+  output$scatterplot <- renderPlot({
+    ggplot(data = movies, aes_string(x = input$x, y = input$y,
+                                     color = input$z)) +
+      geom_point()
+  })
+}
+
+# Create a Shiny app object
+shinyApp(ui = ui, server = server)
+
+```
+
+## Module 2
+
+```{r 2}
+library(shiny)
+library(dplyr)
+library(DT)
+
+load(url("http://s3.amazonaws.com/assets.datacamp.com/production/course_4850/datasets/movies.Rdata"))
+n_total <- nrow(movies)
+
+# Define UI for application that plots features of movies
+ui <- fluidPage(
+  
+  # Sidebar layout with a input and output definitions
+  sidebarLayout(
+    
+    # Inputs
+    sidebarPanel(
+      
+      # Text instructions
+      HTML(paste("Enter a value between 1 and", n_total)),
+      
+      # Numeric input for sample size
+      numericInput(inputId = "n",
+                   label = "Sample size:",
+                   value = 30,
+                   min = 1, max = n_total,
+                   step = 1)
+      
+    ),
+    
+    # Output: Show data table
+    mainPanel(
+      DT::dataTableOutput(outputId = "moviestable")
+    )
+  )
+)
+
+# Define server function required to create the scatterplot
+server <- function(input, output) {
+  
+  # Create data table
+  output$moviestable <- DT::renderDataTable({
+    req(input$n)
+    movies_sample <- movies %>%
+      sample_n(input$n) %>%
+      select(title:studio)
+    DT::datatable(data = movies_sample, 
+                  options = list(pageLength = 10), 
+                  rownames = FALSE)
+  })
+  
+}
+
+# Create a Shiny app object
+shinyApp(ui = ui, server = server)
+```
+

@@ -1,7 +1,7 @@
 ---
 title: "Building Web Apps with Shiny"
 author: "Ken Harmon"
-date: "2019 January 09"
+date: "2019 January 10"
 output:
   html_document:  
     keep_md: true
@@ -99,7 +99,7 @@ shinyApp(ui = ui, server = server)
 
 <!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
 
-## Module 2
+## rand Select
 
 
 ```r
@@ -128,6 +128,7 @@ ui <- fluidPage(
                    value = 30,
                    min = 1, max = n_total,
                    step = 1)
+      
     ),
     
     # Output: Show data table
@@ -142,10 +143,67 @@ server <- function(input, output) {
   
   # Create data table
   output$moviestable <- DT::renderDataTable({
+    req(input$n)
     movies_sample <- movies %>%
       sample_n(input$n) %>%
       select(title:studio)
     DT::datatable(data = movies_sample, 
+                  options = list(pageLength = 10), 
+                  rownames = FALSE)
+  })
+  
+}
+
+# Create a Shiny app object
+shinyApp(ui = ui, server = server)
+```
+
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
+
+## MultiSelct
+
+
+```r
+library(shiny)
+library(ggplot2)
+library(dplyr)
+library(DT)
+load(url("http://s3.amazonaws.com/assets.datacamp.com/production/course_4850/datasets/movies.Rdata"))
+all_studios <- sort(unique(movies$studio))
+
+# UI
+ui <- fluidPage(
+    sidebarLayout(
+    
+    # Input(s)
+    sidebarPanel(
+      selectInput(inputId = "studio",
+                  label = "Select studio:",
+                  choices = all_studios,
+                  selected = "20th Century Fox",
+                  selectize = TRUE,
+                  multiple = TRUE)
+      
+    ),
+    
+    # Output(s)
+    mainPanel(
+      DT::dataTableOutput(outputId = "moviestable")
+    )
+  )
+)
+
+# Server
+server <- function(input, output) {
+  
+  # Create data table
+  output$moviestable <- DT::renderDataTable({
+    req(input$studio)
+    movies_from_selected_studios <- movies %>%
+      filter(studio %in% input$studio) %>%
+      select(title:studio)
+    DT::datatable(data = movies_from_selected_studios, 
                   options = list(pageLength = 10), 
                   rownames = FALSE)
   })

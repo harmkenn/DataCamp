@@ -447,7 +447,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Building Web Apps with Shiny</h1>
 <h4 class="author"><em>Ken Harmon</em></h4>
-<h4 class="date"><em>2019 January 10</em></h4>
+<h4 class="date"><em>2019 January 11</em></h4>
 
 </div>
 
@@ -632,6 +632,64 @@ server &lt;- function(input, output) {
   
 }
 
+# Create a Shiny app object
+shinyApp(ui = ui, server = server)</code></pre>
+<div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
+</div>
+<div id="dateselect" class="section level2">
+<h2>DateSelect</h2>
+<pre class="r"><code>library(shiny)
+library(dplyr)
+library(ggplot2)
+load(url(&quot;http://s3.amazonaws.com/assets.datacamp.com/production/course_4850/datasets/movies.Rdata&quot;))
+
+min_date &lt;- min(movies$thtr_rel_date)
+max_date &lt;- max(movies$thtr_rel_date)
+
+# UI
+ui &lt;- fluidPage(
+    sidebarLayout(
+    
+    # Input(s)
+    sidebarPanel(
+      
+      # Explanatory text
+      HTML(paste0(&quot;Movies released between the following dates will be plotted. 
+                  Pick dates between &quot;, min_date, &quot; and &quot;, max_date, &quot;.&quot;)),
+      
+      # Break for visual separation
+      br(), br(),
+      
+      # Date input
+      dateRangeInput(inputId = &quot;date&quot;,
+                label = &quot;Select dates:&quot;,
+                start = &quot;2013-01-01&quot;,
+                end = &quot;2014-01-01&quot;,
+                min = min_date, max = max_date,
+                startview = &quot;year&quot;)
+    ),
+    
+    # Output(s)
+    mainPanel(
+      plotOutput(outputId = &quot;scatterplot&quot;)
+    )
+  )
+)
+
+# Server
+server &lt;- function(input, output) {
+  
+  # Create the plot
+  output$scatterplot &lt;- renderPlot({
+    req(input$date)
+    movies_selected_date &lt;- movies %&gt;%
+      mutate(thtr_rel_date = as.Date(thtr_rel_date)) %&gt;% # convert thtr_rel_date to Date format
+      filter(thtr_rel_date &gt;= input$date[1] &amp; thtr_rel_date &lt;= input$date[2])
+    ggplot(data = movies_selected_date, aes(x = critics_score, y = audience_score, color = mpaa_rating)) +
+      geom_point()
+  })
+  
+}
 # Create a Shiny app object
 shinyApp(ui = ui, server = server)</code></pre>
 <div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>

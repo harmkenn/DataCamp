@@ -1,0 +1,138 @@
+---
+title: "Central Limit Theorem on NBA Stats"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+# {.tabset .tabset-fade}
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+#install.packages("tidyverse") # run this line once in console to get package
+library(tidyverse)
+library(shiny)
+theme_set(theme_bw())
+```
+
+## Background
+
+## Select Data
+
+```{r reactive}
+library(shiny)
+library(dplyr)
+library(readr)
+NBAplayers <- read_csv("../datasets/NBAplayers.csv")
+
+# UI
+ui <- fluidPage(
+  sidebarLayout(
+    
+    # Input(s)
+    sidebarPanel(
+      
+      # Select variables to study
+      checkboxGroupInput(inputId = "selected_var",
+                         label = "Select variables:",
+                         choices = names(NBAplayers),
+                         selected = c("height"))
+      
+    ),
+
+        
+    # Output(s)
+    mainPanel(
+      HTML("Select a variables, then download and/or view the data."),
+      br(), br(),
+      downloadButton(outputId = "download_data", label = "Download data"),
+      br(), br(),
+      DT::dataTableOutput(outputId = "NBAstats")
+    )
+  )
+)
+
+# Server
+server <- function(input, output) {
+  
+  # Create reactive data frame
+  stats_selected <- reactive({
+    req(input$selected_var)               # ensure input$selected_var is available
+    NBAplayers %>% select(input$selected_var) # select columns of NBAstats
+  })
+  
+  # Create data table
+  output$NBAstats <- DT::renderDataTable({
+    DT::datatable(data = stats_selected(), 
+                  options = list(pageLength = 10), 
+                  rownames = FALSE)
+  })
+  
+  # Download file
+  output$download_data <- downloadHandler(
+    filename = function() {
+      "nbastats.csv"
+    },
+    content = function(file) { 
+        write_csv(stats_selected(), path = file) 
+      })
+}
+# Create a Shiny app object
+shinyApp(ui = ui, server = server)
+```
+
+## CLT
+
+```{r clt}
+# Load packages -----------------------------------------------------
+library(shiny)
+library(openintro)
+library(gridExtra)
+library(BHH2)
+NBAplayers <- read.csv("../datasets/NBAplayers.csv")
+ x <- NBAplayers %>% select(X3P) %>% filter(X3P > 0) %>% pull() %>% na.omit() %>% as.numeric()
+
+# Define UI ---------------------------------------------------------
+ui <- pageWithSidebar(
+  headerPanel("Central Limit Theorem for NBAstats"),
+  sidebarPanel(
+    sliderInput("n", "Sample size:", value = 30, min = 2, max = 500),
+    sliderInput("k", "Number of samples:", value = 200, min = 10, max = 1000),
+    sliderInput(inputId = "bins", label = "Number of bins:", min = 1, max = 50, value = 30),
+    radioButtons(inputId = "stat", label = "NBA Stat:", choices = names(NBAplayers))
+              ),
+  mainPanel(
+    plotOutput(outputId = "distPlot")
+  )
+)
+
+# Define server function required to create the scatterplot-
+server <- function(input, output) {
+  
+ output$distPlot <- renderPlot({
+
+    x <- NBAplayers %>% select(input$stat) %>% filter(input$stat >= 0) %>% pull() %>% na.omit() %>% as.numeric() # select columns of NBA
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+
+    hist(x, breaks = bins, col = "#75AADB", border = "white", xlab = input$stat,  main = "")
+
+    })
+
+}
+
+
+# Create a Shiny app object
+shinyApp(ui = ui, server = server)
+
+
+```

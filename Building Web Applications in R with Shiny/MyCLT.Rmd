@@ -100,33 +100,39 @@ library(openintro)
 library(gridExtra)
 library(BHH2)
 NBAplayers <- read.csv("../datasets/NBAplayers.csv")
- x <- NBAplayers %>% select(X3P) %>% filter(X3P > 0) %>% pull() %>% na.omit() %>% as.numeric()
+
 
 # Define UI ---------------------------------------------------------
 ui <- pageWithSidebar(
   headerPanel("Central Limit Theorem for NBAstats"),
   sidebarPanel(
-    sliderInput("n", "Sample size:", value = 30, min = 2, max = 500),
-    sliderInput("k", "Number of samples:", value = 200, min = 10, max = 1000),
-    sliderInput(inputId = "bins", label = "Number of bins:", min = 1, max = 50, value = 30),
     radioButtons(inputId = "stat", label = "NBA Stat:", choices = names(NBAplayers))
               ),
   mainPanel(
-    plotOutput(outputId = "distPlot")
+    sliderInput(inputId = "bins", label = "Number of bins:", min = 1, max = 50, value = 30),
+    plotOutput(outputId = "distPlot"),
+    verbatimTextOutput("summary"),
+    sliderInput("n", "Sample size:", value = 30, min = 2, max = 500)
   )
 )
 
 # Define server function required to create the scatterplot-
 server <- function(input, output) {
-  
+
  output$distPlot <- renderPlot({
 
-    x <- NBAplayers %>% select(input$stat) %>% filter(input$stat >= 0) %>% pull() %>% na.omit() %>% as.numeric() # select columns of NBA
+    x <- NBAplayers %>% select(input$stat) %>% filter_all(any_vars(. != 0)) %>% pull() %>% na.omit() %>% as.numeric() # select columns of NBA
+
     bins <- seq(min(x), max(x), length.out = input$bins + 1)
 
     hist(x, breaks = bins, col = "#75AADB", border = "white", xlab = input$stat,  main = "")
 
     })
+   output$summary <- renderPrint({
+    x <- NBAplayers %>% select(input$stat) %>% filter_all(any_vars(. != 0)) %>% pull() %>% na.omit() %>% as.numeric()
+
+    summary(x)
+  })
 
 }
 

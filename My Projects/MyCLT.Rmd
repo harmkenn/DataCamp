@@ -9,6 +9,7 @@ output:
     fig_height: 6
     fig_width: 12
     fig_align: 'center'
+runtime: shiny
 ---
 
 # {.tabset .tabset-fade}
@@ -96,10 +97,15 @@ shinyApp(ui = ui, server = server)
 ```{r clt}
 # Load packages -----------------------------------------------------
 library(shiny)
-library(openintro)
-library(gridExtra)
-library(BHH2)
+#library(openintro)
+#library(gridExtra)
+#library(BHH2)
+library(tidyverse)
+library(psych)
+library(pander)
 NBAplayers <- read.csv("../datasets/NBAplayers.csv")
+
+
 
 
 # Define UI ---------------------------------------------------------
@@ -112,7 +118,10 @@ ui <- pageWithSidebar(
     sliderInput(inputId = "bins", label = "Number of bins:", min = 1, max = 50, value = 30),
     plotOutput(outputId = "distPlot"),
     verbatimTextOutput("summary"),
-    sliderInput("n", "Sample size:", value = 30, min = 2, max = 500)
+    sliderInput("n", "Sample size:", value = 30, min = 2, max = 500),
+    sliderInput(inputId = "dsmbins", label = "Number of bins:", min = 1, max = 50, value = 30),
+    plotOutput(outputId = "dsm"),
+    verbatimTextOutput("summaryxbars")
   )
 )
 
@@ -131,9 +140,35 @@ server <- function(input, output) {
    output$summary <- renderPrint({
     x <- NBAplayers %>% select(input$stat) %>% filter_all(any_vars(. != 0)) %>% pull() %>% na.omit() %>% as.numeric()
 
-    summary(x)
+    pander(describe(x))
   })
+   
+# Distribution of Sample Means   
+   
+ output$dsm <- renderPlot({
 
+    x <- NBAplayers %>% select(input$stat) %>% filter_all(any_vars(. != 0)) %>% pull() %>% na.omit() %>% as.numeric() # select columns of NBA
+    samplexs <- sample(x,10000*input$n,replace = TRUE)
+    msx <- as.data.frame(matrix(samplexs,10000,byrow = TRUE))
+    xbars <- apply(msx,1,mean)
+    
+    bins <- seq(min(xbars), max(xbars), length.out = input$dsmbins + 1)
+    bw <- max(xbars) - min(xbars)
+    #
+    #ggplot(as.data.frame(xbars), aes(xbars)) + geom_dotplot(stackgroups = TRUE,binwidth = bw/100,dotsize = .2)
+    #d <- density(xbars)                                  
+    #plot(d, main="Kernel Density of Miles Per Gallon")       
+    #polygon(d, col="red", border="blue")  
+    hist(xbars, breaks = bins, col = "#75AADB", border = "white", xlab = input$stat,  main = "")
+
+    })
+ output$summaryxbars <- renderPrint({
+    x <- NBAplayers %>% select(input$stat) %>% filter_all(any_vars(. != 0)) %>% pull() %>% na.omit() %>% as.numeric()
+    samplexs <- sample(x,10000*input$n,replace = TRUE)
+    msx <- as.data.frame(matrix(samplexs,10000,byrow = TRUE))
+    xbars <- apply(msx,1,mean)
+    pander(describe(xbars))
+  })
 }
 
 
@@ -142,3 +177,5 @@ shinyApp(ui = ui, server = server)
 
 
 ```
+
+

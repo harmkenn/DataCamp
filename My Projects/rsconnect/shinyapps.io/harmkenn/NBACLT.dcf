@@ -1,0 +1,12 @@
+name: NBACLT
+title: NBACLT
+username:
+account: harmkenn
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 682249
+bundleId: 1850298
+url: https://harmkenn.shinyapps.io/NBACLT/
+when: 1549030767.18781
+asMultiple: FALSE
+asStatic: FALSE

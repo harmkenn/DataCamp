@@ -447,7 +447,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Central Limit Theorem on NBA Stats</h1>
 <h4 class="author"><em>Ken Harmon</em></h4>
-<h4 class="date"><em>2019 January 30</em></h4>
+<h4 class="date"><em>2019 January 31</em></h4>
 
 </div>
 
@@ -457,8 +457,8 @@ $(document).ready(function () {
 <div id="background" class="section level2">
 <h2>Background</h2>
 </div>
-<div id="reactive" class="section level2">
-<h2>Reactive</h2>
+<div id="select-data" class="section level2">
+<h2>Select Data</h2>
 <pre class="r"><code>library(shiny)
 library(dplyr)
 library(readr)
@@ -516,6 +516,55 @@ server &lt;- function(input, output) {
         write_csv(stats_selected(), path = file) 
       })
 }
+# Create a Shiny app object
+shinyApp(ui = ui, server = server)</code></pre>
+<div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
+</div>
+<div id="clt" class="section level2">
+<h2>CLT</h2>
+<pre class="r"><code># Load packages -----------------------------------------------------
+library(shiny)
+library(openintro)
+library(gridExtra)
+library(BHH2)
+NBAplayers &lt;- read.csv(&quot;../datasets/NBAplayers.csv&quot;)
+
+
+# Define UI ---------------------------------------------------------
+ui &lt;- pageWithSidebar(
+  headerPanel(&quot;Central Limit Theorem for NBAstats&quot;),
+  sidebarPanel(
+    radioButtons(inputId = &quot;stat&quot;, label = &quot;NBA Stat:&quot;, choices = names(NBAplayers))
+              ),
+  mainPanel(
+    sliderInput(inputId = &quot;bins&quot;, label = &quot;Number of bins:&quot;, min = 1, max = 50, value = 30),
+    plotOutput(outputId = &quot;distPlot&quot;),
+    verbatimTextOutput(&quot;summary&quot;),
+    sliderInput(&quot;n&quot;, &quot;Sample size:&quot;, value = 30, min = 2, max = 500)
+  )
+)
+
+# Define server function required to create the scatterplot-
+server &lt;- function(input, output) {
+
+ output$distPlot &lt;- renderPlot({
+
+    x &lt;- NBAplayers %&gt;% select(input$stat) %&gt;% filter_all(any_vars(. != 0)) %&gt;% pull() %&gt;% na.omit() %&gt;% as.numeric() # select columns of NBA
+
+    bins &lt;- seq(min(x), max(x), length.out = input$bins + 1)
+
+    hist(x, breaks = bins, col = &quot;#75AADB&quot;, border = &quot;white&quot;, xlab = input$stat,  main = &quot;&quot;)
+
+    })
+   output$summary &lt;- renderPrint({
+    x &lt;- NBAplayers %&gt;% select(input$stat) %&gt;% filter_all(any_vars(. != 0)) %&gt;% pull() %&gt;% na.omit() %&gt;% as.numeric()
+
+    summary(x)
+  })
+
+}
+
+
 # Create a Shiny app object
 shinyApp(ui = ui, server = server)</code></pre>
 <div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>

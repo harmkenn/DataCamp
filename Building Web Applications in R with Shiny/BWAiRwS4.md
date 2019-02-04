@@ -1,7 +1,7 @@
 ---
 title: "Building Web Apps with Shiny Module 4"
 author: "Ken Harmon"
-date: "`r format(Sys.time(), '%Y %B %d')`"
+date: "2019 February 04"
 output:
   html_document:  
     keep_md: true
@@ -13,9 +13,7 @@ output:
 
 # {.tabset .tabset-fade}
 
-```{r, echo=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-```
+
 
 ## Background
 
@@ -23,7 +21,8 @@ https://campus.datacamp.com/courses/building-web-applications-in-r-with-shiny/in
 
 ## HTML Tags
 
-```{r ui}
+
+```r
 library(shiny)
 library(ggplot2)
 library(stringr)
@@ -151,9 +150,12 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
 ## img tag
 
-```{r img}
+
+```r
 library(shiny)
 library(ggplot2)
 library(stringr)
@@ -289,9 +291,12 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
 ## Panels
 
-```{r panels}
+
+```r
 library(shiny)
 library(ggplot2)
 library(stringr)
@@ -428,9 +433,12 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
 ## Title
 
-```{r title}
+
+```r
 library(shiny)
 library(ggplot2)
 library(stringr)
@@ -575,9 +583,12 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
 ## Conditional Panel
 
-```{r cp}
+
+```r
 library(shiny)
 library(ggplot2)
 library(stringr)
@@ -722,9 +733,12 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
 ## Tabs
 
-```{r tabs}
+
+```r
 library(shiny)
 library(ggplot2)
 library(stringr)
@@ -868,9 +882,12 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
 ## Codebook
 
-```{r cb}
+
+```r
 library(shiny)
 library(readr)
 library(ggplot2)
@@ -1025,9 +1042,12 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
 ## Datatable Tab
 
-```{r dt}
+
+```r
 library(shiny)
 library(readr)
 library(ggplot2)
@@ -1187,9 +1207,12 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
+
 ## themes
 
-```{r themes}
+
+```r
 library(shiny)
 library(shinythemes)
 library(readr)
@@ -1350,6 +1373,8 @@ server <- function(input, output, session) {
 # Create Shiny app object
 shinyApp(ui = ui, server = server)
 ```
+
+<!--html_preserve--><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><!--/html_preserve-->
 
 
 

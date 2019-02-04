@@ -5,8 +5,8 @@ account: harmkenn
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 682249
-bundleId: 1850298
+bundleId: 1850778
 url: https://harmkenn.shinyapps.io/NBACLT/
-when: 1549030767.18781
+when: 1549045711.53447
 asMultiple: FALSE
 asStatic: FALSE

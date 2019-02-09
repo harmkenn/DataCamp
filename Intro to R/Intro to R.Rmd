@@ -1,5 +1,5 @@
 ---
-title: "Building Web Apps with Shiny Module 4"
+title: "Intro to R"
 author: "Ken Harmon"
 date: "`r format(Sys.time(), '%Y %B %d')`"
 output:

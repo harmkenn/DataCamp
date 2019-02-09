@@ -1,0 +1,521 @@
+---
+title: "Cleaning Data in R"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+# {.tabset .tabset-fade}
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(ggplot2)
+```
+
+## Background
+
+https://campus.datacamp.com/courses/cleaning-data-in-r/chapter-1-introduction-and-exploring-raw-data?ex=1
+
+https://github.com/JoshuaHaden/Cleaning-Data-in-R-Data-Camp
+
+
+
+
+## Intro
+
+```{r Intro}
+###Chapter 1 Introduction and Exploring Raw Data
+
+###Here's what Messy Data Looks Like
+# Weather in Data Camp's workspace
+weather <- read.csv("weather.csv")
+weather_clean <- read.csv("weather_clean.csv")
+bmi_clean <- read.csv("bmi_clean.csv")
+
+# View the first 6 rows of data
+head(weather)
+
+# View the last 6 rows of data
+tail(weather)
+
+# View a condensed summary of the data
+str(weather)
+
+###Here's what Clean Data Look Like
+# View the first 6 rows of data
+head(weather_clean)
+
+# View the last 6 rows of data
+tail(weather_clean)
+
+# View a condensed summary of the data
+str(weather_clean)
+
+###Getting a Feel for Your Data
+# Check the class of bmi
+class(bmi_clean)
+
+# Check the dimensions of bmi
+dim(bmi_clean)
+
+# View the column names of bmi
+names(bmi_clean)
+
+###Viewing the Structure of Your Data
+# Check the structure of bmi
+str(bmi_clean)
+
+# Load dplyr
+library(dplyr)
+
+# Check the structure of bmi, the dplyr way
+glimpse(bmi_clean)
+
+# View a summary of bmi
+summary(bmi_clean)
+
+###Looking at Your Data
+# Print bmi to the console
+bmi_clean
+
+# View the first 6 rows
+head(bmi_clean)
+
+# View the first 15 rows
+head(bmi_clean, 15)
+
+# View the last 6 rows
+tail(bmi_clean)
+
+# View the last 10 rows
+tail(bmi_clean, 10)
+
+###Visualizing your Data
+# Histogram of BMIs from 2008
+hist(bmi_clean$Y2008)
+
+# Scatter plot comparing BMIs from 1980 to those from 2008
+plot(bmi_clean$Y1980, bmi_clean$Y2008)
+
+```
+
+## Tidying
+
+```{r tidying}
+###Chapter 2 Tidying Data
+
+###Gathering Columns into Key-Value Pairs
+library(tidyr)
+library(dplyr)
+bmi_cc <- read.csv("bmi_cc.csv")
+census <- read.csv("census.csv")
+census_long <- read.csv("census_long.csv")
+census_long3 <- read.csv("census_long3.csv")
+
+# Apply gather() to bmi and save the result as bmi_long
+bmi_long <- gather(bmi_clean, year, bmi_val, -Country)
+
+# View the first 20 rows of the result
+head(bmi_long, 20)
+
+###Spreading Key-Value Pairs into Columns
+# Apply spread() to bmi_long
+bmi_wide <- spread(bmi_long, year, bmi_val)
+
+# View the head of bmi_wide
+head(bmi_wide)
+
+###Seperating Columns
+# bmi_cc loaded in Data Camp's workspace
+# Apply separate() to bmi_cc
+bmi_cc_clean <- separate(bmi_cc, col = Country_ISO, into = c("Country", "ISO"), sep = "/")
+
+# View the head of the result
+head(bmi_cc_clean)
+
+###Uniting Columns
+# Apply unite() to bmi_cc_clean
+bmi_cc <- unite(bmi_cc_clean, Country_ISO, Country, ISO, sep = "-")
+
+# View the head of the result
+head(bmi_cc)
+
+###Column Headers are Values, Not Variable Names
+## tidyr and dplyr are already loaded for you
+
+# View the head of census
+head(census)
+
+# Gather the month columns
+census2 <- gather(census, month, amount, -YEAR)
+
+# Arrange rows by YEAR using dplyr's arrange
+census2 <- arrange(census2, YEAR)
+
+# View first 20 rows of census2
+head(census2, 20)
+
+###Variables are Stored in Both Rows and Columns
+## tidyr is already loaded for you
+
+# View first 50 rows of census_long
+# census_long in Data Camp's workspace
+head(census_long, 50)
+
+# Spread the type column
+census_long2 <- spread(census_long, type, amount)
+
+# View first 20 rows of census_long2
+head(census_long2, 20)
+
+###Multiple Values are Stored in one column
+## tidyr is already loaded for you
+
+# View the head of census_long3
+# census_long3 in Data Camp's workspace
+head(census_long3)
+
+# Separate the yr_month column into two
+census_long4 <- separate(census_long3, yr_month, c("year", "month"))
+
+# View the first 6 rows of the result
+head(census_long4)
+```
+
+## Preparing
+
+```{r preparing}
+###Chapter 3 Preparing for Data Analysis
+
+students <- read.csv("students.csv")
+students2 <- read.csv("students2.csv")
+states <- read.csv("states.csv")
+social_df <- read.csv("social_df.csv")
+students3 <- read.csv("students3.csv")
+
+###Types of Variables in R
+# Make this evaluate to character
+class("true")
+
+# Make this evaluate to numeric
+class(8484.00)
+
+# Make this evaluate to integer
+class(99L)
+
+# Make this evaluate to factor
+class(factor("factor"))
+
+# Make this evaluate to logical
+class(FALSE)
+
+###Common Type Conversions
+# Preview students with str()
+str(students)
+
+# Coerce Grades to character
+students$Grades <- as.character(students$Grades)
+
+# Coerce Medu to factor
+students$Medu <- as.factor(students$Medu)
+
+# Coerce Fedu to factor
+students$Fedu <- as.factor(students$Fedu)
+
+# Look at students once more with str()
+str(students)
+
+###Working with Dates
+# students2 in Data Camp's workspace
+# Preview students2 with str()
+str(students2)
+
+# Load the lubridate package
+library(lubridate)
+
+# Parse as date
+dmy("17 Sep 2015")
+
+# Parse as date and time (with no seconds!)
+mdy_hm("July 15, 2012 12:56")
+
+# Coerce dob to a date (with no time)
+students2$dob <- ymd(students2$dob)
+
+# Coerce nurse_visit to a date and time
+students2$nurse_visit <- ymd_hms(students2$nurse_visit)
+
+# Look at students2 once more with str()
+str(students2)
+
+###Trimming and Padding Strings
+# Load the stringr package
+library(stringr)
+
+# Trim all leading and trailing whitespace
+str_trim(c("   Filip ", "Nick  ", " Jonathan"))
+
+# Pad these strings with leading zeros
+str_pad(c("23485W", "8823453Q", "994Z"), width = 9, side = "left", pad = "0")
+
+###Upper and Lower Case
+# states in Data Camp's workspace
+# Print state abbreviations
+states
+
+# Make states all uppercase and save result to states_upper
+states_upper <- toupper(states)
+
+# Make states_upper all lowercase again
+tolower(states_upper)
+
+###Finding and Replacing Strings
+## stringr has been loaded for you
+
+# Look at the head of students2
+head(students2)
+
+# Detect all dates of birth (dob) in 1997
+str_detect(students2$dob, "1997")
+
+# In the sex column, replace "F" with "Female"...
+students2$sex <- str_replace(students2$sex, "F", "Female")
+
+# ...And "M" with "Male"
+students2$sex <- str_replace(students2$sex, "M", "Male")
+
+# View the head of students2
+head(students2)
+
+###Finding Missing Values
+# social_df is in Data Camp's workspace
+# Call is.na() on the full social_df to spot all NAs
+is.na(social_df)
+
+# Use the any() function to ask whether there are any NAs in the data
+any(is.na(social_df))
+
+# View a summary() of the dataset
+summary(social_df)
+
+# Call table() on the status column
+table(social_df$status)
+
+###Dealing with Missing Values
+## The stringr package is preloaded
+
+# Replace all empty strings in status with NA
+social_df$status[social_df$status == ""] <- NA
+
+# Print social_df to the console
+social_df
+
+# Use complete.cases() to see which rows have no missing values
+complete.cases(social_df)
+
+# Use na.omit() to remove all rows with any missing values
+na.omit(social_df)
+
+###Dealing with Outliers and Obvious Errors
+# students3 is in Data Camp's workspace
+# Look at a summary() of students3
+summary(students3)
+
+# View a histogram of the age variable
+hist(students3$age)
+
+# View a histogram of the absences variable
+hist(students3$absences)
+
+# View a histogram of absences, but force zeros to be bucketed to the right of zero
+hist(students3$absences, right = FALSE)
+
+###Another Look at Strange Values
+# View a boxplot of age
+boxplot(students3$age)
+
+# View a boxplot of absences
+boxplot(students3$absences)
+
+```
+
+## All Together
+
+```{r all}
+###Chapter 4 Putting it All Together
+
+###Get a Feel For the Data
+# Verify that weather is a data.frame
+class(weather)
+
+# Check the dimensions
+dim(weather)
+
+# View the column names
+names(weather)
+
+###Summarize the Data
+# View the structure of the data
+str(weather)
+
+# Load dplyr package
+library(dplyr)
+
+# Look at the structure using dplyr's glimpse()
+glimpse(weather)
+
+# View a summary of the data
+summary(weather)
+
+###Take a Closer Look
+# View first 6 rows
+head(weather)
+
+# View first 15 rows
+head(weather, 15)
+
+# View the last 6 rows
+tail(weather)
+
+# View the last 10 rows
+tail(weather, 10)
+
+###Column Names are Values
+# Load the tidyr package
+library(tidyr)
+
+# Gather the columns
+weather2 <- gather(weather, day, value, X1:X31, na.rm = TRUE)
+
+# View the head
+head(weather2)
+
+###Values are Variable Names
+## The tidyr package is already loaded
+
+# First remove column of row names
+weather2 <- weather2[, -1]
+
+# Spread the data
+weather3 <- spread(weather2, measure, value)
+
+# View the head
+head(weather3)
+
+###Clean Up Dates
+## tidyr and dplyr are already loaded
+
+# Load the stringr and lubridate packages
+library(stringr)
+library(lubridate)
+
+# Remove X's from day column
+weather3$day <- str_replace(weather3$day, "X", "")
+
+# Unite the year, month, and day columns
+weather4 <- unite(weather3, date, year, month, day, sep = "-")
+
+# Convert date column to proper date format using stringr's ymd()
+weather4$date <- ymd(weather4$date)
+
+# Rearrange columns using dplyr's select()
+weather5 <- select(weather4, date, Events, CloudCover:WindDirDegrees)
+
+# View the head
+head(weather5)
+
+###A Closer Look at Column Types
+# View the structure of weather5
+str(weather5)
+
+# Examine the first 20 rows of weather5. Are most of the characters numeric?
+head(weather5, 20)
+
+# See what happens if we try to convert PrecipitationIn to numeric
+as.numeric(weather5$PrecipitationIn)
+
+###Column Type Conversions
+## The dplyr package is already loaded
+
+# Replace T with 0 (T = trace)
+
+weather5$PrecipitationIn <- str_replace(weather5$PrecipitationIn, "T", "0")
+
+# Convert characters to numerics
+weather6 <- mutate_each(weather5, funs(as.numeric), CloudCover:WindDirDegrees)
+
+# Look at result
+str(weather6)
+
+###Find Missing Values
+# Count missing values
+sum(is.na(weather6))
+
+# Find missing values
+summary(weather6)
+
+# Find indices of NAs in Max.Gust.SpeedMPH
+ind <- which(is.na(weather6$Max.Gust.SpeedMPH))
+
+# Look at the full rows for records missing Max.Gust.SpeedMPH
+weather6[ind, ]
+
+###An Obvious Error
+# Review distibutions for all variables
+summary(weather6)
+
+# Find row with Max.Humidity of 1000
+ind <- which(weather6$Max.Humidity == 1000)
+
+# Look at the data for that day
+weather6[ind, ]
+
+# Change 1000 to 100
+weather6$Max.Humidity[ind] <- 100
+
+###Another Obvious Error
+# Look at summary of Mean.VisibilityMiles
+summary(weather6$Mean.VisibilityMiles)
+
+# Get index of row with -1 value
+ind <- which(weather6$Mean.VisibilityMiles == -1)
+
+# Look at full row
+weather6[ind, ]
+
+# Set Mean.VisibilityMiles to the appropriate value
+weather6$Mean.VisibilityMiles[ind] <- 10
+
+###Check Other Extreme Values
+# Review summary of full data once more
+summary(weather6)
+
+# Look at histogram for MeanDew.PointF
+hist(weather6$MeanDew.PointF)
+
+# Look at histogram for Min.TemperatureF
+hist(weather6$Min.TemperatureF)
+
+# Compare to histogram for Mean.TemperatureF
+hist(weather6$Mean.TemperatureF)
+
+###Finishing Touches
+temp <- read.csv("new_colnames.csv") 
+new_colnames <- as.vector(temp$x)
+
+# Clean up column names
+names(weather6) <- new_colnames
+
+# Replace empty cells in Events column
+weather6$events[weather6$events == ""] <- "None"
+
+# Print the first 6 rows of weather6
+head(weather6)
+```
+

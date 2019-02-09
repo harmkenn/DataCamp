@@ -1,7 +1,7 @@
 ---
-title: "Building Web Apps with Shiny Module 4"
+title: "Intro to R"
 author: "Ken Harmon"
-date: "2019 February 06"
+date: "2019 February 08"
 output:
   html_document:  
     keep_md: true

@@ -12,7 +12,7 @@
 <meta name="author" content="Ken Harmon" />
 
 
-<title>Intro to R</title>
+<title>Intermediate R</title>
 
 <script>/*! jQuery v1.11.3 | (c) 2005, 2015 jQuery Foundation, Inc. | jquery.org/license */
 !function(a,b){"object"==typeof module&&"object"==typeof module.exports?module.exports=a.document?b(a,!0):function(a){if(!a.document)throw new Error("jQuery requires a window with a document");return b(a)}:b(a)}("undefined"!=typeof window?window:this,function(a,b){var c=[],d=c.slice,e=c.concat,f=c.push,g=c.indexOf,h={},i=h.toString,j=h.hasOwnProperty,k={},l="1.11.3",m=function(a,b){return new m.fn.init(a,b)},n=/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,o=/^-ms-/,p=/-([\da-z])/gi,q=function(a,b){return b.toUpperCase()};m.fn=m.prototype={jquery:l,constructor:m,selector:"",length:0,toArray:function(){return d.call(this)},get:function(a){return null!=a?0>a?this[a+this.length]:this[a]:d.call(this)},pushStack:function(a){var b=m.merge(this.constructor(),a);return b.prevObject=this,b.context=this.context,b},each:function(a,b){return m.each(this,a,b)},map:function(a){return this.pushStack(m.map(this,function(b,c){return a.call(b,c,b)}))},slice:function(){return this.pushStack(d.apply(this,arguments))},first:function(){return this.eq(0)},last:function(){return this.eq(-1)},eq:function(a){var b=this.length,c=+a+(0>a?b:0);return this.pushStack(c>=0&&b>c?[this[c]]:[])},end:function(){return this.prevObject||this.constructor(null)},push:f,sort:c.sort,splice:c.splice},m.extend=m.fn.extend=function(){var a,b,c,d,e,f,g=arguments[0]||{},h=1,i=arguments.length,j=!1;for("boolean"==typeof g&&(j=g,g=arguments[h]||{},h++),"object"==typeof g||m.isFunction(g)||(g={}),h===i&&(g=this,h--);i>h;h++)if(null!=(e=arguments[h]))for(d in e)a=g[d],c=e[d],g!==c&&(j&&c&&(m.isPlainObject(c)||(b=m.isArray(c)))?(b?(b=!1,f=a&&m.isArray(a)?a:[]):f=a&&m.isPlainObject(a)?a:{},g[d]=m.extend(j,f,c)):void 0!==c&&(g[d]=c));return g},m.extend({expando:"jQuery"+(l+Math.random()).replace(/\D/g,""),isReady:!0,error:function(a){throw new Error(a)},noop:function(){},isFunction:function(a){return"function"===m.type(a)},isArray:Array.isArray||function(a){return"array"===m.type(a)},isWindow:function(a){return null!=a&&a==a.window},isNumeric:function(a){return!m.isArray(a)&&a-parseFloat(a)+1>=0},isEmptyObject:function(a){var b;for(b in a)return!1;return!0},isPlainObject:function(a){var b;if(!a||"object"!==m.type(a)||a.nodeType||m.isWindow(a))return!1;try{if(a.constructor&&!j.call(a,"constructor")&&!j.call(a.constructor.prototype,"isPrototypeOf"))return!1}catch(c){return!1}if(k.ownLast)for(b in a)return j.call(a,b);for(b in a);return void 0===b||j.call(a,b)},type:function(a){return null==a?a+"":"object"==typeof a||"function"==typeof a?h[i.call(a)]||"object":typeof a},globalEval:function(b){b&&m.trim(b)&&(a.execScript||function(b){a.eval.call(a,b)})(b)},camelCase:function(a){return a.replace(o,"ms-").replace(p,q)},nodeName:function(a,b){return a.nodeName&&a.nodeName.toLowerCase()===b.toLowerCase()},each:function(a,b,c){var d,e=0,f=a.length,g=r(a);if(c){if(g){for(;f>e;e++)if(d=b.apply(a[e],c),d===!1)break}else for(e in a)if(d=b.apply(a[e],c),d===!1)break}else if(g){for(;f>e;e++)if(d=b.call(a[e],e,a[e]),d===!1)break}else for(e in a)if(d=b.call(a[e],e,a[e]),d===!1)break;return a},trim:function(a){return null==a?"":(a+"").replace(n,"")},makeArray:function(a,b){var c=b||[];return null!=a&&(r(Object(a))?m.merge(c,"string"==typeof a?[a]:a):f.call(c,a)),c},inArray:function(a,b,c){var d;if(b){if(g)return g.call(b,a,c);for(d=b.length,c=c?0>c?Math.max(0,d+c):c:0;d>c;c++)if(c in b&&b[c]===a)return c}return-1},merge:function(a,b){var c=+b.length,d=0,e=a.length;while(c>d)a[e++]=b[d++];if(c!==c)while(void 0!==b[d])a[e++]=b[d++];return a.length=e,a},grep:function(a,b,c){for(var d,e=[],f=0,g=a.length,h=!c;g>f;f++)d=!b(a[f],f),d!==h&&e.push(a[f]);return e},map:function(a,b,c){var d,f=0,g=a.length,h=r(a),i=[];if(h)for(;g>f;f++)d=b(a[f],f,c),null!=d&&i.push(d);else for(f in a)d=b(a[f],f,c),null!=d&&i.push(d);return e.apply([],i)},guid:1,proxy:function(a,b){var c,e,f;return"string"==typeof b&&(f=a[b],b=a,a=f),m.isFunction(a)?(c=d.call(arguments,2),e=function(){return a.apply(b||this,c.concat(d.call(arguments)))},e.guid=a.guid=a.guid||m.guid++,e):void 0},now:function(){return+new Date},support:k}),m.each("Boolean Number String Function Array Date RegExp Object Error".split(" "),function(a,b){h["[object "+b+"]"]=b.toLowerCase()});function r(a){var b="length"in a&&a.length,c=m.type(a);return"function"===c||m.isWindow(a)?!1:1===a.nodeType&&b?!0:"array"===c||0===b||"number"==typeof b&&b>0&&b-1 in a}var s=function(a){var b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u="sizzle"+1*new Date,v=a.document,w=0,x=0,y=ha(),z=ha(),A=ha(),B=function(a,b){return a===b&&(l=!0),0},C=1<<31,D={}.hasOwnProperty,E=[],F=E.pop,G=E.push,H=E.push,I=E.slice,J=function(a,b){for(var c=0,d=a.length;d>c;c++)if(a[c]===b)return c;return-1},K="checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",L="[\\x20\\t\\r\\n\\f]",M="(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",N=M.replace("w","w#"),O="\\["+L+"*("+M+")(?:"+L+"*([*^$|!~]?=)"+L+"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|("+N+"))|)"+L+"*\\]",P=":("+M+")(?:\\((('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|((?:\\\\.|[^\\\\()[\\]]|"+O+")*)|.*)\\)|)",Q=new RegExp(L+"+","g"),R=new RegExp("^"+L+"+|((?:^|[^\\\\])(?:\\\\.)*)"+L+"+$","g"),S=new RegExp("^"+L+"*,"+L+"*"),T=new RegExp("^"+L+"*([>+~]|"+L+")"+L+"*"),U=new RegExp("="+L+"*([^\\]'\"]*?)"+L+"*\\]","g"),V=new RegExp(P),W=new RegExp("^"+N+"$"),X={ID:new RegExp("^#("+M+")"),CLASS:new RegExp("^\\.("+M+")"),TAG:new RegExp("^("+M.replace("w","w*")+")"),ATTR:new RegExp("^"+O),PSEUDO:new RegExp("^"+P),CHILD:new RegExp("^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\("+L+"*(even|odd|(([+-]|)(\\d*)n|)"+L+"*(?:([+-]|)"+L+"*(\\d+)|))"+L+"*\\)|)","i"),bool:new RegExp("^(?:"+K+")$","i"),needsContext:new RegExp("^"+L+"*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\("+L+"*((?:-\\d)?\\d*)"+L+"*\\)|)(?=[^-]|$)","i")},Y=/^(?:input|select|textarea|button)$/i,Z=/^h\d$/i,$=/^[^{]+\{\s*\[native \w/,_=/^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,aa=/[+~]/,ba=/'|\\/g,ca=new RegExp("\\\\([\\da-f]{1,6}"+L+"?|("+L+")|.)","ig"),da=function(a,b,c){var d="0x"+b-65536;return d!==d||c?b:0>d?String.fromCharCode(d+65536):String.fromCharCode(d>>10|55296,1023&d|56320)},ea=function(){m()};try{H.apply(E=I.call(v.childNodes),v.childNodes),E[v.childNodes.length].nodeType}catch(fa){H={apply:E.length?function(a,b){G.apply(a,I.call(b))}:function(a,b){var c=a.length,d=0;while(a[c++]=b[d++]);a.length=c-1}}}function ga(a,b,d,e){var f,h,j,k,l,o,r,s,w,x;if((b?b.ownerDocument||b:v)!==n&&m(b),b=b||n,d=d||[],k=b.nodeType,"string"!=typeof a||!a||1!==k&&9!==k&&11!==k)return d;if(!e&&p){if(11!==k&&(f=_.exec(a)))if(j=f[1]){if(9===k){if(h=b.getElementById(j),!h||!h.parentNode)return d;if(h.id===j)return d.push(h),d}else if(b.ownerDocument&&(h=b.ownerDocument.getElementById(j))&&t(b,h)&&h.id===j)return d.push(h),d}else{if(f[2])return H.apply(d,b.getElementsByTagName(a)),d;if((j=f[3])&&c.getElementsByClassName)return H.apply(d,b.getElementsByClassName(j)),d}if(c.qsa&&(!q||!q.test(a))){if(s=r=u,w=b,x=1!==k&&a,1===k&&"object"!==b.nodeName.toLowerCase()){o=g(a),(r=b.getAttribute("id"))?s=r.replace(ba,"\\$&"):b.setAttribute("id",s),s="[id='"+s+"'] ",l=o.length;while(l--)o[l]=s+ra(o[l]);w=aa.test(a)&&pa(b.parentNode)||b,x=o.join(",")}if(x)try{return H.apply(d,w.querySelectorAll(x)),d}catch(y){}finally{r||b.removeAttribute("id")}}}return i(a.replace(R,"$1"),b,d,e)}function ha(){var a=[];function b(c,e){return a.push(c+" ")>d.cacheLength&&delete b[a.shift()],b[c+" "]=e}return b}function ia(a){return a[u]=!0,a}function ja(a){var b=n.createElement("div");try{return!!a(b)}catch(c){return!1}finally{b.parentNode&&b.parentNode.removeChild(b),b=null}}function ka(a,b){var c=a.split("|"),e=a.length;while(e--)d.attrHandle[c[e]]=b}function la(a,b){var c=b&&a,d=c&&1===a.nodeType&&1===b.nodeType&&(~b.sourceIndex||C)-(~a.sourceIndex||C);if(d)return d;if(c)while(c=c.nextSibling)if(c===b)return-1;return a?1:-1}function ma(a){return function(b){var c=b.nodeName.toLowerCase();return"input"===c&&b.type===a}}function na(a){return function(b){var c=b.nodeName.toLowerCase();return("input"===c||"button"===c)&&b.type===a}}function oa(a){return ia(function(b){return b=+b,ia(function(c,d){var e,f=a([],c.length,b),g=f.length;while(g--)c[e=f[g]]&&(c[e]=!(d[e]=c[e]))})})}function pa(a){return a&&"undefined"!=typeof a.getElementsByTagName&&a}c=ga.support={},f=ga.isXML=function(a){var b=a&&(a.ownerDocument||a).documentElement;return b?"HTML"!==b.nodeName:!1},m=ga.setDocument=function(a){var b,e,g=a?a.ownerDocument||a:v;return g!==n&&9===g.nodeType&&g.documentElement?(n=g,o=g.documentElement,e=g.defaultView,e&&e!==e.top&&(e.addEventListener?e.addEventListener("unload",ea,!1):e.attachEvent&&e.attachEvent("onunload",ea)),p=!f(g),c.attributes=ja(function(a){return a.className="i",!a.getAttribute("className")}),c.getElementsByTagName=ja(function(a){return a.appendChild(g.createComment("")),!a.getElementsByTagName("*").length}),c.getElementsByClassName=$.test(g.getElementsByClassName),c.getById=ja(function(a){return o.appendChild(a).id=u,!g.getElementsByName||!g.getElementsByName(u).length}),c.getById?(d.find.ID=function(a,b){if("undefined"!=typeof b.getElementById&&p){var c=b.getElementById(a);return c&&c.parentNode?[c]:[]}},d.filter.ID=function(a){var b=a.replace(ca,da);return function(a){return a.getAttribute("id")===b}}):(delete d.find.ID,d.filter.ID=function(a){var b=a.replace(ca,da);return function(a){var c="undefined"!=typeof a.getAttributeNode&&a.getAttributeNode("id");return c&&c.value===b}}),d.find.TAG=c.getElementsByTagName?function(a,b){return"undefined"!=typeof b.getElementsByTagName?b.getElementsByTagName(a):c.qsa?b.querySelectorAll(a):void 0}:function(a,b){var c,d=[],e=0,f=b.getElementsByTagName(a);if("*"===a){while(c=f[e++])1===c.nodeType&&d.push(c);return d}return f},d.find.CLASS=c.getElementsByClassName&&function(a,b){return p?b.getElementsByClassName(a):void 0},r=[],q=[],(c.qsa=$.test(g.querySelectorAll))&&(ja(function(a){o.appendChild(a).innerHTML="<a id='"+u+"'></a><select id='"+u+"-\f]' msallowcapture=''><option selected=''></option></select>",a.querySelectorAll("[msallowcapture^='']").length&&q.push("[*^$]="+L+"*(?:''|\"\")"),a.querySelectorAll("[selected]").length||q.push("\\["+L+"*(?:value|"+K+")"),a.querySelectorAll("[id~="+u+"-]").length||q.push("~="),a.querySelectorAll(":checked").length||q.push(":checked"),a.querySelectorAll("a#"+u+"+*").length||q.push(".#.+[+~]")}),ja(function(a){var b=g.createElement("input");b.setAttribute("type","hidden"),a.appendChild(b).setAttribute("name","D"),a.querySelectorAll("[name=d]").length&&q.push("name"+L+"*[*^$|!~]?="),a.querySelectorAll(":enabled").length||q.push(":enabled",":disabled"),a.querySelectorAll("*,:x"),q.push(",.*:")})),(c.matchesSelector=$.test(s=o.matches||o.webkitMatchesSelector||o.mozMatchesSelector||o.oMatchesSelector||o.msMatchesSelector))&&ja(function(a){c.disconnectedMatch=s.call(a,"div"),s.call(a,"[s!='']:x"),r.push("!=",P)}),q=q.length&&new RegExp(q.join("|")),r=r.length&&new RegExp(r.join("|")),b=$.test(o.compareDocumentPosition),t=b||$.test(o.contains)?function(a,b){var c=9===a.nodeType?a.documentElement:a,d=b&&b.parentNode;return a===d||!(!d||1!==d.nodeType||!(c.contains?c.contains(d):a.compareDocumentPosition&&16&a.compareDocumentPosition(d)))}:function(a,b){if(b)while(b=b.parentNode)if(b===a)return!0;return!1},B=b?function(a,b){if(a===b)return l=!0,0;var d=!a.compareDocumentPosition-!b.compareDocumentPosition;return d?d:(d=(a.ownerDocument||a)===(b.ownerDocument||b)?a.compareDocumentPosition(b):1,1&d||!c.sortDetached&&b.compareDocumentPosition(a)===d?a===g||a.ownerDocument===v&&t(v,a)?-1:b===g||b.ownerDocument===v&&t(v,b)?1:k?J(k,a)-J(k,b):0:4&d?-1:1)}:function(a,b){if(a===b)return l=!0,0;var c,d=0,e=a.parentNode,f=b.parentNode,h=[a],i=[b];if(!e||!f)return a===g?-1:b===g?1:e?-1:f?1:k?J(k,a)-J(k,b):0;if(e===f)return la(a,b);c=a;while(c=c.parentNode)h.unshift(c);c=b;while(c=c.parentNode)i.unshift(c);while(h[d]===i[d])d++;return d?la(h[d],i[d]):h[d]===v?-1:i[d]===v?1:0},g):n},ga.matches=function(a,b){return ga(a,null,null,b)},ga.matchesSelector=function(a,b){if((a.ownerDocument||a)!==n&&m(a),b=b.replace(U,"='$1']"),!(!c.matchesSelector||!p||r&&r.test(b)||q&&q.test(b)))try{var d=s.call(a,b);if(d||c.disconnectedMatch||a.document&&11!==a.document.nodeType)return d}catch(e){}return ga(b,n,null,[a]).length>0},ga.contains=function(a,b){return(a.ownerDocument||a)!==n&&m(a),t(a,b)},ga.attr=function(a,b){(a.ownerDocument||a)!==n&&m(a);var e=d.attrHandle[b.toLowerCase()],f=e&&D.call(d.attrHandle,b.toLowerCase())?e(a,b,!p):void 0;return void 0!==f?f:c.attributes||!p?a.getAttribute(b):(f=a.getAttributeNode(b))&&f.specified?f.value:null},ga.error=function(a){throw new Error("Syntax error, unrecognized expression: "+a)},ga.uniqueSort=function(a){var b,d=[],e=0,f=0;if(l=!c.detectDuplicates,k=!c.sortStable&&a.slice(0),a.sort(B),l){while(b=a[f++])b===a[f]&&(e=d.push(f));while(e--)a.splice(d[e],1)}return k=null,a},e=ga.getText=function(a){var b,c="",d=0,f=a.nodeType;if(f){if(1===f||9===f||11===f){if("string"==typeof a.textContent)return a.textContent;for(a=a.firstChild;a;a=a.nextSibling)c+=e(a)}else if(3===f||4===f)return a.nodeValue}else while(b=a[d++])c+=e(b);return c},d=ga.selectors={cacheLength:50,createPseudo:ia,match:X,attrHandle:{},find:{},relative:{">":{dir:"parentNode",first:!0}," ":{dir:"parentNode"},"+":{dir:"previousSibling",first:!0},"~":{dir:"previousSibling"}},preFilter:{ATTR:function(a){return a[1]=a[1].replace(ca,da),a[3]=(a[3]||a[4]||a[5]||"").replace(ca,da),"~="===a[2]&&(a[3]=" "+a[3]+" "),a.slice(0,4)},CHILD:function(a){return a[1]=a[1].toLowerCase(),"nth"===a[1].slice(0,3)?(a[3]||ga.error(a[0]),a[4]=+(a[4]?a[5]+(a[6]||1):2*("even"===a[3]||"odd"===a[3])),a[5]=+(a[7]+a[8]||"odd"===a[3])):a[3]&&ga.error(a[0]),a},PSEUDO:function(a){var b,c=!a[6]&&a[2];return X.CHILD.test(a[0])?null:(a[3]?a[2]=a[4]||a[5]||"":c&&V.test(c)&&(b=g(c,!0))&&(b=c.indexOf(")",c.length-b)-c.length)&&(a[0]=a[0].slice(0,b),a[2]=c.slice(0,b)),a.slice(0,3))}},filter:{TAG:function(a){var b=a.replace(ca,da).toLowerCase();return"*"===a?function(){return!0}:function(a){return a.nodeName&&a.nodeName.toLowerCase()===b}},CLASS:function(a){var b=y[a+" "];return b||(b=new RegExp("(^|"+L+")"+a+"("+L+"|$)"))&&y(a,function(a){return b.test("string"==typeof a.className&&a.className||"undefined"!=typeof a.getAttribute&&a.getAttribute("class")||"")})},ATTR:function(a,b,c){return function(d){var e=ga.attr(d,a);return null==e?"!="===b:b?(e+="","="===b?e===c:"!="===b?e!==c:"^="===b?c&&0===e.indexOf(c):"*="===b?c&&e.indexOf(c)>-1:"$="===b?c&&e.slice(-c.length)===c:"~="===b?(" "+e.replace(Q," ")+" ").indexOf(c)>-1:"|="===b?e===c||e.slice(0,c.length+1)===c+"-":!1):!0}},CHILD:function(a,b,c,d,e){var f="nth"!==a.slice(0,3),g="last"!==a.slice(-4),h="of-type"===b;return 1===d&&0===e?function(a){return!!a.parentNode}:function(b,c,i){var j,k,l,m,n,o,p=f!==g?"nextSibling":"previousSibling",q=b.parentNode,r=h&&b.nodeName.toLowerCase(),s=!i&&!h;if(q){if(f){while(p){l=b;while(l=l[p])if(h?l.nodeName.toLowerCase()===r:1===l.nodeType)return!1;o=p="only"===a&&!o&&"nextSibling"}return!0}if(o=[g?q.firstChild:q.lastChild],g&&s){k=q[u]||(q[u]={}),j=k[a]||[],n=j[0]===w&&j[1],m=j[0]===w&&j[2],l=n&&q.childNodes[n];while(l=++n&&l&&l[p]||(m=n=0)||o.pop())if(1===l.nodeType&&++m&&l===b){k[a]=[w,n,m];break}}else if(s&&(j=(b[u]||(b[u]={}))[a])&&j[0]===w)m=j[1];else while(l=++n&&l&&l[p]||(m=n=0)||o.pop())if((h?l.nodeName.toLowerCase()===r:1===l.nodeType)&&++m&&(s&&((l[u]||(l[u]={}))[a]=[w,m]),l===b))break;return m-=e,m===d||m%d===0&&m/d>=0}}},PSEUDO:function(a,b){var c,e=d.pseudos[a]||d.setFilters[a.toLowerCase()]||ga.error("unsupported pseudo: "+a);return e[u]?e(b):e.length>1?(c=[a,a,"",b],d.setFilters.hasOwnProperty(a.toLowerCase())?ia(function(a,c){var d,f=e(a,b),g=f.length;while(g--)d=J(a,f[g]),a[d]=!(c[d]=f[g])}):function(a){return e(a,0,c)}):e}},pseudos:{not:ia(function(a){var b=[],c=[],d=h(a.replace(R,"$1"));return d[u]?ia(function(a,b,c,e){var f,g=d(a,null,e,[]),h=a.length;while(h--)(f=g[h])&&(a[h]=!(b[h]=f))}):function(a,e,f){return b[0]=a,d(b,null,f,c),b[0]=null,!c.pop()}}),has:ia(function(a){return function(b){return ga(a,b).length>0}}),contains:ia(function(a){return a=a.replace(ca,da),function(b){return(b.textContent||b.innerText||e(b)).indexOf(a)>-1}}),lang:ia(function(a){return W.test(a||"")||ga.error("unsupported lang: "+a),a=a.replace(ca,da).toLowerCase(),function(b){var c;do if(c=p?b.lang:b.getAttribute("xml:lang")||b.getAttribute("lang"))return c=c.toLowerCase(),c===a||0===c.indexOf(a+"-");while((b=b.parentNode)&&1===b.nodeType);return!1}}),target:function(b){var c=a.location&&a.location.hash;return c&&c.slice(1)===b.id},root:function(a){return a===o},focus:function(a){return a===n.activeElement&&(!n.hasFocus||n.hasFocus())&&!!(a.type||a.href||~a.tabIndex)},enabled:function(a){return a.disabled===!1},disabled:function(a){return a.disabled===!0},checked:function(a){var b=a.nodeName.toLowerCase();return"input"===b&&!!a.checked||"option"===b&&!!a.selected},selected:function(a){return a.parentNode&&a.parentNode.selectedIndex,a.selected===!0},empty:function(a){for(a=a.firstChild;a;a=a.nextSibling)if(a.nodeType<6)return!1;return!0},parent:function(a){return!d.pseudos.empty(a)},header:function(a){return Z.test(a.nodeName)},input:function(a){return Y.test(a.nodeName)},button:function(a){var b=a.nodeName.toLowerCase();return"input"===b&&"button"===a.type||"button"===b},text:function(a){var b;return"input"===a.nodeName.toLowerCase()&&"text"===a.type&&(null==(b=a.getAttribute("type"))||"text"===b.toLowerCase())},first:oa(function(){return[0]}),last:oa(function(a,b){return[b-1]}),eq:oa(function(a,b,c){return[0>c?c+b:c]}),even:oa(function(a,b){for(var c=0;b>c;c+=2)a.push(c);return a}),odd:oa(function(a,b){for(var c=1;b>c;c+=2)a.push(c);return a}),lt:oa(function(a,b,c){for(var d=0>c?c+b:c;--d>=0;)a.push(d);return a}),gt:oa(function(a,b,c){for(var d=0>c?c+b:c;++d<b;)a.push(d);return a})}},d.pseudos.nth=d.pseudos.eq;for(b in{radio:!0,checkbox:!0,file:!0,password:!0,image:!0})d.pseudos[b]=ma(b);for(b in{submit:!0,reset:!0})d.pseudos[b]=na(b);function qa(){}qa.prototype=d.filters=d.pseudos,d.setFilters=new qa,g=ga.tokenize=function(a,b){var c,e,f,g,h,i,j,k=z[a+" "];if(k)return b?0:k.slice(0);h=a,i=[],j=d.preFilter;while(h){(!c||(e=S.exec(h)))&&(e&&(h=h.slice(e[0].length)||h),i.push(f=[])),c=!1,(e=T.exec(h))&&(c=e.shift(),f.push({value:c,type:e[0].replace(R," ")}),h=h.slice(c.length));for(g in d.filter)!(e=X[g].exec(h))||j[g]&&!(e=j[g](e))||(c=e.shift(),f.push({value:c,type:g,matches:e}),h=h.slice(c.length));if(!c)break}return b?h.length:h?ga.error(a):z(a,i).slice(0)};function ra(a){for(var b=0,c=a.length,d="";c>b;b++)d+=a[b].value;return d}function sa(a,b,c){var d=b.dir,e=c&&"parentNode"===d,f=x++;return b.first?function(b,c,f){while(b=b[d])if(1===b.nodeType||e)return a(b,c,f)}:function(b,c,g){var h,i,j=[w,f];if(g){while(b=b[d])if((1===b.nodeType||e)&&a(b,c,g))return!0}else while(b=b[d])if(1===b.nodeType||e){if(i=b[u]||(b[u]={}),(h=i[d])&&h[0]===w&&h[1]===f)return j[2]=h[2];if(i[d]=j,j[2]=a(b,c,g))return!0}}}function ta(a){return a.length>1?function(b,c,d){var e=a.length;while(e--)if(!a[e](b,c,d))return!1;return!0}:a[0]}function ua(a,b,c){for(var d=0,e=b.length;e>d;d++)ga(a,b[d],c);return c}function va(a,b,c,d,e){for(var f,g=[],h=0,i=a.length,j=null!=b;i>h;h++)(f=a[h])&&(!c||c(f,d,e))&&(g.push(f),j&&b.push(h));return g}function wa(a,b,c,d,e,f){return d&&!d[u]&&(d=wa(d)),e&&!e[u]&&(e=wa(e,f)),ia(function(f,g,h,i){var j,k,l,m=[],n=[],o=g.length,p=f||ua(b||"*",h.nodeType?[h]:h,[]),q=!a||!f&&b?p:va(p,m,a,h,i),r=c?e||(f?a:o||d)?[]:g:q;if(c&&c(q,r,h,i),d){j=va(r,n),d(j,[],h,i),k=j.length;while(k--)(l=j[k])&&(r[n[k]]=!(q[n[k]]=l))}if(f){if(e||a){if(e){j=[],k=r.length;while(k--)(l=r[k])&&j.push(q[k]=l);e(null,r=[],j,i)}k=r.length;while(k--)(l=r[k])&&(j=e?J(f,l):m[k])>-1&&(f[j]=!(g[j]=l))}}else r=va(r===g?r.splice(o,r.length):r),e?e(null,g,r,i):H.apply(g,r)})}function xa(a){for(var b,c,e,f=a.length,g=d.relative[a[0].type],h=g||d.relative[" "],i=g?1:0,k=sa(function(a){return a===b},h,!0),l=sa(function(a){return J(b,a)>-1},h,!0),m=[function(a,c,d){var e=!g&&(d||c!==j)||((b=c).nodeType?k(a,c,d):l(a,c,d));return b=null,e}];f>i;i++)if(c=d.relative[a[i].type])m=[sa(ta(m),c)];else{if(c=d.filter[a[i].type].apply(null,a[i].matches),c[u]){for(e=++i;f>e;e++)if(d.relative[a[e].type])break;return wa(i>1&&ta(m),i>1&&ra(a.slice(0,i-1).concat({value:" "===a[i-2].type?"*":""})).replace(R,"$1"),c,e>i&&xa(a.slice(i,e)),f>e&&xa(a=a.slice(e)),f>e&&ra(a))}m.push(c)}return ta(m)}function ya(a,b){var c=b.length>0,e=a.length>0,f=function(f,g,h,i,k){var l,m,o,p=0,q="0",r=f&&[],s=[],t=j,u=f||e&&d.find.TAG("*",k),v=w+=null==t?1:Math.random()||.1,x=u.length;for(k&&(j=g!==n&&g);q!==x&&null!=(l=u[q]);q++){if(e&&l){m=0;while(o=a[m++])if(o(l,g,h)){i.push(l);break}k&&(w=v)}c&&((l=!o&&l)&&p--,f&&r.push(l))}if(p+=q,c&&q!==p){m=0;while(o=b[m++])o(r,s,g,h);if(f){if(p>0)while(q--)r[q]||s[q]||(s[q]=F.call(i));s=va(s)}H.apply(i,s),k&&!f&&s.length>0&&p+b.length>1&&ga.uniqueSort(i)}return k&&(w=v,j=t),r};return c?ia(f):f}return h=ga.compile=function(a,b){var c,d=[],e=[],f=A[a+" "];if(!f){b||(b=g(a)),c=b.length;while(c--)f=xa(b[c]),f[u]?d.push(f):e.push(f);f=A(a,ya(e,d)),f.selector=a}return f},i=ga.select=function(a,b,e,f){var i,j,k,l,m,n="function"==typeof a&&a,o=!f&&g(a=n.selector||a);if(e=e||[],1===o.length){if(j=o[0]=o[0].slice(0),j.length>2&&"ID"===(k=j[0]).type&&c.getById&&9===b.nodeType&&p&&d.relative[j[1].type]){if(b=(d.find.ID(k.matches[0].replace(ca,da),b)||[])[0],!b)return e;n&&(b=b.parentNode),a=a.slice(j.shift().value.length)}i=X.needsContext.test(a)?0:j.length;while(i--){if(k=j[i],d.relative[l=k.type])break;if((m=d.find[l])&&(f=m(k.matches[0].replace(ca,da),aa.test(j[0].type)&&pa(b.parentNode)||b))){if(j.splice(i,1),a=f.length&&ra(j),!a)return H.apply(e,f),e;break}}}return(n||h(a,o))(f,b,!p,e,aa.test(a)&&pa(b.parentNode)||b),e},c.sortStable=u.split("").sort(B).join("")===u,c.detectDuplicates=!!l,m(),c.sortDetached=ja(function(a){return 1&a.compareDocumentPosition(n.createElement("div"))}),ja(function(a){return a.innerHTML="<a href='#'></a>","#"===a.firstChild.getAttribute("href")})||ka("type|href|height|width",function(a,b,c){return c?void 0:a.getAttribute(b,"type"===b.toLowerCase()?1:2)}),c.attributes&&ja(function(a){return a.innerHTML="<input/>",a.firstChild.setAttribute("value",""),""===a.firstChild.getAttribute("value")})||ka("value",function(a,b,c){return c||"input"!==a.nodeName.toLowerCase()?void 0:a.defaultValue}),ja(function(a){return null==a.getAttribute("disabled")})||ka(K,function(a,b,c){var d;return c?void 0:a[b]===!0?b.toLowerCase():(d=a.getAttributeNode(b))&&d.specified?d.value:null}),ga}(a);m.find=s,m.expr=s.selectors,m.expr[":"]=m.expr.pseudos,m.unique=s.uniqueSort,m.text=s.getText,m.isXMLDoc=s.isXML,m.contains=s.contains;var t=m.expr.match.needsContext,u=/^<(\w+)\s*\/?>(?:<\/\1>|)$/,v=/^.[^:#\[\.,]*$/;function w(a,b,c){if(m.isFunction(b))return m.grep(a,function(a,d){return!!b.call(a,d,a)!==c});if(b.nodeType)return m.grep(a,function(a){return a===b!==c});if("string"==typeof b){if(v.test(b))return m.filter(b,a,c);b=m.filter(b,a)}return m.grep(a,function(a){return m.inArray(a,b)>=0!==c})}m.filter=function(a,b,c){var d=b[0];return c&&(a=":not("+a+")"),1===b.length&&1===d.nodeType?m.find.matchesSelector(d,a)?[d]:[]:m.find.matches(a,m.grep(b,function(a){return 1===a.nodeType}))},m.fn.extend({find:function(a){var b,c=[],d=this,e=d.length;if("string"!=typeof a)return this.pushStack(m(a).filter(function(){for(b=0;e>b;b++)if(m.contains(d[b],this))return!0}));for(b=0;e>b;b++)m.find(a,d[b],c);return c=this.pushStack(e>1?m.unique(c):c),c.selector=this.selector?this.selector+" "+a:a,c},filter:function(a){return this.pushStack(w(this,a||[],!1))},not:function(a){return this.pushStack(w(this,a||[],!0))},is:function(a){return!!w(this,"string"==typeof a&&t.test(a)?m(a):a||[],!1).length}});var x,y=a.document,z=/^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,A=m.fn.init=function(a,b){var c,d;if(!a)return this;if("string"==typeof a){if(c="<"===a.charAt(0)&&">"===a.charAt(a.length-1)&&a.length>=3?[null,a,null]:z.exec(a),!c||!c[1]&&b)return!b||b.jquery?(b||x).find(a):this.constructor(b).find(a);if(c[1]){if(b=b instanceof m?b[0]:b,m.merge(this,m.parseHTML(c[1],b&&b.nodeType?b.ownerDocument||b:y,!0)),u.test(c[1])&&m.isPlainObject(b))for(c in b)m.isFunction(this[c])?this[c](b[c]):this.attr(c,b[c]);return this}if(d=y.getElementById(c[2]),d&&d.parentNode){if(d.id!==c[2])return x.find(a);this.length=1,this[0]=d}return this.context=y,this.selector=a,this}return a.nodeType?(this.context=this[0]=a,this.length=1,this):m.isFunction(a)?"undefined"!=typeof x.ready?x.ready(a):a(m):(void 0!==a.selector&&(this.selector=a.selector,this.context=a.context),m.makeArray(a,this))};A.prototype=m.fn,x=m(y);var B=/^(?:parents|prev(?:Until|All))/,C={children:!0,contents:!0,next:!0,prev:!0};m.extend({dir:function(a,b,c){var d=[],e=a[b];while(e&&9!==e.nodeType&&(void 0===c||1!==e.nodeType||!m(e).is(c)))1===e.nodeType&&d.push(e),e=e[b];return d},sibling:function(a,b){for(var c=[];a;a=a.nextSibling)1===a.nodeType&&a!==b&&c.push(a);return c}}),m.fn.extend({has:function(a){var b,c=m(a,this),d=c.length;return this.filter(function(){for(b=0;d>b;b++)if(m.contains(this,c[b]))return!0})},closest:function(a,b){for(var c,d=0,e=this.length,f=[],g=t.test(a)||"string"!=typeof a?m(a,b||this.context):0;e>d;d++)for(c=this[d];c&&c!==b;c=c.parentNode)if(c.nodeType<11&&(g?g.index(c)>-1:1===c.nodeType&&m.find.matchesSelector(c,a))){f.push(c);break}return this.pushStack(f.length>1?m.unique(f):f)},index:function(a){return a?"string"==typeof a?m.inArray(this[0],m(a)):m.inArray(a.jquery?a[0]:a,this):this[0]&&this[0].parentNode?this.first().prevAll().length:-1},add:function(a,b){return this.pushStack(m.unique(m.merge(this.get(),m(a,b))))},addBack:function(a){return this.add(null==a?this.prevObject:this.prevObject.filter(a))}});function D(a,b){do a=a[b];while(a&&1!==a.nodeType);return a}m.each({parent:function(a){var b=a.parentNode;return b&&11!==b.nodeType?b:null},parents:function(a){return m.dir(a,"parentNode")},parentsUntil:function(a,b,c){return m.dir(a,"parentNode",c)},next:function(a){return D(a,"nextSibling")},prev:function(a){return D(a,"previousSibling")},nextAll:function(a){return m.dir(a,"nextSibling")},prevAll:function(a){return m.dir(a,"previousSibling")},nextUntil:function(a,b,c){return m.dir(a,"nextSibling",c)},prevUntil:function(a,b,c){return m.dir(a,"previousSibling",c)},siblings:function(a){return m.sibling((a.parentNode||{}).firstChild,a)},children:function(a){return m.sibling(a.firstChild)},contents:function(a){return m.nodeName(a,"iframe")?a.contentDocument||a.contentWindow.document:m.merge([],a.childNodes)}},function(a,b){m.fn[a]=function(c,d){var e=m.map(this,b,c);return"Until"!==a.slice(-5)&&(d=c),d&&"string"==typeof d&&(e=m.filter(d,e)),this.length>1&&(C[a]||(e=m.unique(e)),B.test(a)&&(e=e.reverse())),this.pushStack(e)}});var E=/\S+/g,F={};function G(a){var b=F[a]={};return m.each(a.match(E)||[],function(a,c){b[c]=!0}),b}m.Callbacks=function(a){a="string"==typeof a?F[a]||G(a):m.extend({},a);var b,c,d,e,f,g,h=[],i=!a.once&&[],j=function(l){for(c=a.memory&&l,d=!0,f=g||0,g=0,e=h.length,b=!0;h&&e>f;f++)if(h[f].apply(l[0],l[1])===!1&&a.stopOnFalse){c=!1;break}b=!1,h&&(i?i.length&&j(i.shift()):c?h=[]:k.disable())},k={add:function(){if(h){var d=h.length;!function f(b){m.each(b,function(b,c){var d=m.type(c);"function"===d?a.unique&&k.has(c)||h.push(c):c&&c.length&&"string"!==d&&f(c)})}(arguments),b?e=h.length:c&&(g=d,j(c))}return this},remove:function(){return h&&m.each(arguments,function(a,c){var d;while((d=m.inArray(c,h,d))>-1)h.splice(d,1),b&&(e>=d&&e--,f>=d&&f--)}),this},has:function(a){return a?m.inArray(a,h)>-1:!(!h||!h.length)},empty:function(){return h=[],e=0,this},disable:function(){return h=i=c=void 0,this},disabled:function(){return!h},lock:function(){return i=void 0,c||k.disable(),this},locked:function(){return!i},fireWith:function(a,c){return!h||d&&!i||(c=c||[],c=[a,c.slice?c.slice():c],b?i.push(c):j(c)),this},fire:function(){return k.fireWith(this,arguments),this},fired:function(){return!!d}};return k},m.extend({Deferred:function(a){var b=[["resolve","done",m.Callbacks("once memory"),"resolved"],["reject","fail",m.Callbacks("once memory"),"rejected"],["notify","progress",m.Callbacks("memory")]],c="pending",d={state:function(){return c},always:function(){return e.done(arguments).fail(arguments),this},then:function(){var a=arguments;return m.Deferred(function(c){m.each(b,function(b,f){var g=m.isFunction(a[b])&&a[b];e[f[1]](function(){var a=g&&g.apply(this,arguments);a&&m.isFunction(a.promise)?a.promise().done(c.resolve).fail(c.reject).progress(c.notify):c[f[0]+"With"](this===d?c.promise():this,g?[a]:arguments)})}),a=null}).promise()},promise:function(a){return null!=a?m.extend(a,d):d}},e={};return d.pipe=d.then,m.each(b,function(a,f){var g=f[2],h=f[3];d[f[1]]=g.add,h&&g.add(function(){c=h},b[1^a][2].disable,b[2][2].lock),e[f[0]]=function(){return e[f[0]+"With"](this===e?d:this,arguments),this},e[f[0]+"With"]=g.fireWith}),d.promise(e),a&&a.call(e,e),e},when:function(a){var b=0,c=d.call(arguments),e=c.length,f=1!==e||a&&m.isFunction(a.promise)?e:0,g=1===f?a:m.Deferred(),h=function(a,b,c){return function(e){b[a]=this,c[a]=arguments.length>1?d.call(arguments):e,c===i?g.notifyWith(b,c):--f||g.resolveWith(b,c)}},i,j,k;if(e>1)for(i=new Array(e),j=new Array(e),k=new Array(e);e>b;b++)c[b]&&m.isFunction(c[b].promise)?c[b].promise().done(h(b,k,c)).fail(g.reject).progress(h(b,j,i)):--f;return f||g.resolveWith(k,c),g.promise()}});var H;m.fn.ready=function(a){return m.ready.promise().done(a),this},m.extend({isReady:!1,readyWait:1,holdReady:function(a){a?m.readyWait++:m.ready(!0)},ready:function(a){if(a===!0?!--m.readyWait:!m.isReady){if(!y.body)return setTimeout(m.ready);m.isReady=!0,a!==!0&&--m.readyWait>0||(H.resolveWith(y,[m]),m.fn.triggerHandler&&(m(y).triggerHandler("ready"),m(y).off("ready")))}}});function I(){y.addEventListener?(y.removeEventListener("DOMContentLoaded",J,!1),a.removeEventListener("load",J,!1)):(y.detachEvent("onreadystatechange",J),a.detachEvent("onload",J))}function J(){(y.addEventListener||"load"===event.type||"complete"===y.readyState)&&(I(),m.ready())}m.ready.promise=function(b){if(!H)if(H=m.Deferred(),"complete"===y.readyState)setTimeout(m.ready);else if(y.addEventListener)y.addEventListener("DOMContentLoaded",J,!1),a.addEventListener("load",J,!1);else{y.attachEvent("onreadystatechange",J),a.attachEvent("onload",J);var c=!1;try{c=null==a.frameElement&&y.documentElement}catch(d){}c&&c.doScroll&&!function e(){if(!m.isReady){try{c.doScroll("left")}catch(a){return setTimeout(e,50)}I(),m.ready()}}()}return H.promise(b)};var K="undefined",L;for(L in m(k))break;k.ownLast="0"!==L,k.inlineBlockNeedsLayout=!1,m(function(){var a,b,c,d;c=y.getElementsByTagName("body")[0],c&&c.style&&(b=y.createElement("div"),d=y.createElement("div"),d.style.cssText="position:absolute;border:0;width:0;height:0;top:0;left:-9999px",c.appendChild(d).appendChild(b),typeof b.style.zoom!==K&&(b.style.cssText="display:inline;margin:0;border:0;padding:1px;width:1px;zoom:1",k.inlineBlockNeedsLayout=a=3===b.offsetWidth,a&&(c.style.zoom=1)),c.removeChild(d))}),function(){var a=y.createElement("div");if(null==k.deleteExpando){k.deleteExpando=!0;try{delete a.test}catch(b){k.deleteExpando=!1}}a=null}(),m.acceptData=function(a){var b=m.noData[(a.nodeName+" ").toLowerCase()],c=+a.nodeType||1;return 1!==c&&9!==c?!1:!b||b!==!0&&a.getAttribute("classid")===b};var M=/^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,N=/([A-Z])/g;function O(a,b,c){if(void 0===c&&1===a.nodeType){var d="data-"+b.replace(N,"-$1").toLowerCase();if(c=a.getAttribute(d),"string"==typeof c){try{c="true"===c?!0:"false"===c?!1:"null"===c?null:+c+""===c?+c:M.test(c)?m.parseJSON(c):c}catch(e){}m.data(a,b,c)}else c=void 0}return c}function P(a){var b;for(b in a)if(("data"!==b||!m.isEmptyObject(a[b]))&&"toJSON"!==b)return!1;
@@ -445,7 +445,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Intro to R</h1>
+<h1 class="title toc-ignore">Intermediate R</h1>
 <h4 class="author"><em>Ken Harmon</em></h4>
 <h4 class="date"><em>2019 February 08</em></h4>
 
@@ -460,814 +460,1253 @@ $(document).ready(function () {
 <p><a href="https://rpubs.com/Seetz/T-31052017" class="uri">https://rpubs.com/Seetz/T-31052017</a></p>
 <p><a href="https://github.com/datacamp/courses-intro-to-r/blob/master/chapter6.Rmd" class="uri">https://github.com/datacamp/courses-intro-to-r/blob/master/chapter6.Rmd</a></p>
 </div>
-<div id="module-1" class="section level2">
-<h2>Module 1</h2>
-<pre class="r"><code># Calculate 3 + 4
-3 + 4</code></pre>
-<pre><code>## [1] 7</code></pre>
-<pre class="r"><code># Calculate 6 + 12
-6+12</code></pre>
-<pre><code>## [1] 18</code></pre>
-<pre class="r"><code># An addition
-5 + 5 </code></pre>
-<pre><code>## [1] 10</code></pre>
-<pre class="r"><code># A subtraction
-5 - 5 </code></pre>
-<pre><code>## [1] 0</code></pre>
-<pre class="r"><code># A multiplication
-3 * 5</code></pre>
-<pre><code>## [1] 15</code></pre>
-<pre class="r"><code> # A division
-(5 + 5) / 2 </code></pre>
-<pre><code>## [1] 5</code></pre>
-<pre class="r"><code># Exponentiation
-2^5</code></pre>
-<pre><code>## [1] 32</code></pre>
-<pre class="r"><code># Modulo
-28 %% 6</code></pre>
-<pre><code>## [1] 4</code></pre>
-<pre class="r"><code># Assign the value 42 to x
-x &lt;- 42
-
-# Print out the value of the variable x
-x</code></pre>
-<pre><code>## [1] 42</code></pre>
-<pre class="r"><code># Assign the value 5 to the variable my_apples
-my_apples &lt;- 5
-
-# Print out the value of the variable my_apples
-my_apples</code></pre>
-<pre><code>## [1] 5</code></pre>
-<pre class="r"><code># Assign a value to the variables my_apples and my_oranges
-my_apples &lt;- 5
-my_oranges &lt;-6
-
-# Add these two variables together
-my_apples+my_oranges</code></pre>
-<pre><code>## [1] 11</code></pre>
-<pre class="r"><code># Create the variable my_fruit
-my_fruit&lt;-my_apples+my_oranges
-
-# Assign a value to the variable my_apples
-my_apples &lt;- 5 
-
-# Fix the assignment of my_oranges
-my_oranges &lt;- 6
-
-# Create the variable my_fruit and print it out
-my_fruit &lt;- my_apples + my_oranges 
-my_fruit</code></pre>
-<pre><code>## [1] 11</code></pre>
-<pre class="r"><code># Change my_numeric to be 42
-my_numeric &lt;- 42
-
-# Change my_character to be &quot;universe&quot;
-my_character &lt;- &quot;universe&quot;
-
-# Change my_logical to be FALSE
-my_logical &lt;- FALSE
-
-# Declare variables of different types
-my_numeric &lt;- 42
-my_character &lt;- &quot;universe&quot;
-my_logical &lt;- FALSE 
-
-# Check class of my_numeric
-class(my_numeric)</code></pre>
-<pre><code>## [1] &quot;numeric&quot;</code></pre>
-<pre class="r"><code># Check class of my_character
-class(my_character)</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-<pre class="r"><code># Check class of my_logical
-class(my_logical)</code></pre>
-<pre><code>## [1] &quot;logical&quot;</code></pre>
-</div>
-<div id="vector" class="section level2">
-<h2>Vector</h2>
-<pre class="r"><code># Define the variable vegas
-vegas &lt;- &quot;Go!&quot;
-
-numeric_vector &lt;- c(1, 10, 49)
-character_vector &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
-
-# Complete the code for boolean_vector
-boolean_vector &lt;- c(TRUE,FALSE,TRUE)
-
-# Poker winnings from Monday to Friday
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-
-# Roulette winnings from Monday to Friday
-roulette_vector &lt;-  c(-24,-50,100,-350,10)
-
-# Poker winnings from Monday to Friday
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-
-# Roulette winnings from Monday to Friday
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-
-# Assign days as names of poker_vector
-names(poker_vector) &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-
-# Assign days as names of roulette_vectors
-names(roulette_vector) &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-
-# Poker winnings from Monday to Friday
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-
-# Roulette winnings from Monday to Friday
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-
-# The variable days_vector
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
- 
-# Assign the names of the day to roulette_vector and poker_vector
-names(poker_vector) &lt;- days_vector  
-names(roulette_vector) &lt;- days_vector
-
-A_vector &lt;- c(1, 2, 3)
-B_vector &lt;- c(4, 5, 6)
-
-# Take the sum of A_vector and B_vector
-total_vector &lt;- A_vector+B_vector
-  
-# Print out total_vector
-total_vector</code></pre>
-<pre><code>## [1] 5 7 9</code></pre>
-<pre class="r"><code># Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Assign to total_daily how much you won/lost on each day
-total_daily &lt;- poker_vector+roulette_vector
-
-# Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Total winnings with poker
-total_poker &lt;- sum(poker_vector)
-
-# Total winnings with roulette
-total_roulette &lt;-  sum(roulette_vector)
-
-# Total winnings overall
-total_week &lt;- total_poker+total_roulette
-
-# Print out total_week
-  total_week</code></pre>
-<pre><code>## [1] -84</code></pre>
-<pre class="r"><code>  # Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Calculate total gains for poker and roulette
-total_poker &lt;-sum(poker_vector)
-total_roulette &lt;-sum(roulette_vector)
-
-# Check if you realized higher total gains in poker than in roulette 
-total_poker&gt;total_roulette</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code># Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Define a new variable based on a selection
-poker_wednesday &lt;- poker_vector[3]
-
-# Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Define a new variable based on a selection
-poker_midweek &lt;- poker_vector[c(2,3,4)]
-
-# Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Define a new variable based on a selection
-roulette_selection_vector &lt;- roulette_vector[2:5]
-
-# Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Select poker results for Monday, Tuesday and Wednesday
-poker_start &lt;- poker_vector[c(&quot;Monday&quot;,&quot;Tuesday&quot;,&quot;Wednesday&quot;)]
-  
-# Calculate the average of the elements in poker_start
-mean(poker_start)</code></pre>
-<pre><code>## [1] 36.66667</code></pre>
-<pre class="r"><code># Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Which days did you make money on poker?
-selection_vector &lt;- poker_vector&gt;0
-  
-# Print out selection_vector
-selection_vector</code></pre>
-<pre><code>##    Monday   Tuesday Wednesday  Thursday    Friday 
-##      TRUE     FALSE      TRUE     FALSE      TRUE</code></pre>
-<pre class="r"><code># Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Which days did you make money on poker?
-selection_vector &lt;- poker_vector &gt; 0
-
-# Select from poker_vector these days
-poker_winning_days &lt;- poker_vector[selection_vector]
-
-# Poker and roulette winnings from Monday to Friday:
-poker_vector &lt;- c(140, -50, 20, -120, 240)
-roulette_vector &lt;- c(-24, -50, 100, -350, 10)
-days_vector &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
-names(poker_vector) &lt;- days_vector
-names(roulette_vector) &lt;- days_vector
-
-# Which days did you make money on roulette?
-selection_vector &lt;-roulette_vector&gt;0
-
-# Select from roulette_vector these days
-roulette_winning_days &lt;- roulette_vector[selection_vector]</code></pre>
-</div>
-<div id="matrix" class="section level2">
-<h2>Matrix</h2>
-<pre class="r"><code># Construct a matrix with 3 rows that contain the numbers 1 up to 9
-matrix(1:9, byrow = TRUE, nrow = 3)</code></pre>
-<pre><code>##      [,1] [,2] [,3]
-## [1,]    1    2    3
-## [2,]    4    5    6
-## [3,]    7    8    9</code></pre>
-<pre class="r"><code># Box office Star Wars (in millions!)
-new_hope &lt;- c(460.998, 314.4)
-empire_strikes &lt;- c(290.475, 247.900)
-return_jedi &lt;- c(309.306, 165.8)
-
-# Create box_office
-box_office &lt;- c(new_hope, empire_strikes, return_jedi)
-
-# Construct star_wars_matrix
-star_wars_matrix &lt;- matrix(box_office, byrow = TRUE, nrow = 3)
-star_wars_matrix</code></pre>
-<pre><code>##         [,1]  [,2]
-## [1,] 460.998 314.4
-## [2,] 290.475 247.9
-## [3,] 309.306 165.8</code></pre>
-<pre class="r"><code># Box office Star Wars (in millions!)
-new_hope &lt;- c(460.998, 314.4)
-empire_strikes &lt;- c(290.475, 247.900)
-return_jedi &lt;- c(309.306, 165.8)
-
-# Construct matrix
-star_wars_matrix &lt;- matrix(c(new_hope, empire_strikes, return_jedi), nrow = 3, byrow = TRUE)
-
-# Vectors region and titles, used for naming
-region &lt;- c(&quot;US&quot;, &quot;non-US&quot;)
-titles &lt;- c(&quot;A New Hope&quot;, &quot;The Empire Strikes Back&quot;, &quot;Return of the Jedi&quot;)
-
-# Name the columns with region
-colnames(star_wars_matrix)&lt;-region
-
-# Name the rows with titles
-rownames(star_wars_matrix)&lt;-titles
-
-# Print out star_wars_matrix
-star_wars_matrix</code></pre>
-<pre><code>##                              US non-US
-## A New Hope              460.998  314.4
-## The Empire Strikes Back 290.475  247.9
-## Return of the Jedi      309.306  165.8</code></pre>
-<pre class="r"><code># Construct star_wars_matrix
-box_office &lt;- c(460.998, 314.4, 290.475, 247.900, 309.306, 165.8)
-star_wars_matrix &lt;- matrix(box_office, nrow = 3, byrow = TRUE,
-                           dimnames = list(c(&quot;A New Hope&quot;, &quot;The Empire Strikes Back&quot;, &quot;Return of the Jedi&quot;), 
-                                           c(&quot;US&quot;, &quot;non-US&quot;)))
-
-# Calculate worldwide box office figures
-worldwide_vector &lt;- rowSums(star_wars_matrix)
-
-# Construct star_wars_matrix
-box_office &lt;- c(460.998, 314.4, 290.475, 247.900, 309.306, 165.8)
-star_wars_matrix &lt;- matrix(box_office, nrow = 3, byrow = TRUE,
-                           dimnames = list(c(&quot;A New Hope&quot;, &quot;The Empire Strikes Back&quot;, &quot;Return of the Jedi&quot;), 
-                                           c(&quot;US&quot;, &quot;non-US&quot;)))
-
-# The worldwide box office figures
-worldwide_vector &lt;- rowSums(star_wars_matrix)
-
-# Bind the new variable worldwide_vector as a column to star_wars_matrix
-all_wars_matrix &lt;- cbind(star_wars_matrix,worldwide_vector)
-all_wars_matrix</code></pre>
-<pre><code>##                              US non-US worldwide_vector
-## A New Hope              460.998  314.4          775.398
-## The Empire Strikes Back 290.475  247.9          538.375
-## Return of the Jedi      309.306  165.8          475.106</code></pre>
-<pre class="r"><code># star_wars_matrix and star_wars_matrix2 are available in your workspace
-star_wars_matrix  </code></pre>
-<pre><code>##                              US non-US
-## A New Hope              460.998  314.4
-## The Empire Strikes Back 290.475  247.9
-## Return of the Jedi      309.306  165.8</code></pre>
-<pre class="r"><code>load(url(&quot;http://s3.amazonaws.com/assets.datacamp.com/course/intro_to_r/all_wars_matrix.RData&quot;))
-movie_names &lt;- c(&quot;A New Hope&quot;,&quot;The Empire Strikes Back&quot;,&quot;Return of the Jedi&quot;, &quot;The Phantom Menace&quot;, &quot;Attack of the Clones&quot;, &quot;Revenge of the Sith&quot;)
-box_office_all &lt;- c(461, 314.4, 290.5, 247.9, 309.3, 165.8)
-box_office_all2 &lt;- c(474.5, 552.5, 310.7, 338.7, 380.3, 468.5)
-movie_names2 &lt;- c(&quot;The Phantom Menace&quot;, &quot;Attack of the Clones&quot;, &quot;Revenge of the Sith&quot;)
-col_titles &lt;- c(&quot;US&quot;,&quot;non-US&quot;)
-ticket_prices_matrix &lt;- matrix(c(5, 5, 6, 6, 7, 7, 4, 4, 4.5, 4.5, 4.9, 4.9), nrow = 6, byrow = TRUE, dimnames = list(movie_names,col_titles))
-star_wars_matrix2 &lt;- matrix(box_office_all2, nrow=3, byrow = TRUE, dimnames = list(movie_names2, col_titles))
-star_wars_matrix2 </code></pre>
-<pre><code>##                         US non-US
-## The Phantom Menace   474.5  552.5
-## Attack of the Clones 310.7  338.7
-## Revenge of the Sith  380.3  468.5</code></pre>
-<pre class="r"><code># Combine both Star Wars trilogies in one matrix
-all_wars_matrix &lt;- rbind(star_wars_matrix,star_wars_matrix2)
-all_wars_matrix</code></pre>
-<pre><code>##                              US non-US
-## A New Hope              460.998  314.4
-## The Empire Strikes Back 290.475  247.9
-## Return of the Jedi      309.306  165.8
-## The Phantom Menace      474.500  552.5
-## Attack of the Clones    310.700  338.7
-## Revenge of the Sith     380.300  468.5</code></pre>
-<pre class="r"><code># all_wars_matrix is available in your workspace
-all_wars_matrix</code></pre>
-<pre><code>##                              US non-US
-## A New Hope              460.998  314.4
-## The Empire Strikes Back 290.475  247.9
-## Return of the Jedi      309.306  165.8
-## The Phantom Menace      474.500  552.5
-## Attack of the Clones    310.700  338.7
-## Revenge of the Sith     380.300  468.5</code></pre>
-<pre class="r"><code># Total revenue for US and non-US
-total_revenue_vector &lt;- colSums(all_wars_matrix)
-  
-# Print out total_revenue_vector
-total_revenue_vector</code></pre>
-<pre><code>##       US   non-US 
-## 2226.279 2087.800</code></pre>
-<pre class="r"><code># all_wars_matrix is available in your workspace
-all_wars_matrix</code></pre>
-<pre><code>##                              US non-US
-## A New Hope              460.998  314.4
-## The Empire Strikes Back 290.475  247.9
-## Return of the Jedi      309.306  165.8
-## The Phantom Menace      474.500  552.5
-## Attack of the Clones    310.700  338.7
-## Revenge of the Sith     380.300  468.5</code></pre>
-<pre class="r"><code># Select the non-US revenue for all movies
-non_us_all &lt;- all_wars_matrix[,2]
-  
-# Average non-US revenue
-mean(non_us_all)</code></pre>
-<pre><code>## [1] 347.9667</code></pre>
-<pre class="r"><code># Select the non-US revenue for first two movies
-non_us_some &lt;- all_wars_matrix[1:2,2]
-  
-# Average non-US revenue for first two movies
-mean(non_us_some)</code></pre>
-<pre><code>## [1] 281.15</code></pre>
-<pre class="r"><code># all_wars_matrix is available in your workspace
-all_wars_matrix</code></pre>
-<pre><code>##                              US non-US
-## A New Hope              460.998  314.4
-## The Empire Strikes Back 290.475  247.9
-## Return of the Jedi      309.306  165.8
-## The Phantom Menace      474.500  552.5
-## Attack of the Clones    310.700  338.7
-## Revenge of the Sith     380.300  468.5</code></pre>
-<pre class="r"><code># Estimate the visitors
-visitors &lt;- all_wars_matrix/5
-  
-# Print the estimate to the console
-visitors</code></pre>
-<pre><code>##                              US non-US
-## A New Hope              92.1996  62.88
-## The Empire Strikes Back 58.0950  49.58
-## Return of the Jedi      61.8612  33.16
-## The Phantom Menace      94.9000 110.50
-## Attack of the Clones    62.1400  67.74
-## Revenge of the Sith     76.0600  93.70</code></pre>
-<pre class="r"><code># all_wars_matrix and ticket_prices_matrix are available in your workspace
-all_wars_matrix</code></pre>
-<pre><code>##                              US non-US
-## A New Hope              460.998  314.4
-## The Empire Strikes Back 290.475  247.9
-## Return of the Jedi      309.306  165.8
-## The Phantom Menace      474.500  552.5
-## Attack of the Clones    310.700  338.7
-## Revenge of the Sith     380.300  468.5</code></pre>
-<pre class="r"><code>ticket_prices_matrix</code></pre>
-<pre><code>##                          US non-US
-## A New Hope              5.0    5.0
-## The Empire Strikes Back 6.0    6.0
-## Return of the Jedi      7.0    7.0
-## The Phantom Menace      4.0    4.0
-## Attack of the Clones    4.5    4.5
-## Revenge of the Sith     4.9    4.9</code></pre>
-<pre class="r"><code># Estimated number of visitors
-visitors &lt;- all_wars_matrix/ticket_prices_matrix
-
-# US visitors
-us_visitors &lt;- visitors[,1]
-
-# Average number of US visitors
-mean(us_visitors)</code></pre>
-<pre><code>## [1] 75.01339</code></pre>
-</div>
-<div id="factors" class="section level2">
-<h2>Factors</h2>
-<pre class="r"><code># Assign to the variable theory what this chapter is about!
-theory &lt;- &quot;factors for categorical variables&quot;
-
-# Gender vector
-gender_vector &lt;- c(&quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;)
-
-# Convert gender_vector to a factor
-factor_gender_vector &lt;- factor(gender_vector)
-
-# Print out factor_gender_vector
-factor_gender_vector</code></pre>
-<pre><code>## [1] Male   Female Female Male   Male  
-## Levels: Female Male</code></pre>
-<pre class="r"><code># Animals
-animals_vector &lt;- c(&quot;Elephant&quot;, &quot;Giraffe&quot;, &quot;Donkey&quot;, &quot;Horse&quot;)
-factor_animals_vector &lt;- factor(animals_vector)
-factor_animals_vector</code></pre>
-<pre><code>## [1] Elephant Giraffe  Donkey   Horse   
-## Levels: Donkey Elephant Giraffe Horse</code></pre>
-<pre class="r"><code># Temperature
-temperature_vector &lt;- c(&quot;High&quot;, &quot;Low&quot;, &quot;High&quot;,&quot;Low&quot;, &quot;Medium&quot;)
-factor_temperature_vector &lt;- factor(temperature_vector, order = TRUE, levels = c(&quot;Low&quot;, &quot;Medium&quot;, &quot;High&quot;))
-factor_temperature_vector</code></pre>
-<pre><code>## [1] High   Low    High   Low    Medium
-## Levels: Low &lt; Medium &lt; High</code></pre>
-<pre class="r"><code># Code to build factor_survey_vector
-survey_vector &lt;- c(&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;)
-factor_survey_vector &lt;- factor(survey_vector)
-
-# Specify the levels of factor_survey_vector
-levels(factor_survey_vector) &lt;-
-
-factor_survey_vector
-
-# Build factor_survey_vector with clean levels
-survey_vector &lt;- c(&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;)
-factor_survey_vector &lt;- factor(survey_vector)
-levels(factor_survey_vector) &lt;- c(&quot;Female&quot;, &quot;Male&quot;)
-factor_survey_vector</code></pre>
-<pre><code>## [1] Male   Female Female Male   Male  
-## Levels: Female Male</code></pre>
-<pre class="r"><code># Generate summary for survey_vector
-summary(survey_vector)</code></pre>
-<pre><code>##    Length     Class      Mode 
-##         5 character character</code></pre>
-<pre class="r"><code># Generate summary for factor_survey_vector
-summary(factor_survey_vector)</code></pre>
-<pre><code>## Female   Male 
-##      2      3</code></pre>
-<pre class="r"><code># Build factor_survey_vector with clean levels
-survey_vector &lt;- c(&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;)
-factor_survey_vector &lt;- factor(survey_vector)
-levels(factor_survey_vector) &lt;- c(&quot;Female&quot;, &quot;Male&quot;)
-
-# Male
-male &lt;- factor_survey_vector[1]
-
-# Female
-female &lt;- factor_survey_vector[2]
-
-# Battle of the sexes: Male 'larger' than female?
-male &gt; female</code></pre>
-<pre><code>## [1] NA</code></pre>
-<pre class="r"><code># Create speed_vector
-speed_vector &lt;- c(&quot;fast&quot;,&quot;slow&quot;,&quot;slow&quot;,&quot;fast&quot;,&quot;insane&quot;)
-
-# Create speed_vector
-speed_vector &lt;- c(&quot;fast&quot;, &quot;slow&quot;, &quot;slow&quot;, &quot;fast&quot;, &quot;insane&quot;)
-
-# Convert speed_vector to ordered factor vector
-factor_speed_vector &lt;- factor(speed_vector, ordered=TRUE, levels = c(&quot;slow&quot; , &quot;fast&quot; , &quot;insane&quot;))
-
-# Print factor_speed_vector
-factor_speed_vector</code></pre>
-<pre><code>## [1] fast   slow   slow   fast   insane
-## Levels: slow &lt; fast &lt; insane</code></pre>
-<pre class="r"><code>summary(factor_speed_vector)</code></pre>
-<pre><code>##   slow   fast insane 
-##      2      2      1</code></pre>
-<pre class="r"><code># Create factor_speed_vector
-speed_vector &lt;- c(&quot;fast&quot;, &quot;slow&quot;, &quot;slow&quot;, &quot;fast&quot;, &quot;insane&quot;)
-factor_speed_vector &lt;- factor(speed_vector, ordered = TRUE, levels = c(&quot;slow&quot;, &quot;fast&quot;, &quot;insane&quot;))
-
-# Factor value for second data analyst
-da2 &lt;- factor_speed_vector[2]
-
-# Factor value for fifth data analyst
-da5 &lt;- factor_speed_vector[5]
-
-# Is data analyst 2 faster than data analyst 5?
-da2&gt;da5</code></pre>
+<div id="conditionals" class="section level2">
+<h2>Conditionals</h2>
+<pre class="r"><code>###Chapter 1 Conditionals And Control Flow
+
+###Equality
+# Comparison of logicals
+TRUE == FALSE</code></pre>
 <pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># Comparison of numerics
+-6 * 14 != 17 - 101</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># Comparison of character strings
+&quot;useR&quot; == &quot;user&quot;</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># Compare a logical with a numeric
+TRUE == 1</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>###Greater And Less Than
+# Comparison of numerics
+-6*5+2 &gt;= -10+1</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># Comparison of character strings
+&quot;raining&quot; &lt;= &quot;raining dogs&quot;</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># Comparison of logicals
+TRUE &gt; FALSE</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>###Compare Vectors
+# The linkedin and facebook vectors have already been created for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
+facebook &lt;- c(17, 7, 5, 16, 8, 13, 14)
+
+# Popular days
+linkedin &gt; 15</code></pre>
+<pre><code>## [1]  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE</code></pre>
+<pre class="r"><code># Quiet days
+linkedin &lt;= 5</code></pre>
+<pre><code>## [1] FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE</code></pre>
+<pre class="r"><code># LinkedIn more popular than Facebook
+linkedin &gt; facebook</code></pre>
+<pre><code>## [1] FALSE  TRUE  TRUE FALSE FALSE  TRUE FALSE</code></pre>
+<pre class="r"><code>###Compare Matrices
+# The social data has been created for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
+facebook &lt;- c(17, 7, 5, 16, 8, 13, 14)
+views &lt;- matrix(c(linkedin, facebook), nrow = 2, byrow = TRUE)
+
+# When does views equal 13?
+views == 13</code></pre>
+<pre><code>##       [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]
+## [1,] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE
+## [2,] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE</code></pre>
+<pre class="r"><code># When is views less than or equal to 14?
+views &lt;= 14</code></pre>
+<pre><code>##       [,1] [,2] [,3]  [,4] [,5]  [,6] [,7]
+## [1,] FALSE TRUE TRUE  TRUE TRUE FALSE TRUE
+## [2,] FALSE TRUE TRUE FALSE TRUE  TRUE TRUE</code></pre>
+<pre class="r"><code># How often does facebook equal or exceed linkedin times two?
+sum(facebook &gt;= linkedin * 2)</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>###&amp; And |
+# The linkedin and last variable are already defined for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
+last &lt;- tail(linkedin, 1)
+
+# Is last under 5 or above 10?
+last&lt;5 | last&gt;10</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># Is last between 15 (exclusive) and 20 (inclusive)?
+last&gt;15 &amp; last&lt;=20</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># Is last between 0 and 5 or between 10 and 15?
+(last &gt; 0 &amp; last &lt; 5) | (last &gt; 10 &amp; last &lt; 15)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>###&amp; And | (2)
+# The social data (linkedin, facebook, views) has been created for you
+
+# linkedin exceeds 10 but facebook below 10
+linkedin&gt;10 &amp; facebook&lt;10</code></pre>
+<pre><code>## [1] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE</code></pre>
+<pre class="r"><code># When were one or both visited at least 12 times?
+linkedin&gt;=12 | facebook&gt;=12</code></pre>
+<pre><code>## [1]  TRUE FALSE  TRUE  TRUE FALSE  TRUE  TRUE</code></pre>
+<pre class="r"><code># When is views between 11 (exclusive) and 14 (inclusive)?
+views&gt;11 &amp; views&lt;=14</code></pre>
+<pre><code>##       [,1]  [,2]  [,3]  [,4]  [,5]  [,6] [,7]
+## [1,] FALSE FALSE  TRUE FALSE FALSE FALSE TRUE
+## [2,] FALSE FALSE FALSE FALSE FALSE  TRUE TRUE</code></pre>
+<pre class="r"><code>###Reverse The Result: !
+x &lt;- 5
+y &lt;- 7
+!(!(x &lt; 4) &amp; !!!(y &gt; 12))</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>###Blend It All Together
+# li_df is pre-loaded in Data Camp's workspace
+li_df &lt;- read.table(file = &quot;li_df.txt&quot;, header = TRUE)
+
+# Select the second column, named day2, from li_df: second
+second &lt;- li_df$day2
+
+# Build a logical vector, TRUE if value in second is extreme: extremes
+extremes &lt;- second &gt; 25 | second &lt; 5
+
+# Count the number of TRUEs in extremes
+sum(extremes)</code></pre>
+<pre><code>## [1] 16</code></pre>
+<pre class="r"><code># Solve it with a one-liner
+sum(li_df$day2 &gt; 25 | li_df$day2 &lt; 5)</code></pre>
+<pre><code>## [1] 16</code></pre>
+<pre class="r"><code>###The If Statement
+# Variables related to your last day of recordings
+medium &lt;- &quot;LinkedIn&quot;
+num_views &lt;- 14
+
+# Examine the if statement for medium
+if (medium == &quot;LinkedIn&quot;) {
+  print(&quot;Showing LinkedIn information&quot;)
+}</code></pre>
+<pre><code>## [1] &quot;Showing LinkedIn information&quot;</code></pre>
+<pre class="r"><code># Write the if statement for num_views
+if (num_views&gt;15) {
+  print(&quot;You're popular!&quot;)
+}
+
+###Add An Else
+# Variables related to your last day of recordings
+medium &lt;- &quot;LinkedIn&quot;
+num_views &lt;- 14
+
+# Control structure for medium
+if (medium == &quot;LinkedIn&quot;) {
+  print(&quot;Showing LinkedIn information&quot;)
+} else {
+  print(&quot;Unknown medium&quot;)
+}</code></pre>
+<pre><code>## [1] &quot;Showing LinkedIn information&quot;</code></pre>
+<pre class="r"><code># Control structure for num_views
+if (num_views &gt; 15) {
+  print(&quot;You're popular!&quot;)
+} else {
+  print(&quot;Try to be more visible!&quot;)
+}</code></pre>
+<pre><code>## [1] &quot;Try to be more visible!&quot;</code></pre>
+<pre class="r"><code>###Customize Further: Else If
+# Variables related to your last day of recordings
+medium &lt;- &quot;LinkedIn&quot;
+num_views &lt;- 14
+
+# Control structure for medium
+if (medium == &quot;LinkedIn&quot;) {
+  print(&quot;Showing LinkedIn information&quot;)
+} else if (medium == &quot;Facebook&quot;) {
+  print(&quot;Showing Facebook information&quot;)
+} else {
+  print(&quot;Unknown medium&quot;)
+}</code></pre>
+<pre><code>## [1] &quot;Showing LinkedIn information&quot;</code></pre>
+<pre class="r"><code># Control structure for num_views
+if (num_views &gt; 15) {
+  print(&quot;You're popular!&quot;)
+} else if (num_views &lt;= 15 &amp; num_views &gt; 10) {
+  print(&quot;Your number of views is average&quot;)
+} else {
+  print(&quot;Try to be more visible!&quot;)
+}</code></pre>
+<pre><code>## [1] &quot;Your number of views is average&quot;</code></pre>
+<pre class="r"><code>###Else If 2.0
+#1.
+number &lt;- 6
+#2.
+number &lt;- 100
+#3.
+number &lt;- 4
+#4.
+number &lt;- 2500
+if (number &lt; 10) {
+  if (number &lt; 5) {
+    result &lt;- &quot;extra small&quot;
+  } else {
+    result &lt;- &quot;small&quot;
+  }
+} else if (number &lt; 100) {
+  result &lt;- &quot;medium&quot;
+} else {
+  result &lt;- &quot;large&quot;
+}
+print(result)</code></pre>
+<pre><code>## [1] &quot;large&quot;</code></pre>
+<pre class="r"><code>###Take Control!
+# Variables related to your last day of recordings
+li &lt;- 15
+fb &lt;- 9
+
+# Code the control-flow construct
+if (li &gt;= 15 &amp; fb &gt;= 15) {
+  sms &lt;- 2 * (li + fb)
+} else if (li &lt; 10 &amp; fb &lt; 10) {
+  sms &lt;- 0.5 * (li + fb)
+} else {
+  sms &lt;- li + fb
+}
+
+# Print the resulting sms to the console
+print(sms)</code></pre>
+<pre><code>## [1] 24</code></pre>
 </div>
-<div id="data-frames" class="section level2">
-<h2>Data Frames</h2>
-<pre class="r"><code># Print out built-in R data frame
-mtcars </code></pre>
-<pre><code>##                      mpg cyl  disp  hp drat    wt  qsec vs am gear carb
-## Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
-## Mazda RX4 Wag       21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
-## Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
-## Hornet 4 Drive      21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
-## Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
-## Valiant             18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
-## Duster 360          14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
-## Merc 240D           24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
-## Merc 230            22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
-## Merc 280            19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
-## Merc 280C           17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4
-## Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3
-## Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3
-## Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3
-## Cadillac Fleetwood  10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4
-## Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4
-## Chrysler Imperial   14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4
-## Fiat 128            32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
-## Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
-## Toyota Corolla      33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
-## Toyota Corona       21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
-## Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2
-## AMC Javelin         15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2
-## Camaro Z28          13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4
-## Pontiac Firebird    19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2
-## Fiat X1-9           27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
-## Porsche 914-2       26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
-## Lotus Europa        30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
-## Ford Pantera L      15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4
-## Ferrari Dino        19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
-## Maserati Bora       15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8
-## Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></pre>
-<pre class="r"><code># Call head() on mtcars
-head(mtcars)</code></pre>
-<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
-## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
-## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
-## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
-## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
-## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
-## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
-<pre class="r"><code># Investigate the structure of mtcars
-str(mtcars)</code></pre>
-<pre><code>## 'data.frame':    32 obs. of  11 variables:
-##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
-##  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
-##  $ disp: num  160 160 108 258 360 ...
-##  $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
-##  $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
-##  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
-##  $ qsec: num  16.5 17 18.6 19.4 17 ...
-##  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
-##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
-##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
-##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...</code></pre>
-<pre class="r"><code># Definition of vectors
-name &lt;- c(&quot;Mercury&quot;, &quot;Venus&quot;, &quot;Earth&quot;, &quot;Mars&quot;, &quot;Jupiter&quot;, &quot;Saturn&quot;, &quot;Uranus&quot;, &quot;Neptune&quot;)
-type &lt;- c(&quot;Terrestrial planet&quot;, &quot;Terrestrial planet&quot;, &quot;Terrestrial planet&quot;, 
-          &quot;Terrestrial planet&quot;, &quot;Gas giant&quot;, &quot;Gas giant&quot;, &quot;Gas giant&quot;, &quot;Gas giant&quot;)
-diameter &lt;- c(0.382, 0.949, 1, 0.532, 11.209, 9.449, 4.007, 3.883)
-rotation &lt;- c(58.64, -243.02, 1, 1.03, 0.41, 0.43, -0.72, 0.67)
-rings &lt;- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
+<div id="loops" class="section level2">
+<h2>Loops</h2>
+<pre class="r"><code>###Chapter 2 Loops
 
-# Create a data frame from the vectors
-planets_df &lt;- data.frame(name, type, diameter, rotation , rings)
+###Write A While Loop
+# Initialize the speed variable
+speed &lt;- 64
 
-# Check the structure of planets_df
-str(planets_df)</code></pre>
-<pre><code>## 'data.frame':    8 obs. of  5 variables:
-##  $ name    : Factor w/ 8 levels &quot;Earth&quot;,&quot;Jupiter&quot;,..: 4 8 1 3 2 6 7 5
-##  $ type    : Factor w/ 2 levels &quot;Gas giant&quot;,&quot;Terrestrial planet&quot;: 2 2 2 2 1 1 1 1
-##  $ diameter: num  0.382 0.949 1 0.532 11.209 ...
-##  $ rotation: num  58.64 -243.02 1 1.03 0.41 ...
-##  $ rings   : logi  FALSE FALSE FALSE FALSE TRUE TRUE ...</code></pre>
-<pre class="r"><code># The planets_df data frame from the previous exercise is pre-loaded
+# Code the while loop
+while (speed&gt;30) {
+  print(&quot;Slow down!&quot;)
+  speed &lt;- speed - 7
+}</code></pre>
+<pre><code>## [1] &quot;Slow down!&quot;
+## [1] &quot;Slow down!&quot;
+## [1] &quot;Slow down!&quot;
+## [1] &quot;Slow down!&quot;
+## [1] &quot;Slow down!&quot;</code></pre>
+<pre class="r"><code># Print out the speed variable
+speed</code></pre>
+<pre><code>## [1] 29</code></pre>
+<pre class="r"><code>###Throw In More Conditionals
+# Initialize the speed variable
+speed &lt;- 64
 
-# Select first 5 values of diameter column
-planets_df[1:5,&quot;diameter&quot;]</code></pre>
-<pre><code>## [1]  0.382  0.949  1.000  0.532 11.209</code></pre>
-<pre class="r"><code># planets_df is pre-loaded in your workspace
+# Extend/adapt the while loop
+while (speed &gt; 30) {
+  print(paste(&quot;Your speed is&quot;,speed))
+  if (speed &gt; 48) {
+    print(&quot;Slow down big time!&quot;)
+    speed &lt;- speed - 11
+  } else {
+    print(&quot;Slow down!&quot;)
+    speed &lt;- speed - 6
+  }
+}</code></pre>
+<pre><code>## [1] &quot;Your speed is 64&quot;
+## [1] &quot;Slow down big time!&quot;
+## [1] &quot;Your speed is 53&quot;
+## [1] &quot;Slow down big time!&quot;
+## [1] &quot;Your speed is 42&quot;
+## [1] &quot;Slow down!&quot;
+## [1] &quot;Your speed is 36&quot;
+## [1] &quot;Slow down!&quot;</code></pre>
+<pre class="r"><code>###Stop The While Loop: Break
+# Initialize the speed variable
+speed &lt;- 88
 
-# Select the rings variable from planets_df
-rings_vector &lt;- planets_df$rings
+while (speed &gt; 30) {
+  print(paste(&quot;Your speed is&quot;,speed))
   
-# Print out rings_vector
-rings_vector</code></pre>
-<pre><code>## [1] FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE</code></pre>
-<pre class="r"><code># planets_df and rings_vector are pre-loaded in your workspace
+  # Break the while loop when speed exceeds 80
+  if (speed &gt; 80)
+    break
+  
+  if (speed &gt; 48) {
+    print(&quot;Slow down big time!&quot;)
+    speed &lt;- speed - 11
+  } else {
+    print(&quot;Slow down!&quot;)
+    speed &lt;- speed - 6
+  }
+}</code></pre>
+<pre><code>## [1] &quot;Your speed is 88&quot;</code></pre>
+<pre class="r"><code>###Build A While Loop From Scratch
+# Initialize i as 1 
+i &lt;- 1
 
-# Adapt the code to select all columns for planets with rings
-planets_df[rings_vector, ]</code></pre>
-<pre><code>##      name      type diameter rotation rings
-## 5 Jupiter Gas giant   11.209     0.41  TRUE
-## 6  Saturn Gas giant    9.449     0.43  TRUE
-## 7  Uranus Gas giant    4.007    -0.72  TRUE
-## 8 Neptune Gas giant    3.883     0.67  TRUE</code></pre>
-<pre class="r"><code># planets_df is pre-loaded in your workspace
+# Code the while loop
+while (i &lt;= 10) {
+  print(i * 3)
+  if ( (i * 3) %% 8 == 0) {
+    break
+  }
+  i &lt;- i + 1
+}</code></pre>
+<pre><code>## [1] 3
+## [1] 6
+## [1] 9
+## [1] 12
+## [1] 15
+## [1] 18
+## [1] 21
+## [1] 24</code></pre>
+<pre class="r"><code>###Loop Over A Vector
+# The linkedin vector has already been defined for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
 
-# Select planets with diameter &lt; 1
-subset(planets_df, diameter &lt; 1)</code></pre>
-<pre><code>##      name               type diameter rotation rings
-## 1 Mercury Terrestrial planet    0.382    58.64 FALSE
-## 2   Venus Terrestrial planet    0.949  -243.02 FALSE
-## 4    Mars Terrestrial planet    0.532     1.03 FALSE</code></pre>
-<pre class="r"><code># Play around with the order function in the console
+# Loop version 1
+for (p in linkedin) {
+  print(p)
+}</code></pre>
+<pre><code>## [1] 16
+## [1] 9
+## [1] 13
+## [1] 5
+## [1] 2
+## [1] 17
+## [1] 14</code></pre>
+<pre class="r"><code># Loop version 2
+for (i in 1:length(linkedin)) {
+  print(linkedin[i])
+}</code></pre>
+<pre><code>## [1] 16
+## [1] 9
+## [1] 13
+## [1] 5
+## [1] 2
+## [1] 17
+## [1] 14</code></pre>
+<pre class="r"><code>###Loop Over A List
+# The nyc list is already specified
+nyc &lt;- list(pop = 8405837, 
+            boroughs = c(&quot;Manhattan&quot;, &quot;Bronx&quot;, &quot;Brooklyn&quot;, &quot;Queens&quot;, &quot;Staten Island&quot;), 
+            capital = FALSE)
 
-# planets_df is pre-loaded in your workspace
+# Loop version 1
+for (info in nyc) {
+  print(info)
+}</code></pre>
+<pre><code>## [1] 8405837
+## [1] &quot;Manhattan&quot;     &quot;Bronx&quot;         &quot;Brooklyn&quot;      &quot;Queens&quot;       
+## [5] &quot;Staten Island&quot;
+## [1] FALSE</code></pre>
+<pre class="r"><code># Loop version 2
+for (i in 1:length(nyc)) {
+  print(nyc[[i]])
+}</code></pre>
+<pre><code>## [1] 8405837
+## [1] &quot;Manhattan&quot;     &quot;Bronx&quot;         &quot;Brooklyn&quot;      &quot;Queens&quot;       
+## [5] &quot;Staten Island&quot;
+## [1] FALSE</code></pre>
+<pre class="r"><code>###Loop Over A Matrix
+# The tic-tac-toe matrix has already been defined for you
+ttt &lt;- matrix(c(&quot;O&quot;, NA, &quot;X&quot;, NA, &quot;O&quot;, NA, &quot;X&quot;, &quot;O&quot;, &quot;X&quot;), nrow = 3, ncol = 3)
 
-# Use order() to create positions
-positions &lt;-  order(planets_df$diameter)
+# define the double for loop
+for (i in 1:nrow(ttt)) {
+  for (j in 1:ncol(ttt)) {
+    print(paste(&quot;On row&quot;, i, &quot;and column&quot;, j, &quot;the board contains&quot;, ttt[i,j]))
+  }
+}</code></pre>
+<pre><code>## [1] &quot;On row 1 and column 1 the board contains O&quot;
+## [1] &quot;On row 1 and column 2 the board contains NA&quot;
+## [1] &quot;On row 1 and column 3 the board contains X&quot;
+## [1] &quot;On row 2 and column 1 the board contains NA&quot;
+## [1] &quot;On row 2 and column 2 the board contains O&quot;
+## [1] &quot;On row 2 and column 3 the board contains O&quot;
+## [1] &quot;On row 3 and column 1 the board contains X&quot;
+## [1] &quot;On row 3 and column 2 the board contains NA&quot;
+## [1] &quot;On row 3 and column 3 the board contains X&quot;</code></pre>
+<pre class="r"><code>###Mix It Up With Control Flow
+# The linkedin vector has already been defined for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
 
-# Use positions to sort planets_df
-planets_df[positions,]</code></pre>
-<pre><code>##      name               type diameter rotation rings
-## 1 Mercury Terrestrial planet    0.382    58.64 FALSE
-## 4    Mars Terrestrial planet    0.532     1.03 FALSE
-## 2   Venus Terrestrial planet    0.949  -243.02 FALSE
-## 3   Earth Terrestrial planet    1.000     1.00 FALSE
-## 8 Neptune          Gas giant    3.883     0.67  TRUE
-## 7  Uranus          Gas giant    4.007    -0.72  TRUE
-## 6  Saturn          Gas giant    9.449     0.43  TRUE
-## 5 Jupiter          Gas giant   11.209     0.41  TRUE</code></pre>
+# Code the for loop with conditionals
+for (li in linkedin) {
+  if (li &gt; 10) {
+    print(&quot;You're popular!&quot;)
+  } else {
+    print(&quot;Be more visible!&quot;)
+  }
+  print(li)
+}</code></pre>
+<pre><code>## [1] &quot;You're popular!&quot;
+## [1] 16
+## [1] &quot;Be more visible!&quot;
+## [1] 9
+## [1] &quot;You're popular!&quot;
+## [1] 13
+## [1] &quot;Be more visible!&quot;
+## [1] 5
+## [1] &quot;Be more visible!&quot;
+## [1] 2
+## [1] &quot;You're popular!&quot;
+## [1] 17
+## [1] &quot;You're popular!&quot;
+## [1] 14</code></pre>
+<pre class="r"><code>###Next, You Break It
+# The linkedin vector has already been defined for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
+
+# Adapt/extend the for loop
+for (li in linkedin) {
+  if (li &gt; 10) {
+    print(&quot;You're popular!&quot;)
+  } else {
+    print(&quot;Be more visible!&quot;)
+  }
+  
+  # Add code to conditionally break iteration
+  if (li &gt; 16) {
+    print(&quot;This is ridiculous, I'm outta here!&quot;)
+    break
+  }
+  
+  # Add code to conditionally skip iteration
+  if (li &lt; 5) {
+    print(&quot;This is too embarrassing!&quot;)
+    next
+  }
+  
+  print(li)
+}</code></pre>
+<pre><code>## [1] &quot;You're popular!&quot;
+## [1] 16
+## [1] &quot;Be more visible!&quot;
+## [1] 9
+## [1] &quot;You're popular!&quot;
+## [1] 13
+## [1] &quot;Be more visible!&quot;
+## [1] 5
+## [1] &quot;Be more visible!&quot;
+## [1] &quot;This is too embarrassing!&quot;
+## [1] &quot;You're popular!&quot;
+## [1] &quot;This is ridiculous, I'm outta here!&quot;</code></pre>
+<pre class="r"><code>###Build A For Loop From Scratch
+# Pre-defined variables
+rquote &lt;- &quot;r's internals are irrefutably intriguing&quot;
+chars &lt;- strsplit(rquote, split = &quot;&quot;)[[1]]
+
+# Initialize rcount
+rcount &lt;- 0
+
+# Finish the for loop
+for (char in chars) {
+  if (char == &quot;r&quot;) {
+    rcount &lt;- rcount + 1
+  }
+  if (char == &quot;u&quot;) {
+    break
+  }
+}
+
+# Print out rcount
+rcount</code></pre>
+<pre><code>## [1] 5</code></pre>
 </div>
-<div id="lists" class="section level2">
-<h2>Lists</h2>
-<pre class="r"><code># Just click the 'Submit Answer' button.
+<div id="functions" class="section level2">
+<h2>Functions</h2>
+<pre class="r"><code>###Chapter 3 Functions
 
-# Click 'Submit Answer' to start the first exercise on lists.
+###Function Documentation
+# Consult the documentation on the mean() function
+help(mean)
 
-# Vector with numerics from 1 up to 10
-my_vector &lt;- 1:10 
+# Inspect the arguments of the mean() function
+args(mean)</code></pre>
+<pre><code>## function (x, ...) 
+## NULL</code></pre>
+<pre class="r"><code>###Use A Function
+# The linkedin and facebook vectors have already been created for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
+facebook &lt;- c(17, 7, 5, 16, 8, 13, 14)
 
-# Matrix with numerics from 1 up to 9
-my_matrix &lt;- matrix(1:9, ncol = 3)
+# Calculate average number of views
+avg_li = mean(linkedin)
+avg_fb = mean(facebook)
 
-# First 10 elements of the built-in data frame mtcars
-my_df &lt;- mtcars[1:10,]
+# Inspect avg_li and avg_fb
+avg_li</code></pre>
+<pre><code>## [1] 10.85714</code></pre>
+<pre class="r"><code>avg_fb</code></pre>
+<pre><code>## [1] 11.42857</code></pre>
+<pre class="r"><code># Calculate the mean of linkedin minus facebook
+mean(linkedin - facebook)</code></pre>
+<pre><code>## [1] -0.5714286</code></pre>
+<pre class="r"><code>###Use A Function (2)
+# The linkedin and facebook vectors have already been created for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
+facebook &lt;- c(17, 7, 5, 16, 8, 13, 14)
 
-# Construct list with these different elements:
-my_list &lt;- list(my_vector,my_matrix,my_df)
-my_list</code></pre>
+# Calculate the mean of the sum
+avg_sum = mean(linkedin + facebook)
+
+# Calculate the trimmed mean of the sum
+avg_sum_trimmed = mean(linkedin + facebook, trim = 0.2)
+
+# Inspect both new variables
+avg_sum</code></pre>
+<pre><code>## [1] 22.28571</code></pre>
+<pre class="r"><code>avg_sum_trimmed</code></pre>
+<pre><code>## [1] 22.6</code></pre>
+<pre class="r"><code>###Use A Function (3)
+# The linkedin and facebook vectors have already been created for you
+linkedin &lt;- c(16, 9, 13, 5, NA, 17, 14)
+facebook &lt;- c(17, NA, 5, 16, 8, 13, 14)
+
+# Basic average of linkedin
+mean(linkedin)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code># Advanced average of linkedin
+mean(linkedin, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 12.33333</code></pre>
+<pre class="r"><code>###Functions Inside Functions
+# The linkedin and facebook vectors have already been created for you
+linkedin &lt;- c(16, 9, 13, 5, NA, 17, 14)
+facebook &lt;- c(17, 6, 5, 16, 8, 13, 14)
+
+# Calculate the mean absolute deviation
+mean(abs(linkedin - facebook), na.rm = TRUE)</code></pre>
+<pre><code>## [1] 4.5</code></pre>
+<pre class="r"><code>###Write Your Own Function
+# Create a function pow_two()
+pow_two &lt;- function(x) {
+  x ^ 2
+}
+
+# Use the function 
+pow_two(12)</code></pre>
+<pre><code>## [1] 144</code></pre>
+<pre class="r"><code># Create a function sum_abs()
+sum_abs &lt;- function(x, y) {
+  abs(x) + abs(y)
+}
+
+# Use the function
+sum_abs(-2, 3)</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>###Write Your Own Function (2)
+# Define the function hello()
+hello &lt;- function() {
+  print(&quot;Hi there!&quot;)
+  TRUE
+}
+
+# Call the function hello()
+hello()</code></pre>
+<pre><code>## [1] &quot;Hi there!&quot;</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># Define the function my_filter()
+my_filter &lt;- function(x) {
+  if (x &gt; 0) {
+    return(x)
+  } else {
+    return(NULL)
+  }
+}
+
+# Call the function my_filter() twice
+my_filter(5)</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>my_filter(-5)</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>###Write Your Own Function (3)
+# Extend the pow_two() function
+pow_two &lt;- function(x, print_info = TRUE) {
+  y &lt;- x ^ 2
+  if (print_info) {
+    print(paste(x, &quot;to the power two equals&quot;, y))
+  }
+  return(y)
+}
+
+###Function Scoping
+two_dice &lt;- function() {
+  possibilities &lt;- 1:6
+  dice1 &lt;- sample(possibilities, size = 1)
+  dice2 &lt;- sample(possibilities, size = 1)
+  dice1 + dice2
+}
+
+###R Passes Arguments By Value
+increment &lt;- function(x, inc = 1) {
+  x &lt;- x + inc
+  x
+}
+count &lt;- 5
+a &lt;- increment(count, 2)
+b &lt;- increment(count)
+count &lt;- increment(count, 2)
+
+###R You Functional?
+# The linkedin and facebook vectors have already been created for you
+
+# Define the interpret function
+interpret &lt;- function(num_views) {
+  if (num_views &gt; 15) {
+    print(&quot;You're popular!&quot;)
+    return(num_views)
+  } else {
+    print(&quot;Try to be more visible!&quot;)
+    return(0)
+  }
+}
+
+# Call the interpret function twice
+interpret(linkedin[1])</code></pre>
+<pre><code>## [1] &quot;You're popular!&quot;</code></pre>
+<pre><code>## [1] 16</code></pre>
+<pre class="r"><code>interpret(facebook[2])</code></pre>
+<pre><code>## [1] &quot;Try to be more visible!&quot;</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>###R You Functional? (2)
+# The linkedin and facebook vectors have already been created for you
+linkedin &lt;- c(16, 9, 13, 5, 2, 17, 14)
+facebook &lt;- c(17, 7, 5, 16, 8, 13, 14)
+
+# The interpret() can be used inside interpret_all()
+interpret &lt;- function(num_views) {
+  if (num_views &gt; 15) {
+    print(&quot;You're popular!&quot;)
+    return(num_views)
+  } else {
+    print(&quot;Try to be more visible!&quot;)
+    return(0)
+  }
+}
+
+# Define the interpret_all() function
+interpret_all &lt;- function(views, return_sum = TRUE) {
+  count &lt;- 0
+  for (v in views) {
+    count &lt;- count + interpret(v)
+  }
+  if (return_sum) {
+    return(count)
+  } else {
+    return(NULL)
+  }
+}
+
+# Call the interpret_all() function on both linkedin and facebook
+interpret_all(linkedin)</code></pre>
+<pre><code>## [1] &quot;You're popular!&quot;
+## [1] &quot;Try to be more visible!&quot;
+## [1] &quot;Try to be more visible!&quot;
+## [1] &quot;Try to be more visible!&quot;
+## [1] &quot;Try to be more visible!&quot;
+## [1] &quot;You're popular!&quot;
+## [1] &quot;Try to be more visible!&quot;</code></pre>
+<pre><code>## [1] 33</code></pre>
+<pre class="r"><code>interpret_all(facebook)</code></pre>
+<pre><code>## [1] &quot;You're popular!&quot;
+## [1] &quot;Try to be more visible!&quot;
+## [1] &quot;Try to be more visible!&quot;
+## [1] &quot;You're popular!&quot;
+## [1] &quot;Try to be more visible!&quot;
+## [1] &quot;Try to be more visible!&quot;
+## [1] &quot;Try to be more visible!&quot;</code></pre>
+<pre><code>## [1] 33</code></pre>
+<pre class="r"><code>###Load An R Package
+# The mtcars vectors have already been prepared for you
+wt &lt;- mtcars$wt
+hp &lt;- mtcars$hp
+
+# Request the currently attached packages
+search()</code></pre>
+<pre><code>##  [1] &quot;.GlobalEnv&quot;        &quot;package:ggplot2&quot;   &quot;package:stats&quot;    
+##  [4] &quot;package:graphics&quot;  &quot;package:grDevices&quot; &quot;package:utils&quot;    
+##  [7] &quot;package:datasets&quot;  &quot;package:methods&quot;   &quot;Autoloads&quot;        
+## [10] &quot;package:base&quot;</code></pre>
+<pre class="r"><code># Try the qplot() function with wt and hp
+qplot(wt, hp)</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre class="r"><code># Load the ggplot2 package
+library(&quot;ggplot2&quot;)
+
+# Retry the qplot() function
+qplot(wt, hp)</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre class="r"><code># Check out the currently attached packages again
+search()</code></pre>
+<pre><code>##  [1] &quot;.GlobalEnv&quot;        &quot;package:ggplot2&quot;   &quot;package:stats&quot;    
+##  [4] &quot;package:graphics&quot;  &quot;package:grDevices&quot; &quot;package:utils&quot;    
+##  [7] &quot;package:datasets&quot;  &quot;package:methods&quot;   &quot;Autoloads&quot;        
+## [10] &quot;package:base&quot;</code></pre>
+</div>
+<div id="apply" class="section level2">
+<h2>Apply</h2>
+<pre class="r"><code>###Chapter 4 The Apply Family
+
+###Use lapply With A Built-In R Function
+# The vector pioneers has already been created for you
+pioneers &lt;- c(&quot;GAUSS:1777&quot;, &quot;BAYES:1702&quot;, &quot;PASCAL:1623&quot;, &quot;PEARSON:1857&quot;)
+
+# Split names from birth year: split_math
+split_math &lt;- strsplit(pioneers, split = &quot;:&quot;)
+
+# Convert to lowercase strings: split_low
+split_low &lt;- lapply(split_math, tolower)
+
+# Take a look at the structure of split_low
+str(split_low)</code></pre>
+<pre><code>## List of 4
+##  $ : chr [1:2] &quot;gauss&quot; &quot;1777&quot;
+##  $ : chr [1:2] &quot;bayes&quot; &quot;1702&quot;
+##  $ : chr [1:2] &quot;pascal&quot; &quot;1623&quot;
+##  $ : chr [1:2] &quot;pearson&quot; &quot;1857&quot;</code></pre>
+<pre class="r"><code>###Use lapply With Your Own Function
+# Code from previous exercise:
+pioneers &lt;- c(&quot;GAUSS:1777&quot;, &quot;BAYES:1702&quot;, &quot;PASCAL:1623&quot;, &quot;PEARSON:1857&quot;)
+split &lt;- strsplit(pioneers, split = &quot;:&quot;)
+split_low &lt;- lapply(split, tolower)
+
+# Write function select_first()
+select_first &lt;- function(x) {
+  x[1]
+}
+
+# Apply select_first() over split_low: names
+names &lt;- lapply(split_low, select_first)
+
+# Write function select_second()
+select_second &lt;- function(x) {
+  x[2]
+}
+
+###lapply And Anonymous Functions
+# Definition of split_low
+pioneers &lt;- c(&quot;GAUSS:1777&quot;, &quot;BAYES:1702&quot;, &quot;PASCAL:1623&quot;, &quot;PEARSON:1857&quot;)
+split &lt;- strsplit(pioneers, split = &quot;:&quot;)
+split_low &lt;- lapply(split, tolower)
+
+names &lt;- lapply(split_low, function(x) { x[1] })
+
+years &lt;- lapply(split_low, function(x) { x[2] })
+
+###Use lapply With Additional Arguments
+# Definition of split_low
+pioneers &lt;- c(&quot;GAUSS:1777&quot;, &quot;BAYES:1702&quot;, &quot;PASCAL:1623&quot;, &quot;PEARSON:1857&quot;)
+split &lt;- strsplit(pioneers, split = &quot;:&quot;)
+split_low &lt;- lapply(split, tolower)
+
+# Replace the select_*() functions by a single function: select_el
+select_el &lt;- function(x, index) {
+  x[index]
+}
+
+# Call the select_el() function twice on split_low: names and years
+names &lt;- lapply(split_low, select_el, index = 1)
+years &lt;- lapply(split_low, select_el, index = 2)
+
+###Apply Functions That Return NULL
+lapply(split_low, function(x) {
+  if (nchar(x[1]) &gt; 5) {
+    return(NULL)
+  } else {
+    return(x[2])
+  }
+})</code></pre>
 <pre><code>## [[1]]
-##  [1]  1  2  3  4  5  6  7  8  9 10
+## [1] &quot;1777&quot;
 ## 
 ## [[2]]
-##      [,1] [,2] [,3]
-## [1,]    1    4    7
-## [2,]    2    5    8
-## [3,]    3    6    9
+## [1] &quot;1702&quot;
 ## 
 ## [[3]]
-##                    mpg cyl  disp  hp drat    wt  qsec vs am gear carb
-## Mazda RX4         21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
-## Mazda RX4 Wag     21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
-## Datsun 710        22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
-## Hornet 4 Drive    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
-## Hornet Sportabout 18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
-## Valiant           18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
-## Duster 360        14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
-## Merc 240D         24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
-## Merc 230          22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
-## Merc 280          19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4</code></pre>
-<pre class="r"><code># Vector with numerics from 1 up to 10
-my_vector &lt;- 1:10 
-
-# Matrix with numerics from 1 up to 9
-my_matrix &lt;- matrix(1:9, ncol = 3)
-
-# First 10 elements of the built-in data frame mtcars
-my_df &lt;- mtcars[1:10,]
-
-# Adapt list() call to give the components names
-my_list &lt;- list(vec=my_vector, mat=my_matrix, df=my_df)
-
-# Print out my_list
-my_list</code></pre>
-<pre><code>## $vec
-##  [1]  1  2  3  4  5  6  7  8  9 10
+## NULL
 ## 
-## $mat
-##      [,1] [,2] [,3]
-## [1,]    1    4    7
-## [2,]    2    5    8
-## [3,]    3    6    9
+## [[4]]
+## NULL</code></pre>
+<pre class="r"><code>###How To Use sapply
+# temp has already been defined in Data Camp's workspace
+temp &lt;- list(c(3, 7, 9, 6, -1), c(6, 9, 12, 13, 5), c(4, 8, 3, -1, -3), c(1, 4, 7, 2, -2), 
+             c(5, 7, 9, 4, 2), c(-3, 5, 8, 9, 4), c(3, 6, 9, 4, 1))
+# Use lapply() to find each day's minimum temperature
+lapply(temp, min)</code></pre>
+<pre><code>## [[1]]
+## [1] -1
 ## 
-## $df
-##                    mpg cyl  disp  hp drat    wt  qsec vs am gear carb
-## Mazda RX4         21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
-## Mazda RX4 Wag     21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
-## Datsun 710        22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
-## Hornet 4 Drive    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
-## Hornet Sportabout 18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
-## Valiant           18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
-## Duster 360        14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
-## Merc 240D         24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
-## Merc 230          22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
-## Merc 280          19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4</code></pre>
-<pre class="r"><code># The variables mov, act and rev are available
-
-mov &lt;- &quot;The Shining&quot;
-act      &lt;- c(&quot;Jack Nicholson&quot;,&quot;Shelley Duvall&quot;,&quot;Danny Lloyd&quot;,&quot;Scatman Crothers&quot;,&quot;Barry Nelson&quot;)
-sources     &lt;- c(&quot;IMDb1&quot;,&quot;IMDb2&quot;,&quot;IMDb3&quot;)
-comments    &lt;- c(&quot;Best Horror Film I Have Ever Seen&quot;,&quot;A truly brilliant and scary film from Stanley Kubrick&quot;,&quot;A masterpiece of psychological horror&quot;)
-scores      &lt;- c(4.5,4,5)
-rev     &lt;- data.frame(scores, sources, comments)
-rm(scores, sources, comments)
-
-
-# Finish the code to build shining_list
-shining_list &lt;- list(moviename = mov,actors=act,reviews=rev)
-shining_list</code></pre>
-<pre><code>## $moviename
-## [1] &quot;The Shining&quot;
+## [[2]]
+## [1] 5
 ## 
-## $actors
-## [1] &quot;Jack Nicholson&quot;   &quot;Shelley Duvall&quot;   &quot;Danny Lloyd&quot;     
-## [4] &quot;Scatman Crothers&quot; &quot;Barry Nelson&quot;    
+## [[3]]
+## [1] -3
 ## 
-## $reviews
-##   scores sources                                              comments
-## 1    4.5   IMDb1                     Best Horror Film I Have Ever Seen
-## 2    4.0   IMDb2 A truly brilliant and scary film from Stanley Kubrick
-## 3    5.0   IMDb3                 A masterpiece of psychological horror</code></pre>
-<pre class="r"><code># shining_list is already pre-loaded in the workspace
+## [[4]]
+## [1] -2
+## 
+## [[5]]
+## [1] 2
+## 
+## [[6]]
+## [1] -3
+## 
+## [[7]]
+## [1] 1</code></pre>
+<pre class="r"><code># Use sapply() to find each day's minimum temperature
+sapply(temp, min)</code></pre>
+<pre><code>## [1] -1  5 -3 -2  2 -3  1</code></pre>
+<pre class="r"><code># Use lapply() to find each day's maximum temperature
+lapply(temp, max)</code></pre>
+<pre><code>## [[1]]
+## [1] 9
+## 
+## [[2]]
+## [1] 13
+## 
+## [[3]]
+## [1] 8
+## 
+## [[4]]
+## [1] 7
+## 
+## [[5]]
+## [1] 9
+## 
+## [[6]]
+## [1] 9
+## 
+## [[7]]
+## [1] 9</code></pre>
+<pre class="r"><code># Use sapply() to find each day's maximum temperature
+sapply(temp, max)</code></pre>
+<pre><code>## [1]  9 13  8  7  9  9  9</code></pre>
+<pre class="r"><code>###sapply With Your Own Function
+# temp is already defined in the workspace
 
-# Print out the vector representing the actors
-shining_list$actors</code></pre>
-<pre><code>## [1] &quot;Jack Nicholson&quot;   &quot;Shelley Duvall&quot;   &quot;Danny Lloyd&quot;     
-## [4] &quot;Scatman Crothers&quot; &quot;Barry Nelson&quot;</code></pre>
-<pre class="r"><code># Print the second element of the vector representing the actors
-shining_list$actors[2]</code></pre>
-<pre><code>## [1] &quot;Shelley Duvall&quot;</code></pre>
-<pre class="r"><code># shining_list, the list containing movie name, actors and reviews, is pre-loaded in the workspace
+# Define a function calculates the average of the min and max of a vector: extremes_avg
+extremes_avg &lt;- function(x) {
+  (min(x) + max(x))/2
+}
 
-# We forgot something; add the year to shining_list
-shining_list_full &lt;- c(shining_list, year=1980)
+# Apply extremes_avg() over temp using sapply()
+sapply(temp, extremes_avg)</code></pre>
+<pre><code>## [1] 4.0 9.0 2.5 2.5 5.5 3.0 5.0</code></pre>
+<pre class="r"><code># Apply extremes_avg() over temp using lapply()
+lapply(temp, extremes_avg)</code></pre>
+<pre><code>## [[1]]
+## [1] 4
+## 
+## [[2]]
+## [1] 9
+## 
+## [[3]]
+## [1] 2.5
+## 
+## [[4]]
+## [1] 2.5
+## 
+## [[5]]
+## [1] 5.5
+## 
+## [[6]]
+## [1] 3
+## 
+## [[7]]
+## [1] 5</code></pre>
+<pre class="r"><code>###sapply With Function Returning Vector
+# temp is already available in the workspace
 
-# Have a look at shining_list_full
-shining_list_full</code></pre>
-<pre><code>## $moviename
-## [1] &quot;The Shining&quot;
+# Create a function that returns min and max of a vector: extremes
+extremes &lt;- function(x) {
+  c(min = min(x), max = max(x))
+}
+
+# Apply extremes() over temp with sapply()
+sapply(temp, extremes)</code></pre>
+<pre><code>##     [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+## min   -1    5   -3   -2    2   -3    1
+## max    9   13    8    7    9    9    9</code></pre>
+<pre class="r"><code># Apply extremes() over temp with lapply()
+lapply(temp, extremes)</code></pre>
+<pre><code>## [[1]]
+## min max 
+##  -1   9 
 ## 
-## $actors
-## [1] &quot;Jack Nicholson&quot;   &quot;Shelley Duvall&quot;   &quot;Danny Lloyd&quot;     
-## [4] &quot;Scatman Crothers&quot; &quot;Barry Nelson&quot;    
+## [[2]]
+## min max 
+##   5  13 
 ## 
-## $reviews
-##   scores sources                                              comments
-## 1    4.5   IMDb1                     Best Horror Film I Have Ever Seen
-## 2    4.0   IMDb2 A truly brilliant and scary film from Stanley Kubrick
-## 3    5.0   IMDb3                 A masterpiece of psychological horror
+## [[3]]
+## min max 
+##  -3   8 
 ## 
-## $year
-## [1] 1980</code></pre>
-<pre class="r"><code>str(shining_list_full)</code></pre>
-<pre><code>## List of 4
-##  $ moviename: chr &quot;The Shining&quot;
-##  $ actors   : chr [1:5] &quot;Jack Nicholson&quot; &quot;Shelley Duvall&quot; &quot;Danny Lloyd&quot; &quot;Scatman Crothers&quot; ...
-##  $ reviews  :'data.frame':   3 obs. of  3 variables:
-##   ..$ scores  : num [1:3] 4.5 4 5
-##   ..$ sources : Factor w/ 3 levels &quot;IMDb1&quot;,&quot;IMDb2&quot;,..: 1 2 3
-##   ..$ comments: Factor w/ 3 levels &quot;A masterpiece of psychological horror&quot;,..: 3 2 1
-##  $ year     : num 1980</code></pre>
+## [[4]]
+## min max 
+##  -2   7 
+## 
+## [[5]]
+## min max 
+##   2   9 
+## 
+## [[6]]
+## min max 
+##  -3   9 
+## 
+## [[7]]
+## min max 
+##   1   9</code></pre>
+<pre class="r"><code>###sapply Can't Simplify, Now What?
+# temp is already prepared for you in the workspace
+
+# Create a function that returns all values below zero: below_zero
+below_zero &lt;- function(x) {
+  return(x[x &lt; 0])
+}
+
+# Apply below_zero over temp using sapply(): freezing_s
+freezing_s &lt;- sapply(temp, below_zero)
+
+# Apply below_zero over temp using lapply(): freezing_l
+freezing_l &lt;- lapply(temp, below_zero)
+
+# Compare freezing_s to freezing_l using identical()
+identical(freezing_s, freezing_l)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>###sapply With Functions That Return NULL
+# temp is already available in the workspace
+
+# Write a function that 'cat()s' out the average temperatures: print_info
+print_info &lt;- function(x) {
+  cat(&quot;The average temperature is&quot;, mean(x), &quot;\n&quot;)
+}
+
+# Apply print_info() over temp using lapply()
+sapply(temp, print_info)</code></pre>
+<pre><code>## The average temperature is 4.8 
+## The average temperature is 9 
+## The average temperature is 2.2 
+## The average temperature is 2.4 
+## The average temperature is 5.4 
+## The average temperature is 4.6 
+## The average temperature is 4.6</code></pre>
+<pre><code>## [[1]]
+## NULL
+## 
+## [[2]]
+## NULL
+## 
+## [[3]]
+## NULL
+## 
+## [[4]]
+## NULL
+## 
+## [[5]]
+## NULL
+## 
+## [[6]]
+## NULL
+## 
+## [[7]]
+## NULL</code></pre>
+<pre class="r"><code># Apply print_info() over temp using sapply()
+lapply(temp, print_info)</code></pre>
+<pre><code>## The average temperature is 4.8 
+## The average temperature is 9 
+## The average temperature is 2.2 
+## The average temperature is 2.4 
+## The average temperature is 5.4 
+## The average temperature is 4.6 
+## The average temperature is 4.6</code></pre>
+<pre><code>## [[1]]
+## NULL
+## 
+## [[2]]
+## NULL
+## 
+## [[3]]
+## NULL
+## 
+## [[4]]
+## NULL
+## 
+## [[5]]
+## NULL
+## 
+## [[6]]
+## NULL
+## 
+## [[7]]
+## NULL</code></pre>
+<pre class="r"><code>###Reverse Engineering sapply
+sapply(list(runif (10), runif (10)), 
+       function(x) c(min = min(x), mean = mean(x), max = max(x)))</code></pre>
+<pre><code>##            [,1]      [,2]
+## min  0.08645178 0.3693823
+## mean 0.52305792 0.6864594
+## max  0.84190212 0.9132397</code></pre>
+<pre class="r"><code>###Use vapply
+# temp is already available in the workspace
+
+# Code the basics() function
+basics &lt;- function(x) {
+  c(min = min(x), mean = mean(x), max = max(x))
+}
+
+# Apply basics() over temp using vapply()
+vapply(temp, basics, numeric(3))</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+## min  -1.0    5 -3.0 -2.0  2.0 -3.0  1.0
+## mean  4.8    9  2.2  2.4  5.4  4.6  4.6
+## max   9.0   13  8.0  7.0  9.0  9.0  9.0</code></pre>
+<pre class="r"><code>###Use vapply (2)
+# temp is already available in the workspace
+
+# Definition of the basics() function
+basics &lt;- function(x) {
+  c(min = min(x), mean = mean(x), median = median(x), max = max(x))
+}
+
+# Fix the error:
+vapply(temp, basics, numeric(4))</code></pre>
+<pre><code>##        [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+## min    -1.0    5 -3.0 -2.0  2.0 -3.0  1.0
+## mean    4.8    9  2.2  2.4  5.4  4.6  4.6
+## median  6.0    9  3.0  2.0  5.0  5.0  4.0
+## max     9.0   13  8.0  7.0  9.0  9.0  9.0</code></pre>
+<pre class="r"><code>###From sapply To vapply
+# temp is already defined in the workspace
+
+# Convert to vapply() expression
+vapply(temp, max, numeric(1))</code></pre>
+<pre><code>## [1]  9 13  8  7  9  9  9</code></pre>
+<pre class="r"><code># Convert to vapply() expression
+vapply(temp, function(x, y) { mean(x) &gt; y }, logical(1), y = 5)</code></pre>
+<pre><code>## [1] FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE</code></pre>
+<pre class="r"><code># Definition of get_info (don't change)
+get_info &lt;- function(x, y) { 
+  if (mean(x) &gt; y) {
+    return(&quot;Not too cold!&quot;)
+  } else {
+    return(&quot;Pretty cold!&quot;)
+  }
+}
+
+# Convert to vapply() expression
+vapply(temp, get_info, character(1), y = 5)</code></pre>
+<pre><code>## [1] &quot;Pretty cold!&quot;  &quot;Not too cold!&quot; &quot;Pretty cold!&quot;  &quot;Pretty cold!&quot; 
+## [5] &quot;Not too cold!&quot; &quot;Pretty cold!&quot;  &quot;Pretty cold!&quot;</code></pre>
+</div>
+<div id="utilities" class="section level2">
+<h2>Utilities</h2>
+<pre class="r"><code>###Chapter 5 Utilities
+
+###Mathematical Utilities
+# The errors vector has already been defined for you
+errors &lt;- c(1.9,-2.6,4.0,-9.5,-3.4,7.3)
+
+# Sum of absolute rounded values of errors
+sum(round(abs(errors)))</code></pre>
+<pre><code>## [1] 29</code></pre>
+<pre class="r"><code>###Find The Error
+# Don't edit these two lines
+vec1 &lt;- c(1.5,2.5,8.4,3.7,6.3)
+vec2 &lt;- rev(vec1)
+
+# Fix the error
+mean(c(abs(vec1), abs(vec2)))</code></pre>
+<pre><code>## [1] 4.48</code></pre>
+<pre class="r"><code>###Data Utilities
+# The linkedin and facebook vectors have already been created for you
+linkedin &lt;- list(16, 9, 13, 5, 2, 17, 14)
+facebook &lt;- list(17, 7, 5, 16, 8, 13, 14)
+
+# Convert linkedin and facebook to a vector: li_vec and fb_vec
+li_vec &lt;- unlist(linkedin)
+fb_vec &lt;- unlist(facebook)
+
+# Append fb_vec to li_vec: social_vec
+social_vec &lt;- append(li_vec, fb_vec)
+
+# Sort social_vec
+sort(social_vec, decreasing = TRUE)</code></pre>
+<pre><code>##  [1] 17 17 16 16 14 14 13 13  9  8  7  5  5  2</code></pre>
+<pre class="r"><code>###Find The Error (2)
+# Fix me
+round(sum(unlist(list(1.1,3,5))))</code></pre>
+<pre><code>## [1] 9</code></pre>
+<pre class="r"><code># Fix me
+rep(seq(1, 7, by = 2), times = 7)</code></pre>
+<pre><code>##  [1] 1 3 5 7 1 3 5 7 1 3 5 7 1 3 5 7 1 3 5 7 1 3 5 7 1 3 5 7</code></pre>
+<pre class="r"><code>###Beat Gauss Using R
+# Create first sequence: seq1
+seq1 &lt;- seq(1, 500, by = 3)
+
+# Create second sequence: seq2
+seq2 &lt;- seq(1200, 900, by = -7)
+
+# Calculate total sum of the sequences
+sum(seq1) + sum(seq2)</code></pre>
+<pre><code>## [1] 87029</code></pre>
+<pre class="r"><code>###grepl &amp; grep
+# The emails vector has already been defined for you
+emails &lt;- c(&quot;john.doe@ivyleague.edu&quot;, &quot;education@world.gov&quot;, &quot;dalai.lama@peace.org&quot;, 
+            &quot;invalid.edu&quot;, &quot;quant@bigdatacollege.edu&quot;, &quot;cookie.monster@sesame.tv&quot;)
+
+# Use grepl() to match for &quot;edu&quot;
+grepl(&quot;edu&quot;, emails)</code></pre>
+<pre><code>## [1]  TRUE  TRUE FALSE  TRUE  TRUE FALSE</code></pre>
+<pre class="r"><code># Use grep() to match for &quot;edu&quot;, save result to hits
+hits &lt;- grep(&quot;edu&quot;, emails)
+
+# Subset emails using hits
+emails[hits]</code></pre>
+<pre><code>## [1] &quot;john.doe@ivyleague.edu&quot;   &quot;education@world.gov&quot;     
+## [3] &quot;invalid.edu&quot;              &quot;quant@bigdatacollege.edu&quot;</code></pre>
+<pre class="r"><code>###grepl &amp; grep (2)
+# The emails vector has already been defined for you
+emails &lt;- c(&quot;john.doe@ivyleague.edu&quot;, &quot;education@world.gov&quot;, &quot;dalai.lama@peace.org&quot;, 
+            &quot;invalid.edu&quot;, &quot;quant@bigdatacollege.edu&quot;, &quot;cookie.monster@sesame.tv&quot;)
+
+# Use grepl() to match for .edu addresses more robustly
+grepl(&quot;@.*\\.edu$&quot;, emails)</code></pre>
+<pre><code>## [1]  TRUE FALSE FALSE FALSE  TRUE FALSE</code></pre>
+<pre class="r"><code># Use grep() to match for .edu addresses more robustly, save result to hits
+hits &lt;- grep(&quot;@.*\\.edu$&quot;, emails)
+
+# Subset emails using hits
+emails[hits]</code></pre>
+<pre><code>## [1] &quot;john.doe@ivyleague.edu&quot;   &quot;quant@bigdatacollege.edu&quot;</code></pre>
+<pre class="r"><code>###sub &amp; gsub
+# The emails vector has already been defined for you
+emails &lt;- c(&quot;john.doe@ivyleague.edu&quot;, &quot;education@world.gov&quot;, &quot;global@peace.org&quot;,
+            &quot;invalid.edu&quot;, &quot;quant@bigdatacollege.edu&quot;, &quot;cookie.monster@sesame.tv&quot;)
+
+# Use sub() to convert the email domains to datacamp.edu
+sub(&quot;@.*\\.edu$&quot;, &quot;@datacamp.edu&quot;, emails)</code></pre>
+<pre><code>## [1] &quot;john.doe@datacamp.edu&quot;    &quot;education@world.gov&quot;     
+## [3] &quot;global@peace.org&quot;         &quot;invalid.edu&quot;             
+## [5] &quot;quant@datacamp.edu&quot;       &quot;cookie.monster@sesame.tv&quot;</code></pre>
+<pre class="r"><code>###sub &amp; gsub (2)
+awards &lt;- c(&quot;Won 1 Oscar.&quot;,
+            &quot;Won 1 Oscar. Another 9 wins &amp; 24 nominations.&quot;,
+            &quot;1 win and 2 nominations.&quot;,
+            &quot;2 wins &amp; 3 nominations.&quot;,
+            &quot;Nominated for 2 Golden Globes. 1 more win &amp; 2 nominations.&quot;,
+            &quot;4 wins &amp; 1 nomination.&quot;)
+
+sub(&quot;.*\\s([0-9]+)\\snomination.*$&quot;, &quot;\\1&quot;, awards)</code></pre>
+<pre><code>## [1] &quot;Won 1 Oscar.&quot; &quot;24&quot;           &quot;2&quot;            &quot;3&quot;           
+## [5] &quot;2&quot;            &quot;1&quot;</code></pre>
+<pre class="r"><code>###Right Here, Right Now
+# Get the current date: today
+today &lt;- Sys.Date()
+
+# See what today looks like under the hood
+unclass(today)</code></pre>
+<pre><code>## [1] 17935</code></pre>
+<pre class="r"><code># Get the current time: now
+now &lt;- Sys.time()
+
+# See what now looks like under the hood
+unclass(now)</code></pre>
+<pre><code>## [1] 1549650998</code></pre>
+<pre class="r"><code>###Create And Format Dates
+# Definition of character strings representing dates
+str1 &lt;- &quot;May 23, '96&quot;
+str2 &lt;- &quot;2012-03-15&quot;
+str3 &lt;- &quot;30/January/2006&quot;
+
+# Convert the strings to dates: date1, date2, date3
+date1 &lt;- as.Date(str1, format = &quot;%b %d, '%y&quot;)
+date2 &lt;- as.Date(str2)
+date3 &lt;- as.Date(str3, format = &quot;%d/%B/%Y&quot;)
+
+# Convert dates to formatted strings
+format(date1, &quot;%A&quot;)</code></pre>
+<pre><code>## [1] &quot;Thursday&quot;</code></pre>
+<pre class="r"><code>format(date2, &quot;%d&quot;)</code></pre>
+<pre><code>## [1] &quot;15&quot;</code></pre>
+<pre class="r"><code>format(date3, &quot;%b %Y&quot;)</code></pre>
+<pre><code>## [1] &quot;Jan 2006&quot;</code></pre>
+<pre class="r"><code>###Create And Format Times
+# Definition of character strings representing times
+str1 &lt;- &quot;May 23, '96 hours:23 minutes:01 seconds:45&quot;
+str2 &lt;- &quot;2012-3-12 14:23:08&quot;
+
+# Convert the strings to POSIXct objects: time1, time2
+time1 &lt;- as.POSIXct(str1, format = &quot;%B %d, '%y hours:%H minutes:%M seconds:%S&quot;)
+time2 &lt;- as.POSIXct(str2)
+
+# Convert times to formatted strings
+format(time1, &quot;%M&quot;)</code></pre>
+<pre><code>## [1] &quot;01&quot;</code></pre>
+<pre class="r"><code>format(time2, &quot;%I:%M %p&quot;)</code></pre>
+<pre><code>## [1] &quot;02:23 PM&quot;</code></pre>
+<pre class="r"><code>###Calculations With Dates
+# day1, day2, day3, day4 and day5 are available in Data Camp's workspace
+
+# Constructing day1, day2, day3, day4 and day5 vectors
+day1 &lt;- as.Date(&quot;2016-11-21&quot;)
+day2 &lt;- as.Date(&quot;2016-11-16&quot;)
+day3 &lt;- as.Date(&quot;2016-11-27&quot;)
+day4 &lt;- as.Date(&quot;2016-11-14&quot;)
+day5 &lt;- as.Date(&quot;2016-12-02&quot;)
+
+# Difference between last and first pizza day
+day5 - day1</code></pre>
+<pre><code>## Time difference of 11 days</code></pre>
+<pre class="r"><code># Create vector pizza
+pizza &lt;- c(day1, day2, day3, day4, day5)
+
+# Create differences between consecutive pizza days: day_diff
+day_diff &lt;- diff(pizza)
+
+# Average period between two consecutive pizza days
+mean(day_diff)</code></pre>
+<pre><code>## Time difference of 2.75 days</code></pre>
+<pre class="r"><code>###Calculations With Times
+# login and logout are already defined in the workspace
+
+# Constructing login and logout vectors
+login &lt;- as.POSIXct(c(&quot;2016-11-18 10:18:04 UTC&quot;, 
+                      &quot;2016-11-23 09:14:18 UTC&quot;, 
+                      &quot;2016-11-23 12:21:51 UTC&quot;, 
+                      &quot;2016-11-23 12:37:24 UTC&quot;, 
+                      &quot;2016-11-25 21:37:55 UTC&quot;))
+
+logout &lt;- as.POSIXct(c(&quot;2016-11-18 10:56:29 UTC&quot;, 
+                       &quot;2016-11-23 09:14:52 UTC&quot;, 
+                       &quot;2016-11-23 12:35:48 UTC&quot;,
+                       &quot;2016-11-23 13:17:22 UTC&quot;, 
+                       &quot;2016-11-25 22:08:47 UTC&quot;))
+
+
+
+# Calculate the difference between login and logout: time_online
+time_online &lt;- logout - login
+
+# Inspect the variable time_online
+time_online</code></pre>
+<pre><code>## Time differences in secs
+## [1] 2305   34  837 2398 1852</code></pre>
+<pre class="r"><code># Calculate the total time online
+sum(time_online)</code></pre>
+<pre><code>## Time difference of 7426 secs</code></pre>
+<pre class="r"><code># Calculate the average time online
+mean(time_online)</code></pre>
+<pre><code>## Time difference of 1485.2 secs</code></pre>
+<pre class="r"><code>###Time Is Of The Essence
+# Convert astro to vector of Date objects: astro_dates
+# Constructing astro and meteo vectors
+astro &lt;- c(&quot;20-Mar-2015&quot;, &quot;25-Jun-2015&quot;, &quot;23-Sep-2015&quot;, &quot;22-Dec-2015&quot;)
+names(astro) &lt;- c(&quot;spring&quot;, &quot;summer&quot;, &quot;fall&quot;, &quot;winter&quot;)
+
+meteo &lt;- c(&quot;March 1, 15&quot;, &quot;June 1, 15&quot;, &quot;September 1, 15&quot;, &quot;December 1, 15&quot;)
+names(meteo) &lt;- c(&quot;spring&quot;, &quot;summer&quot;, &quot;fall&quot;, &quot;winter&quot;)
+
+
+# Source: www.timeanddate.com 
+astro_dates &lt;- as.Date(astro, format = &quot;%d-%b-%Y&quot;)
+
+# Convert meteo to vector of Date objects: meteo_dates
+meteo_dates &lt;- as.Date(meteo, format = &quot;%B %d, %y&quot;)
+
+# Calculate the maximum absolute difference between astro_dates and meteo_dates
+max(abs(meteo_dates - astro_dates))</code></pre>
+<pre><code>## Time difference of 24 days</code></pre>
 </div>
 </div>
 

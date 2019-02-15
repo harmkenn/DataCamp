@@ -1,7 +1,7 @@
 ---
 title: "Intermediate R"
 author: "Ken Harmon"
-date: "2019 February 08"
+date: "2019 February 13"
 output:
   html_document:  
     keep_md: true
@@ -17,11 +17,9 @@ output:
 
 ## Background
 
-https://campus.datacamp.com/courses/free-introduction-to-r/chapter-1-intro-to-basics-1?ex=1
+https://campus.datacamp.com/courses/intermediate-r
 
-https://rpubs.com/Seetz/T-31052017
-
-https://github.com/datacamp/courses-intro-to-r/blob/master/chapter6.Rmd
+https://github.com/JoshuaHaden/Intermediate-R-Programming-Data-Camp
 
 ## Conditionals
 
@@ -1481,9 +1479,9 @@ sapply(list(runif (10), runif (10)),
 
 ```
 ##            [,1]      [,2]
-## min  0.08645178 0.3693823
-## mean 0.52305792 0.6864594
-## max  0.84190212 0.9132397
+## min  0.02525353 0.0666171
+## mean 0.42274440 0.3922186
+## max  0.79071800 0.8951343
 ```
 
 ```r
@@ -1751,7 +1749,7 @@ unclass(today)
 ```
 
 ```
-## [1] 17935
+## [1] 17940
 ```
 
 ```r
@@ -1763,7 +1761,7 @@ unclass(now)
 ```
 
 ```
-## [1] 1549650998
+## [1] 1550084663
 ```
 
 ```r

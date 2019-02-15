@@ -447,7 +447,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Intermediate R</h1>
 <h4 class="author"><em>Ken Harmon</em></h4>
-<h4 class="date"><em>2019 February 08</em></h4>
+<h4 class="date"><em>2019 February 13</em></h4>
 
 </div>
 
@@ -456,9 +456,8 @@ $(document).ready(function () {
 <h1></h1>
 <div id="background" class="section level2">
 <h2>Background</h2>
-<p><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-1-intro-to-basics-1?ex=1" class="uri">https://campus.datacamp.com/courses/free-introduction-to-r/chapter-1-intro-to-basics-1?ex=1</a></p>
-<p><a href="https://rpubs.com/Seetz/T-31052017" class="uri">https://rpubs.com/Seetz/T-31052017</a></p>
-<p><a href="https://github.com/datacamp/courses-intro-to-r/blob/master/chapter6.Rmd" class="uri">https://github.com/datacamp/courses-intro-to-r/blob/master/chapter6.Rmd</a></p>
+<p><a href="https://campus.datacamp.com/courses/intermediate-r" class="uri">https://campus.datacamp.com/courses/intermediate-r</a></p>
+<p><a href="https://github.com/JoshuaHaden/Intermediate-R-Programming-Data-Camp" class="uri">https://github.com/JoshuaHaden/Intermediate-R-Programming-Data-Camp</a></p>
 </div>
 <div id="conditionals" class="section level2">
 <h2>Conditionals</h2>
@@ -1434,9 +1433,9 @@ lapply(temp, print_info)</code></pre>
 sapply(list(runif (10), runif (10)), 
        function(x) c(min = min(x), mean = mean(x), max = max(x)))</code></pre>
 <pre><code>##            [,1]      [,2]
-## min  0.08645178 0.3693823
-## mean 0.52305792 0.6864594
-## max  0.84190212 0.9132397</code></pre>
+## min  0.02525353 0.0666171
+## mean 0.42274440 0.3922186
+## max  0.79071800 0.8951343</code></pre>
 <pre class="r"><code>###Use vapply
 # temp is already available in the workspace
 
@@ -1596,13 +1595,13 @@ today &lt;- Sys.Date()
 
 # See what today looks like under the hood
 unclass(today)</code></pre>
-<pre><code>## [1] 17935</code></pre>
+<pre><code>## [1] 17940</code></pre>
 <pre class="r"><code># Get the current time: now
 now &lt;- Sys.time()
 
 # See what now looks like under the hood
 unclass(now)</code></pre>
-<pre><code>## [1] 1549650998</code></pre>
+<pre><code>## [1] 1550084663</code></pre>
 <pre class="r"><code>###Create And Format Dates
 # Definition of character strings representing dates
 str1 &lt;- &quot;May 23, '96&quot;

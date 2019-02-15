@@ -1,0 +1,433 @@
+---
+title: "Cleaning Data in R"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+# {.tabset .tabset-fade}
+
+```{r, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(ggplot2)
+library(ggvis)
+library(tidyverse)
+```
+
+## Background
+
+https://www.datacamp.com/courses/ggvis-data-visualization-r-tutorial
+
+https://github.com/JoshuaHaden/Data-Visualization-in-R-with-ggvis-Data-Camp
+
+## Grammar
+
+```{r grammar}
+###Chapter 1 The Grammar Of Graphics
+
+###Load ggvis And Start To Explore
+# ggvis is already installed for you; now load it and start playing around
+library("ggvis")
+
+# change the code below to plot the disp variable of mtcars on the x axis
+mtcars %>% ggvis(~disp, ~mpg) %>% layer_points()
+
+###ggvis And Its Capabilities
+# The ggvis packages is loaded into the workspace already
+
+# Change the code below to make a graph with red points
+mtcars %>% ggvis(~wt, ~mpg, fill := "red") %>% layer_points()
+
+# Change the code below draw smooths instead of points
+mtcars %>% ggvis(~wt, ~mpg) %>% layer_smooths()
+
+# Change the code below to make a graph containing both points and a smoothed summary line
+mtcars %>% ggvis(~wt, ~mpg) %>% layer_points() %>% layer_smooths()
+
+###ggvis Grammar ~ Graphics Grammar
+# Adapt the code: show bars instead of points
+pressure %>% ggvis(~temperature, ~pressure) %>% layer_bars()
+
+# Adapt the codee: show lines instead of points
+pressure %>% ggvis(~temperature, ~pressure) %>% layer_lines()
+
+# Extend the code: map the fill property to the temperature variable
+pressure %>% ggvis(~temperature, ~pressure, fill = ~temperature) %>% layer_points()
+
+# Extend the code: map the size property to the pressure variable
+pressure %>% ggvis(~temperature, ~pressure, size = ~pressure) %>% layer_points()
+
+###4 Essential Components Of A Graph
+faithful %>%
+  ggvis(~waiting, ~eruptions, fill := "red") %>%
+  layer_points() %>%
+  add_axis("y", title = "Duration of eruption (m)",
+           values = c(2, 3, 4, 5), subdivide = 9) %>%
+  add_axis("x", title = "Time since previous eruption (m)")
+```
+
+## Lines and Syntax
+
+```{r lines}
+###Chapter 2 Lines And Syntax
+
+###Three Operators: %>%, = And :=
+# Rewrite the code with the pipe operator     
+faithful %>% 
+  ggvis(~waiting, ~eruptions) %>% 
+  layer_points()
+
+# Modify this graph to map the size property to the pressure variable
+pressure %>% ggvis(~temperature, ~pressure, size = ~pressure) %>% layer_points()
+
+# Modify this graph by setting the size property
+pressure %>% ggvis(~temperature, ~pressure, size := 100) %>% layer_points()
+
+# Fix this code to set the fill property to red
+pressure %>% ggvis(~temperature, ~pressure, fill := "red") %>% layer_points()
+
+###Referring To Different Objects
+red <- "green"
+pressure$red <- pressure$temperature
+
+# GRAPH A
+pressure %>%
+  ggvis(~temperature, ~pressure,
+        fill = ~red) %>%
+  layer_points()
+
+# GRAPH B
+pressure %>%
+  ggvis(~temperature, ~pressure,
+        fill = "red") %>%
+  layer_points()
+
+# GRAPH C
+pressure %>%
+  ggvis(~temperature, ~pressure,
+        fill := red) %>%
+  layer_points()
+
+###Referring To Diffeent Objects (2)
+red <- "green"
+pressure$red <- pressure$temperature
+
+# GRAPH A
+pressure %>%
+  ggvis(~temperature, ~pressure,
+        fill = ~red) %>%
+  layer_points()
+
+# GRAPH B
+pressure %>%
+  ggvis(~temperature, ~pressure,
+        fill = "red") %>%
+  layer_points()
+
+# GRAPH C
+pressure %>%
+  ggvis(~temperature, ~pressure,
+        fill := red) %>%
+  layer_points()
+
+###Properties For Points
+# Add code
+faithful %>% 
+  ggvis(~waiting, ~eruptions, 
+        size = ~eruptions, opacity := 0.5, 
+        fill := "blue", stroke := "black") %>% 
+  layer_points()
+
+# Add code
+faithful %>% 
+  ggvis(~waiting, ~eruptions, 
+        fillOpacity = ~eruptions, size := 100,  
+        fill := "red", stroke := "red", shape := "cross") %>% 
+  layer_points()
+
+###Properties For Lines
+# Update the code
+pressure %>% 
+  ggvis(~temperature, ~pressure, 
+        stroke := "red", strokeWidth := 2, strokeDash := 6) %>% 
+  layer_lines()
+
+###Path Marks And Polygons
+# Update the plot
+# Texas available in Data Camp workspace
+texas <- read.csv("texas.csv")
+# See Texas.png for the resulting plot
+texas %>% ggvis(~long, ~lat, fill := "darkorange") %>% layer_paths()
+
+###Display Model Fits
+# Compute the x and y coordinates for a loess smooth line that predicts mpg with the wt
+mtcars %>% compute_smooth(mpg ~ wt)
+
+###compute_smooth() To Simplify Model Fits
+# Extend with ggvis() and layer_lines()
+mtcars %>% compute_smooth(mpg ~ wt) %>% ggvis(~pred_, ~resp_) %>% layer_lines()
+
+# Extend with layer_points() and layer_smooths()
+mtcars %>% ggvis(~wt, ~mpg) %>% layer_smooths() %>% layer_points()
+
+# Extend the code for the second plot and add 'layer_points()' to the graph
+mtcars %>% ggvis(~wt, ~mpg) %>% layer_points() %>% layer_smooths()
+
+```
+
+## Transformations
+
+```{r trans}
+###Chapter 3 Transformations
+
+###Histograms (1)
+# Build a histogram of the waiting variable of the faithful data set.
+faithful %>% ggvis(~waiting) %>% layer_histograms()
+
+# Build the same histogram, but with a binwidth of 5 units
+faithful %>% ggvis(~waiting) %>% layer_histograms(width = 5)
+
+###Histograms (2)
+# Finish the command
+faithful %>% 
+  compute_bin(~waiting, width = 5) %>% 
+  ggvis(x = ~xmin_, x2 = ~xmax_, y = 0, y2 = ~count_) %>% 
+  layer_rects()
+
+###Density Plots
+# Combine compute_density() with layer_lines() to make a density plot of the waiting variable.
+faithful %>% ggvis(~waiting, fill := "green") %>% layer_densities()
+
+###Shortcuts
+# Complete the code to plot a bar graph of the cyl factor.
+mtcars %>% ggvis(~factor(cyl)) %>% layer_bars()
+
+# Adapt the solution to the first challenge to just calculate the count values. No plotting!
+mtcars %>% compute_count(~factor(cyl))
+
+###ggvis And group_by
+# Both ggvis and dplyr are loaded into the workspace
+
+# Instruction 1
+mtcars %>% group_by(cyl) %>% ggvis(~mpg, ~wt, stroke = ~factor(cyl)) %>% layer_smooths()
+
+# Instruction 2
+mtcars %>% group_by(cyl) %>% ggvis(~mpg, fill = ~factor(cyl)) %>% layer_densities()
+
+###group_by() Versus interaction()
+# Alter the graph
+mtcars %>% group_by(cyl, am) %>% ggvis(~mpg, fill = ~interaction(cyl, am)) %>% layer_densities()
+
+###Chaining Is A Virtue
+mtcars %>%
+  group_by(am) %>%
+  ggvis(~mpg, ~hp) %>%
+  layer_smooths(stroke = ~factor(am)) %>%
+  layer_points(fill = ~factor(am))
+```
+
+## Interactivity
+
+```{r interactivity}
+###Chapter 4 Interactivity And Layers
+
+###The Basics Of Interactive Plots
+# Adapt the code: set fill with a select box
+faithful %>% 
+  ggvis(~waiting, ~eruptions, fillOpacity := 0.5, 
+        shape := input_select(label = "Choose shape:", 
+                              choices = c("circle", "square", "cross", 
+                                          "diamond", "triangle-up", "triangle-down")), 
+        fill := input_select(label = "Choose color:", 
+                             choices = c("black", "red", "blue", "green"))) %>% 
+  layer_points()
+
+# Add radio buttons to control the fill of the plot
+mtcars %>% 
+  ggvis(~mpg, ~wt, 
+        fill := input_radiobuttons(label = "Choose color:", 
+                                   choices = c("black", "red", "blue", "green"))) %>% 
+  layer_points()
+
+###Input Widgets In More Detail
+# Change the radiobuttons widget to a text widget 
+mtcars %>% 
+  ggvis(~mpg, ~wt, 
+        fill := input_text(label = "Choose color:", 
+                           value = "black")) %>% 
+  layer_points()
+
+# Map the fill property to a select box that returns variable names
+mtcars %>% 
+  ggvis(~mpg, ~wt, 
+        fill = input_select(label = "Choose fill variable:", 
+                            choices = names(mtcars), map = as.name)) %>% 
+  layer_points()
+
+###Input Widgets In More Detail (2)
+# Map the fill property to a select box that returns variable names
+mtcars %>% 
+  ggvis(~mpg, ~wt, 
+        fill = input_select(label = "Choose fill variable:", 
+                            choices = names(mtcars), map = as.name)) %>% 
+  layer_points()
+
+###Control Parameters And Values
+# Map the bindwidth to a numeric field ("Choose a binwidth:")
+mtcars %>% 
+  ggvis(~mpg) %>% 
+  layer_histograms(width = input_numeric(label = "Choose a binwidth:", value = 1))
+
+# Map the binwidth to a slider bar ("Choose a binwidth:")
+mtcars %>% 
+  ggvis(~mpg) %>% 
+  layer_histograms(width = input_slider(label = "Choose a binwidth:", min = 1, max = 20))
+
+###Multi-Layered Plots And Their Properties
+# Add a layer of points to the graph below.
+pressure %>% 
+  ggvis(~temperature, ~pressure, stroke := "skyblue") %>% 
+  layer_lines() %>%
+  layer_points()
+
+# Adapt the solution to the first instruction below so that only the lines layer uses a skyblue stroke.
+pressure %>% 
+  ggvis(~temperature, ~pressure) %>% 
+  layer_lines(stroke := "skyblue") %>% 
+  layer_points()
+
+# Rewrite the code below so that only the points layer uses the shape property.
+pressure %>% 
+  ggvis(~temperature, ~pressure) %>% 
+  layer_lines(stroke := "skyblue") %>% 
+  layer_points(shape := "triangle-up")
+
+# Refactor the code for the graph below to make it as concise as possible
+pressure %>% 
+  ggvis(~temperature, ~pressure, stroke := "skyblue", 
+        strokeOpacity := 0.5, strokeWidth := 5) %>% 
+  layer_lines() %>% 
+  layer_points(fill = ~temperature, shape := "triangle-up", size := 300)
+
+###Multi-Layered Plots And Their Properties (2)
+# Rewrite the code below so that only the points layer uses the shape property.
+pressure %>% 
+  ggvis(~temperature, ~pressure) %>% 
+  layer_lines(stroke := "skyblue") %>% 
+  layer_points(shape := "triangle-up")
+
+# Refactor the code for the graph below to make it as concise as possible
+pressure %>% 
+  ggvis(~temperature, ~pressure, stroke := "skyblue", 
+        strokeOpacity := 0.5, strokeWidth := 5) %>% 
+  layer_lines() %>% 
+  layer_points(fill = ~temperature, shape := "triangle-up", size := 300)
+
+###There Is No Limit On The Number Of Layers
+# Create a graph containing a scatterplot, a linear model and a smooth line.
+pressure %>% 
+  ggvis(~temperature, ~pressure) %>%
+  layer_lines(opacity := 0.5) %>%
+  layer_points() %>%
+  layer_model_predictions(model = "lm", stroke := "navy") %>%
+  layer_smooths(stroke := "skyblue")
+
+```
+
+## Labels
+
+```{r labels}
+###Chapter 5 Customizing Axes, Legends, and Scales
+
+###Axes
+# Change the axes of the plot as instructed
+faithful %>% 
+  ggvis(~waiting, ~eruptions) %>% 
+  layer_points() %>% 
+  add_axis("x", 
+           title = "Time since previous eruption (m)", 
+           values = c(50, 60, 70, 80, 90), 
+           subdivide = 9,
+           orient = "top") %>%
+  add_axis("y", 
+           title = "Duration of eruption (m)", 
+           values = c(2, 3, 4, 5), 
+           subdivide = 9,
+           orient = "right")
+
+###Legends
+# Add a legend to the plot below: use the correct title and orientation
+faithful %>% 
+  ggvis(~waiting, ~eruptions, opacity := 0.6, 
+        fill = ~factor(round(eruptions))) %>% 
+  layer_points() %>% 
+  add_legend("fill", title = "~ duration (m)", orient = "left")
+
+# Use add_legend() to combine the legends in the plot below. Adjust its properties as instructed.
+faithful %>% 
+  ggvis(~waiting, ~eruptions, opacity := 0.6, 
+        fill = ~factor(round(eruptions)), shape = ~factor(round(eruptions)), 
+        size = ~round(eruptions)) %>% 
+  layer_points() %>% 
+  add_legend(c("fill", "shape", "size"), 
+             title = "~ duration (m)", values = c(2, 3, 4, 5))
+
+###Legends (2)
+# Fix the legend
+faithful %>% 
+  ggvis(~waiting, ~eruptions, opacity := 0.6, 
+        fill = ~factor(round(eruptions)), shape = ~factor(round(eruptions)), 
+        size = ~round(eruptions)) %>% 
+  layer_points() %>% 
+  add_legend(c("fill", "shape", "size"), 
+             title = "~ duration (m)")
+
+###Scale Types
+# Add a scale_numeric() function to the code below to make the stroke color range from "darkred" to "orange".
+mtcars %>% 
+  ggvis(~wt, ~mpg, fill = ~disp, stroke = ~disp, strokeWidth := 2) %>%
+  layer_points() %>%
+  scale_numeric("fill", range = c("red", "yellow")) %>%
+  scale_numeric("stroke", range = c("darkred", "orange")) 
+
+# Change the graph below to make the fill colors range from green to beige.
+mtcars %>% ggvis(~wt, ~mpg, fill = ~hp) %>%
+  layer_points() %>%
+  scale_numeric("fill", range = c("green", "beige"))
+
+# Create a scale that will map factor(cyl) to a new range of colors: purple, blue, and green. 
+mtcars %>% ggvis(~wt, ~mpg, fill = ~factor(cyl)) %>%
+  layer_points() %>%
+  scale_nominal("fill", range = c("purple", "blue", "green"))
+
+###Adjust Any Visual Property
+# Add a scale that limits the range of opacity from 0.2 to 1. 
+mtcars %>% ggvis(x = ~wt, y = ~mpg, fill = ~factor(cyl), opacity = ~hp) %>%
+  layer_points() %>%
+  scale_numeric("opacity", range = c(0.2, 1))
+
+# Add a second scale that will expand the x axis to cover data values from 0 to 6.
+mtcars %>% ggvis(~wt, ~mpg, fill = ~disp) %>%
+  layer_points() %>%
+  scale_numeric("y", domain = c(0, NA)) %>%
+  scale_numeric("x", domain = c(0, 6))
+
+###Adjust Any Visual Property (2)
+# Add a second scale to set domain for x
+mtcars %>% ggvis(~wt, ~mpg, fill = ~disp) %>%
+  layer_points() %>%
+  scale_numeric("y", domain = c(0, NA)) %>%
+  scale_numeric("x", domain = c(0, 6))
+
+###"=" Versus ":="
+# Set the fill value to the color variable instead of mapping it, and see what happens
+mtcars$color <- c("red", "teal", "#cccccc", "tan")
+mtcars %>% ggvis(x = ~wt, y = ~mpg, fill := ~color) %>% layer_points()
+```
+

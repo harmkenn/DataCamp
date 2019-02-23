@@ -1,5 +1,5 @@
 ---
-title: "Intermediate R"
+title: "Data Visualization with ggplot2"
 author: "Ken Harmon"
 date: "`r format(Sys.time(), '%Y %B %d')`"
 output:

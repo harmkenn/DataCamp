@@ -440,6 +440,7 @@ fancyRpartPlot(tree)
 
 ###Classify With the Decision Tree
 # The train and test set are loaded into your workspace.
+test <- read.csv("test.csv")
 
 # Code from previous exercise
 set.seed(1)
@@ -473,6 +474,8 @@ fancyRpartPlot(pruned)
 
 ###Splitting Criterion
 # All packages, emails, train, and test have been pre-loaded
+train <- read.csv("trainsc.csv")
+test <- read.csv("testsc.csv")
 
 # Set random seed. Don't remove this line.
 set.seed(1)
@@ -499,6 +502,8 @@ acc_i
 
 ###Preprocess the Data
 # train and test are pre-loaded
+train <- read.csv("trainpd.csv")
+test <- read.csv("testpd.csv")
 
 # Store the Survived column of train and test in train_labels and test_labels
 train_labels <- train$Survived
@@ -573,6 +578,8 @@ which.max(accs)
 
 ###Creating the ROC Curve (1)
 # train and test are pre-loaded
+train <- read.csv("trainroc.csv")
+test <- read.csv("testroc.csv")
 
 # Set random seed. Don't remove this line
 set.seed(1)
@@ -600,16 +607,14 @@ probs <- predict(tree, test, type = "prob")[,2]
 # Load the ROCR library
 library(ROCR)
 
-# Make the prediction objects for both models: pred_t, pred_k
-pred_t <- prediction(probs_t, test$spam)
-pred_k <- prediction(probs_k, test$spam)
+# Make a prediction object: pred
+pred <- prediction(probs, test$income)
 
-# Make the performance objects for both models: perf_t, perf_k
-perf_t <- performance(pred_t, "tpr", "fpr")
-perf_k <- performance(pred_k, "tpr", "fpr")
+# Make a performance object: perf
+perf <- performance(pred, "tpr", "fpr")
 
-# Draw the ROC lines using draw_roc_lines()
-draw_roc_lines(tree = perf_t, knn = perf_k)
+# Plot this curve
+plot(perf)
 
 ###The Area Under the Curve
 # test and train are loaded into your workspace
@@ -631,21 +636,6 @@ perf <- performance(pred, "auc")
 # Print out the AUC
 print(perf@y.values[[1]])
 
-###Comparing the Methods
-# Load the ROCR library
-library(ROCR)
-
-# Make the prediction objects for both models: pred_t, pred_k
-pred_t <- prediction(probs_t, test$spam)
-pred_k <- prediction(probs_k, test$spam)
-
-# Make the performance objects for both models: perf_t, perf_k
-perf_t <- performance(pred_t, "tpr", "fpr")
-perf_k <- performance(pred_k, "tpr", "fpr")
-
-# Draw the ROC lines using draw_roc_lines()
-draw_roc_lines(tree = perf_t, knn = perf_k)
-
 ```
 
 ## Regression
@@ -655,6 +645,8 @@ draw_roc_lines(tree = perf_t, knn = perf_k)
 
 ###Simple Linear Regression: Your First Step!
 # The kang_nose dataset and nose_width_new are already loaded in your workspace.
+kang_nose <- readxl::read_xlsx("kang_nose.xlsx")
+nose_width_new <- data.frame("nose_width" = 250)
 
 # Plot nose length as function of nose width.
 plot(kang_nose, xlab = "nose width", ylab = "nose length")
@@ -704,6 +696,8 @@ summary(lm_kang)
 
 ###Another Take at Regression: Be Critical
 # world_bank_train and cgdp_afg is available for you to work with
+world_bank_train <- read.csv("world_bank_train.csv")
+cgdp_afg <- data.frame("cgdp"=413)
 
 # Plot urb_pop as function of cgdp
 plot(world_bank_train, 

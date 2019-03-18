@@ -738,7 +738,7 @@ predict(lm_wb, cgdp_afg)
 
 ###Going All-In With Predictors!
 # shop_data has been loaded in your workspace
-
+shop_data <- read.csv("shop_data.csv")
 # Add a plot: sales as a function of inventory. Is linearity plausible?
 plot(sales ~ sq_ft, shop_data)
 plot(sales ~ size_dist, shop_data)
@@ -752,7 +752,7 @@ summary(lm_shop)
 
 ###Are All Predictors Relevant?
 # shop_data, shop_new and lm_shop have been loaded in your workspace
-
+shop_new <- read.csv("shop_new.csv")
 # Plot the residuals in function of your fitted observations
 plot(lm_shop$fitted.values,  lm_shop$residuals, 
      xlab = "Fitted values", ylab = "Residuals")
@@ -768,6 +768,7 @@ predict(lm_shop, shop_new)
 
 ###Are All Predictors Relevant? Take 2!
 # choco_data has been loaded in your workspace
+choco_data <- read.csv("choco_data.csv")
 
 # Add a plot:  energy/100g as function of total size. Linearity plausible?
 plot(energy ~ protein, choco_data)
@@ -789,6 +790,8 @@ summary(lm_choco)
 
 ###Does Your Model Generalize?
 # world_bank_train, world_bank_test and lm_wb_log are pre-loaded
+world_bank_train <- read.csv("world_bank_train.csv")
+world_bank_test <- read.csv("world_bank_test.csv")
 
 # Build the log-linear model
 lm_wb_log <- lm(urb_pop ~ log(cgdp), data = world_bank_train)
@@ -859,13 +862,15 @@ points(world_bank_test$cgdp, test_output, col = "green")
 # world_bank_train and world_bank_test are pre-loaded
 # lm_wb and lm_wb_log have been trained on world_bank_train
 # The my_knn() function is available
+world_bank_test <- world_bank_test[2:3]
+
 
 # Define ranks to order the predictor variables in the test set
 ranks <- order(world_bank_test$cgdp)
 
 # Scatter plot of test set
-plot(world_bank_test, 
-     xlab = "GDP per Capita", ylab = "Percentage Urban Population")
+plot(world_bank_test, xlab = "GDP per Capita", ylab = "Percentage Urban Population")
+
 
 # Predict with simple linear model and add line
 test_output_lm <- predict(lm_wb, data.frame(cgdp = world_bank_test$cgdp))

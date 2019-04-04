@@ -792,6 +792,7 @@ summary(lm_choco)
 # world_bank_train, world_bank_test and lm_wb_log are pre-loaded
 world_bank_train <- read.csv("world_bank_train.csv")
 world_bank_test <- read.csv("world_bank_test.csv")
+world_bank_test <- world_bank_test[2:3]
 
 # Build the log-linear model
 lm_wb_log <- lm(urb_pop ~ log(cgdp), data = world_bank_train)
@@ -862,7 +863,7 @@ points(world_bank_test$cgdp, test_output, col = "green")
 # world_bank_train and world_bank_test are pre-loaded
 # lm_wb and lm_wb_log have been trained on world_bank_train
 # The my_knn() function is available
-world_bank_test <- world_bank_test[2:3]
+
 
 
 # Define ranks to order the predictor variables in the test set
@@ -902,6 +903,9 @@ sqrt(mean( (test_output_knn - world_bank_test$urb_pop) ^ 2))
 
 ###k-means: How Well Did You Do Earlier?
 # seeds and seeds_type are pre-loaded in your workspace
+seeds <- read.csv("seeds.csv")
+seeds_type <- read.csv("seeds_type.csv")
+seeds_type <- as.vector(seeds_type[[2]])
 
 # Set random seed. Don't remove this line.
 set.seed(100)
@@ -936,6 +940,7 @@ table(seeds_km_1$cluster, seeds_km_2$cluster)
 
 ###Making A Scree Plot!
 # The dataset school_result is pre-loaded
+school_result <- read.csv("school_result.csv")
 
 # Set random seed. Don't remove this line.
 set.seed(100)
@@ -962,7 +967,7 @@ plot(ratio_ss, type = "b", xlab = "k")
 
 ###Standardized vs Non-Standardized Clustering (1)
 # The dataset run_record has been loaded in your workspace
-
+run_record <- read.csv("run_record.csv")
 # Set random seed. Don't remove this line.
 set.seed(1)
 

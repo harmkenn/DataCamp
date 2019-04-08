@@ -16,10 +16,11 @@ editor_options:
 # {.tabset .tabset-fade}
 
 ```{r, echo=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 library(ggplot2)
 library(RColorBrewer)
 library(tidyverse)
+library(clValid)
 ```
 
 ## Background
@@ -1076,6 +1077,7 @@ table(run_km_sc$cluster, memb_complete)
 ###Clustering US States Based on Criminal Activity
 # Set random seed. Don't remove this line.
 set.seed(1)
+crime_data <- read.csv("crime_data.csv")
 
 # Scale the dataset: crime_data_sc
 crime_data_sc <- scale(crime_data)

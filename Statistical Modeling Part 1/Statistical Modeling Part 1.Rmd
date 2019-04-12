@@ -104,5 +104,13 @@ model_2 <- rpart(net~age+sex,dat=Runners,cp=.002)
 
 # Examine graph of model_2 (don't change)
 fmodel(model_2, ~ age + sex)
+
+## Will they run again?
+Ran_twice <- read.csv("Ran_twice.csv")
+# Create run_again_model
+run_again_model <- rpart(runs_again~age+sex+net,data=Ran_twice,cp=.005)
+
+# Visualize the model (don't change)
+fmodel(run_again_model, ~ age + net, data = Ran_twice)
 ```
 

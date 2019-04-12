@@ -15,8 +15,8 @@ editor_options:
 
 # {.tabset .tabset-fade}
 
-```{r, echo=FALSE}
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```{r, echo=TRUE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(ggplot2)
 library(tidyverse)
 library(mosaic)
@@ -35,7 +35,7 @@ https://www.datacamp.com/courses/statistical-modeling-in-r-part-1
 
 ## What is Statistical Modeling
 
-```{r}
+```{r ad}
 ## Accessing Data
 
 # Use data() to load Trucking_jobs
@@ -75,6 +75,12 @@ plot(Cost ~ Age, data = AARP)
 xyplot(Cost ~ Age, data = AARP)
 gf_point(Cost ~ Age, data = AARP)
 
+
+```
+
+## Designing, training, and evaluating models
+
+```{r DTEM}
 ## Modeling running times
 # Find the variable names in Runners 
 names(Runners)
@@ -90,7 +96,13 @@ fmodel(handicap_model_2)
 fmodel(handicap_model_3)
 
 ##Using the recursive partitioning model architecture
+# Load rpart
+library(rpart)
 
+# Build rpart model: model_2
+model_2 <- rpart(net~age+sex,dat=Runners,cp=.002)
+
+# Examine graph of model_2 (don't change)
+fmodel(model_2, ~ age + sex)
 ```
-
 

@@ -16,126 +16,24 @@ editor_options:
 # {.tabset .tabset-fade}
 
 
-```
-## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-```
-
-```
-## ✔ tibble  2.1.1     ✔ purrr   0.2.5
-## ✔ tidyr   0.8.2     ✔ dplyr   0.7.8
-## ✔ readr   1.3.1     ✔ stringr 1.3.1
-## ✔ tibble  2.1.1     ✔ forcats 0.3.0
+```r
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-```
-## ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
+
+```r
+library(ggplot2)
+library(tidyverse)
+library(mosaic)
+library(mosaicData)
+# Install devtools if necessary
+#install.packages("devtools")
+
+# Install statisticalModeling
+devtools::install_github("dtkaplan/statisticalModeling")
+library(statisticalModeling)
 ```
 
-```
-## Loading required package: lattice
-```
-
-```
-## Loading required package: ggformula
-```
-
-```
-## Loading required package: ggstance
-```
-
-```
-## 
-## Attaching package: 'ggstance'
-```
-
-```
-## The following objects are masked from 'package:ggplot2':
-## 
-##     geom_errorbarh, GeomErrorbarh
-```
-
-```
-## 
-## New to ggformula?  Try the tutorials: 
-## 	learnr::run_tutorial("introduction", package = "ggformula")
-## 	learnr::run_tutorial("refining", package = "ggformula")
-```
-
-```
-## Loading required package: mosaicData
-```
-
-```
-## Loading required package: Matrix
-```
-
-```
-## 
-## Attaching package: 'Matrix'
-```
-
-```
-## The following object is masked from 'package:tidyr':
-## 
-##     expand
-```
-
-```
-## 
-## The 'mosaic' package masks several functions from core packages in order to add 
-## additional features.  The original behavior of these functions should not be affected by this.
-## 
-## Note: If you use the Matrix package, be sure to load it BEFORE loading mosaic.
-```
-
-```
-## 
-## Attaching package: 'mosaic'
-```
-
-```
-## The following object is masked from 'package:Matrix':
-## 
-##     mean
-```
-
-```
-## The following objects are masked from 'package:dplyr':
-## 
-##     count, do, tally
-```
-
-```
-## The following object is masked from 'package:purrr':
-## 
-##     cross
-```
-
-```
-## The following object is masked from 'package:ggplot2':
-## 
-##     stat
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     binom.test, cor, cor.test, cov, fivenum, IQR, median,
-##     prop.test, quantile, sd, t.test, var
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     max, mean, min, prod, range, sample, sum
-```
-
-```
-## Skipping install of 'statisticalModeling' from a github remote, the SHA1 (4c5383d3) has not changed since last install.
-##   Use `force = TRUE` to force installation
-```
 
 ## Background
 
@@ -218,38 +116,41 @@ mosaic::mean(Cost~Sex, data = AARP)
 boxplot(Cost ~ Sex, data = AARP)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/ad-1.png)<!-- -->
 
 ```r
 bwplot(Cost ~ Sex, data = AARP)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-2.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/ad-2.png)<!-- -->
 
 ```r
 gf_boxplot(Cost ~ Sex, data = AARP)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-3.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/ad-3.png)<!-- -->
 
 ```r
 # Make a scatterplot using base, lattice, or ggplot2
 plot(Cost ~ Age, data = AARP)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-4.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/ad-4.png)<!-- -->
 
 ```r
 xyplot(Cost ~ Age, data = AARP)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-5.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/ad-5.png)<!-- -->
 
 ```r
 gf_point(Cost ~ Age, data = AARP)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-6.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/ad-6.png)<!-- -->
+
+## Designing, training, and evaluating models
+
 
 ```r
 ## Modeling running times
@@ -272,22 +173,21 @@ handicap_model_3 <- lm(net~age+sex, data = Runners)
 fmodel(handicap_model_1)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-7.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/DTEM-1.png)<!-- -->
 
 ```r
 fmodel(handicap_model_2)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-8.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/DTEM-2.png)<!-- -->
 
 ```r
 fmodel(handicap_model_3)
 ```
 
-![](Statistical_Modeling_Part_1_files/figure-html/unnamed-chunk-2-9.png)<!-- -->
+![](Statistical_Modeling_Part_1_files/figure-html/DTEM-3.png)<!-- -->
 
 ```r
 ##Using the recursive partitioning model architecture
 ```
-
 

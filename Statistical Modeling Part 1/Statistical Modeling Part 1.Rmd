@@ -112,5 +112,102 @@ run_again_model <- rpart(runs_again~age+sex+net,data=Ran_twice,cp=.005)
 
 # Visualize the model (don't change)
 fmodel(run_again_model, ~ age + net, data = Ran_twice)
+
+## From inputs to outputs
+
+# Display the variable names in the AARP data frame
+names(AARP)
+
+# Build a model: insurance_cost_model
+insurance_cost_model <- lm(Cost ~ Age + Sex + Coverage, data = AARP)
+
+# Construct a data frame: example_vals 
+example_vals <- data.frame(Age = 60, Sex = "F", Coverage = 200)
+
+# Predict insurance cost using predict()
+predict(insurance_cost_model, newdata = example_vals)
+
+# Load statisticalModeling
+library(statisticalModeling)
+
+# Calculate model output using evaluate_model()
+evaluate_model(insurance_cost_model, data = example_vals)
+
+##Extrapolation
+# Build a model: insurance_cost_model
+insurance_cost_model <- lm(Cost ~ Age + Sex + Coverage, data = AARP)
+
+# Create a data frame: new_inputs_1
+new_inputs_1 <- data.frame(Age = c(30, 90), Sex = c("F", "M"), 
+                           Coverage = c(0, 100))
+
+# Use expand.grid(): new_inputs_2
+new_inputs_2 <- expand.grid(Age = c(30, 90), Sex = c("F", "M"), 
+                            Coverage = c(0, 100))
+
+# Use predict() for new_inputs_1 and new_inputs_2
+predict(insurance_cost_model, newdata = new_inputs_1)
+predict(insurance_cost_model, newdata = new_inputs_2)
+
+# Use evaluate_model() for new_inputs_1 and new_inputs_2
+evaluate_model(insurance_cost_model, data = new_inputs_1)
+evaluate_model(insurance_cost_model, data = new_inputs_2)
+
+## Typical values of data
+
+# Evaluate insurance_cost_model
+evaluate_model(insurance_cost_model)
+
+# Use fmodel() to reproduce the graphic
+fmodel(insurance_cost_model, ~ Coverage + Age + Sex)
+
+# A new formula to highlight difference in sexes
+new_formula <- ~ Age + Sex + Coverage
+
+# Make the new plot (don't change)
+fmodel(insurance_cost_model, new_formula)
 ```
+
+## Assessing Prediction Performance
+
+```{r app}
+## Running experience
+Runners_100 <- read.csv("Runners_100.csv")
+
+# Build a model of net running time
+base_model <- lm(net ~ age + sex, data = Runners_100)
+
+# Evaluate base_model on the training data
+base_model_output <- predict(base_model, newdata = Runners_100)
+
+# Build the augmented model
+aug_model <- lm(net ~ age + sex + previous, data = Runners_100)
+
+# Evaluate aug_model on the training data
+aug_model_output <- predict(aug_model, newdata = Runners_100)
+
+# How much do the model outputs differ?
+mean((aug_model_output - base_model_output) ^ 2, na.rm = TRUE)
+
+## Prediction performance
+
+# Build and evaluate the base model on Runners_100
+base_model <- lm(net ~ age + sex, data = Runners_100)
+base_model_output <- predict(base_model, newdata = Runners_100)
+
+# Build and evaluate the augmented model on Runners_100
+aug_model <- lm(net ~ age + sex + previous, data = Runners_100)
+aug_model_output <- predict(aug_model, newdata = Runners_100)
+
+# Find the case-by-case differences
+base_model_differences <- with(Runners_100, net - base_model_output)
+aug_model_differences <- with(Runners_100, net - aug_model_output)
+
+# Calculate mean square errors
+mean(base_model_differences ^ 2)
+mean(aug_model_differences ^ 2)
+```
+
+
+
 

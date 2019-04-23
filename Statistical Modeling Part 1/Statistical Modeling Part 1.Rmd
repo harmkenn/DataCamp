@@ -15,7 +15,7 @@ editor_options:
 
 # {.tabset .tabset-fade}
 
-```{r, echo=TRUE}
+```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(ggplot2)
 library(tidyverse)
@@ -27,6 +27,7 @@ library(mosaicData)
 # Install statisticalModeling
 devtools::install_github("dtkaplan/statisticalModeling")
 library(statisticalModeling)
+
 ```
 
 ## Background
@@ -206,6 +207,37 @@ aug_model_differences <- with(Runners_100, net - aug_model_output)
 # Calculate mean square errors
 mean(base_model_differences ^ 2)
 mean(aug_model_differences ^ 2)
+
+## Where's the statistics
+
+# Add bogus column to CPS85 (don't change)
+CPS85$bogus <- rnorm(nrow(CPS85)) > 0
+
+# Make the base model
+base_model <- lm(wage ~ educ + sector + sex, data = CPS85)
+
+# Make the bogus augmented model
+aug_model <- lm(wage ~ educ + sector + sex + bogus, data = CPS85)
+
+# Find the MSE of the base model
+mean((CPS85$wage - predict(base_model, newdata = CPS85)) ^ 2)
+
+# Find the MSE of the augmented model
+mean((CPS85$wage - predict(aug_model, newdata = CPS85)) ^ 2)
+
+##Testing and training datasets
+
+# Generate a random TRUE or FALSE for each case in Runners_100
+Runners_100$training_cases <- rnorm(nrow(Runners_100)) > 0
+
+# Build base model net ~ age + sex with training cases
+base_model <- lm(net ~ age + sex, data = subset(Runners_100, training_cases))
+
+# Evaluate the model for the testing cases
+Preds <- evaluate_model(base_model, data = subset(Runners_100, !training_cases))
+
+# Calculate the MSE on the testing data
+with(data = Preds, mean((net - model_output)^2))
 ```
 
 

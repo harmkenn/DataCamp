@@ -1,7 +1,7 @@
 ---
 title: "Statstical Modeling Part 1"
 author: "Ken Harmon"
-date: "2019 April 23"
+date: "2019 May 02"
 output:
   html_document:  
     keep_md: true
@@ -419,9 +419,91 @@ mean((CPS85$wage - predict(aug_model, newdata = CPS85)) ^ 2)
 ```
 
 ```
-## [1] 19.64155
+## [1] 19.72338
 ```
 
+```r
+##Testing and training datasets
+
+# Generate a random TRUE or FALSE for each case in Runners_100
+Runners_100$training_cases <- rnorm(nrow(Runners_100)) > 0
+
+# Build base model net ~ age + sex with training cases
+base_model <- lm(net ~ age + sex, data = subset(Runners_100, training_cases))
+
+# Evaluate the model for the testing cases
+Preds <- evaluate_model(base_model, data = subset(Runners_100, !training_cases))
+
+# Calculate the MSE on the testing data
+with(data = Preds, mean((net - model_output)^2))
+```
+
+```
+## [1] 129.2437
+```
+
+```r
+## To add or not to add (an explanatory variable)?
+
+# The base model
+base_model <- lm(net ~ age + sex, data = Runners_100)
+
+# An augmented model adding previous as an explanatory variable
+aug_model <- lm(net ~ age + sex + previous, data = Runners_100)
+
+# Run cross validation trials on the two models
+trials <- cv_pred_error(base_model, aug_model)
+
+# Compare the two sets of cross-validated errors
+t.test(mse ~ model, data = trials)
+```
+
+```
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  mse by model
+## t = 1.6579, df = 7.6701, p-value = 0.1375
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -1.464441  8.761299
+## sample estimates:
+##  mean in group aug_model mean in group base_model 
+##                 144.2493                 140.6009
+```
+
+## Prediction of error for Categorical Variables
+
+
+```r
+## The maximum error rate
+
+# Build the null model with rpart()
+Runners$all_the_same <- 1 # null "explanatory" variable
+null_model <- rpart(start_position ~ all_the_same, data = Runners)
+
+# Evaluate the null model on training data
+null_model_output <- evaluate_model(null_model, data = Runners, type = "class")
+
+# Calculate the error rate
+with(data = null_model_output, mean(start_position != model_output, na.rm = TRUE))
+```
+
+```
+## [1] 0.5853618
+```
+
+```r
+# Generate a random guess...
+null_model_output$random_guess <- mosaic::shuffle(Runners$start_position)
+
+# ...and find the error rate
+with(data = null_model_output, mean(start_position != random_guess, na.rm = TRUE))
+```
+
+```
+## [1] 0.6523662
+```
 
 
 

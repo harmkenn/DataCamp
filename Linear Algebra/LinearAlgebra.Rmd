@@ -1,0 +1,104 @@
+---
+title: "Linear Algera for Data Science in R"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+# {.tabset .tabset-fade}
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+#install.packages("tidyverse") # run this line once in console to get package
+library(tidyverse)
+theme_set(theme_bw())
+```
+
+```{r load_data}
+# Use this R-Chunk to import all your datasets!
+
+```
+
+## Intro to Linear Algebra
+
+https://campus.datacamp.com/courses/linear-algebra-for-data-science-in-r/introduction-to-linear-algebra?ex=1
+
+### Motivations
+```{r motivations}
+x <- rep(1, 4)
+y <- seq(2, 8, by = 2)
+z <- c(1, 5, -2, 4)
+z[3] <- 7
+
+matrix(2, 3, 2)
+matrix(c(1, -1, 2, 3, 2, -2), nrow = 2, ncol = 3, byrow = TRUE)
+matrix(c(1, -1, 2, 3, 2, -2), nrow = 2, ncol = 3, byrow = FALSE)
+```
+### Creating Vecors in R
+
+```{r cvir}
+# Creating three 3's and four 4's, respectively
+rep(3, 3)
+rep(4, 4)
+
+# Creating a vector with the first three even numbers and the first three odd numbers
+seq(2, 6, by = 2)
+seq(1, 5, by = 2)
+
+# Re-creating the previous four vectors using the 'c' command
+c(3, 3, 3)
+c(4, 4, 4, 4)
+
+c(2, 4, 6)
+c(1, 3, 5)
+```
+### The Algebra of Vectors
+
+```{r aov}
+x <- seq(1,7,by=1)
+y <- seq(2,14, by=2)
+z <- c(1,1,2)
+
+# Add x to y and print
+print(x + y)
+
+# Multiply z by 2 and print
+print(2 * z)
+
+# Multiply x and y by each other and print
+print(x * y)
+
+# Add x to z, if possible, and print
+print(x + z)
+```
+
+
+
+## Original Dataset
+
+```{r tidy_data}
+# Use this R-Chunk to clean & wrangle your data!
+
+```
+
+## Data Visualization
+
+```{r plot_data}
+
+```
+
+
+
+
+## Conclusions
+

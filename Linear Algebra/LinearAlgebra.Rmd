@@ -82,6 +82,70 @@ print(x * y)
 print(x + z)
 ```
 
+## Creating Matrices in R
+
+```{r CMiR}
+# Create a matrix of all 1's and all 2's that are 2 by 3 and 3 by 2, respectively
+matrix(1, nrow = 2, ncol = 3)
+
+print(matrix(2, nrow = 3, ncol = 2))
+
+# Create a matrix B and changing the byrow designation.
+B <- matrix(c(1, 2, 3, 2), nrow = 2, ncol = 2, byrow = FALSE)
+B <- matrix(c(1, 2, 3, 2), nrow = 2, ncol = 2, byrow = TRUE)
+
+# Add A to the previously-created matrix B
+A <- matrix(1, nrow = 2, ncol = 2)
+A + B
+```
+## Matrix-Vector Operations
+
+```{r MVO}
+A <- matrix(c(4,0,0,1), nrow = 2, ncol = 2, byrow = T)
+b <- c(1,1)
+B <- matrix(c(1,0,0,2/3), nrow = 2, ncol = 2, byrow = T)
+
+# Multiply A by b
+A %*% b
+
+# Multiply B by b
+B %*% b
+
+A <- matrix(c(-1,0,0,1), nrow = 2, ncol = 2, byrow = T)
+b <- c(2,1)
+B <- matrix(c(1,0,0,-1), nrow = 2, ncol = 2, byrow = T)
+C <- matrix(c(-4,0,0,-2), nrow = 2, ncol = 2, byrow = T)
+
+# Multiply A by b
+A%*%b
+
+# Multiply B by b 
+B%*%b
+
+# Multiply C by b 
+C%*%b
+```
+
+### Matrix-Matrix Calulations
+
+```{r MMC}
+c <- sqrt(2)/2
+A <- matrix(c(c,c,-c,c), nrow=2, ncol = 2, byrow = F) #rotation of a 2-dimensional vector by 45 degrees counterclockwise
+b <- c(1,1)
+
+# Multiply A by B
+A%*%B
+
+# Multiply A on the right of B
+B%*%A
+
+# Multiply the product of A and B by the vector b
+A%*%B%*%b
+
+# Multiply A on the right of B, and then by the vector b
+B%*%A%*%b
+```
+
 
 
 ## Original Dataset

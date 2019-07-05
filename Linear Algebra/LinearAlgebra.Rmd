@@ -146,14 +146,91 @@ A%*%B%*%b
 B%*%A%*%b
 ```
 
+```{r Inv}
+A <- matrix(c(1,2,-1,2), nrow = 2, ncol = 2, byrow = T)
+
+# Take the inverse of the 2 by 2 identity matrix
+solve(diag(2))
+
+# Take the inverse of the matrix A
+Ainv <- solve(A)
+
+# Multiply A inverse by A
+Ainv%*%A
+
+# Multiply A by its inverse
+A%*%Ainv
+```
 
 
-## Original Dataset
+## Matrix-Vector Equations
 
-```{r tidy_data}
-# Use this R-Chunk to clean & wrangle your data!
+```{r MVE}
+wnba <- read.csv("wnba.csv")
+M <- data.frame(wnba)
+rownames(M) <- as.character((M[,1]))
+M <- M[,-1]
+
+# Print the Massey Matrix M
+
+print(M)
+
+wnbapd <- read.csv("wnbapd.csv")
+fdf <- data.frame(wnbapd)
+f <- data.frame(fdf[,2])
+rownames(f) <- as.character((fdf[,1]))
+colnames(f) <- c("Differential")
+
+# Print the vector of point differentials f 
+print(f)
+
+# Find the sum of the first column of M
+sum(M[1])
+
+# Find the sum of the vector f
+sum(f)
 
 ```
+
+```{r AMM}
+# Add a row of 1's
+M_2 <- rbind(M, 1)
+
+# Add a column of -1's 
+M_3 <- cbind(M_2, rep(-1, 13))
+
+# Change the element in the lower-right corner of the matrix
+M_3[13, 13] <- 1
+
+# Print M_3
+print(M_3)
+
+M_3 <- cbind(M, -1)
+M_2 <- rbind(M_3, 1)
+M<-M_2
+```
+
+```{r IMM}
+solve(M)
+```
+
+```{r 2017Wr}
+f <- rbind(f,0)
+f <- as.matrix(f)
+M <- as.matrix(M)
+# Solve for r and rename column
+r <- solve(M)%*%f
+colnames(r) <- "Rating"
+
+# Print r
+print(r)
+
+R<-data.frame(r)
+R<-cbind(rownames(R),R)
+R<-R[1:12,]
+arrange(R, -Rating)
+```
+
 
 ## Data Visualization
 

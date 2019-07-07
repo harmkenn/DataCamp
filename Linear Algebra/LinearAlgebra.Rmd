@@ -231,15 +231,93 @@ R<-R[1:12,]
 arrange(R, -Rating)
 ```
 
+```{r AttRMI}
+# Print M
+print(M)
 
-## Data Visualization
+# Find the rating vector the conventional way
+r <- solve(M)%*%f
+colnames(r) <- "Rating"
+print(r)
 
-```{r plot_data}
-
+# Find the rating vector using ginv
+r <- ginv(M)%*%f
+colnames(r) <- "Rating"
+print(r)
 ```
 
+## Eigenvalues and Eigenvectors
 
+```{r SDA}
+A<-matrix(c(2,0,0,2/3),nrow=2,ncol=2,byrow=F)
+# Multiply A by the given vector
+print(A%*%c(1,1))
+```
 
+```{r FE}
+A<-matrix(c(-1,0,0,2,7,0,4,12,-4),nrow=3,ncol=3,byrow=F)
 
-## Conclusions
+# Show that 7 is an eigenvalue for A
+A%*%c(0.2425356, 0.9701425, 0) - 7*c(0.2425356, 0.9701425, 0)
+
+# Show that -4 is an eigenvalue for A
+A%*%c(-0.3789810, -0.6821657, 0.6253186) - (-4)*c(-0.3789810, -0.6821657, 0.6253186)
+
+# Show that -1 is an eigenvalue for A
+A%*%c(1,0,0) - (-1)*c(1,0,0)
+```
+
+```{r SMEE}
+# Show that double an eigenvector is still an eigenvector
+A%*%((2)*c(0.2425356, 0.9701425, 0)) - 7*(2)*c(0.2425356, 0.9701425, 0)
+
+# Show half of an eigenvector is still an eigenvector
+A%*%((0.5)*c(0.2425356, 0.9701425, 0)) - 7*(0.5)*c(0.2425356, 0.9701425, 0)
+```
+
+```{r VME}
+A<-matrix(c(1,1,2,1),nrow=2,ncol=2,byrow=F)
+
+# Compute the eigenvalues of A and store in Lambda
+Lambda <- eigen(A)
+
+# Print eigenvalues
+print(Lambda$values[1])
+print(Lambda$values[2])
+
+# Verify that these numbers satisfy the conditions of being an eigenvalue
+det(Lambda$values[1]*diag(2) - A)
+det(Lambda$values[2]*diag(2) - A)
+```
+
+```{r CEV}
+# Find the eigenvectors of A and store them in Lambda
+Lambda <- eigen(A)
+
+# Print eigenvectors
+print(Lambda$vector[, 1])
+print(Lambda$vectors[, 2])
+
+# Verify that these eigenvectors & their associated eigenvalues satisfy Av - lambda v = 0
+Lambda$values[1]*Lambda$vectors[, 1] - A%*%Lambda$vectors[, 1]
+Lambda$values[2]*Lambda$vectors[, 2] - A%*%Lambda$vectors[, 2]
+```
+
+```{r MMAF}
+M <- data.matrix(M)
+
+# This code iterates mutation 1000 times
+x <- c(1, 0, 0, 0)
+for (j in 1:1000) {x <- M%*%x}
+
+# Print x
+print(x)
+
+# Print and scale the first eigenvector of M
+Lambda <- eigen(M)
+v1 <- Lambda$vectors[, 1]/sum(Lambda$vector[, 1])
+
+# Print v1
+print(v1)
+```
 

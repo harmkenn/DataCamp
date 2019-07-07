@@ -23,13 +23,11 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 # Use this R-Chunk to load all your libraries!
 #install.packages("tidyverse") # run this line once in console to get package
 library(tidyverse)
+library(ggfortify)
 theme_set(theme_bw())
 ```
 
-```{r load_data}
-# Use this R-Chunk to import all your datasets!
-
-```
+https://www.datacamp.com/courses/linear-algebra-for-data-science-in-r
 
 ## Intro to Linear Algebra
 
@@ -394,12 +392,19 @@ head(cbind(combine[, 1:4], prcomp(A)$x[, 1:2]))
 ```{r SDBPCA}
 # Scale columns 5-12 of combine
 B <- scale(combine[, 5:12])
+C <- combine[,5:12]
 
 # Print the first 6 rows of the data
 head(B)
 
 # Summarize the principal component analysis
 summary(prcomp(B))
+summary(prcomp(C))
+back <- cbind(combine[, 1:4], prcomp(B)$x[, 1:2])
+
+head(back)
+
+autoplot(prcomp(B), data=back, colour = "position" )
 ```
 
 ```{r SPCAr}

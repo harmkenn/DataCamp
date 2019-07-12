@@ -74,4 +74,18 @@ res.ind$cos2           # Quality of representation
 
 ## Predict using PCA
 
+```{r PuPCA}
+# Data for the supplementary individuals
+ind.sup <- decathlon2[24:27, 1:10]
+ind.sup[, 1:6]
+
+#coordinates
+ind.sup.coord <- predict(res.pca, newdata = ind.sup)
+ind.sup.coord[, 1:4]
+
+# Plot of active individuals
+p <- fviz_pca_ind(res.pca, repel = TRUE)
+# Add supplementary individuals
+fviz_add(p, ind.sup.coord, color ="blue")
+```
 

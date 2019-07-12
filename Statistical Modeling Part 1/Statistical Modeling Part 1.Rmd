@@ -21,6 +21,8 @@ library(ggplot2)
 library(tidyverse)
 library(mosaic)
 library(mosaicData)
+library(rpart)
+library(rpart.plot)
 # Install devtools if necessary
 #install.packages("devtools")
 
@@ -254,8 +256,15 @@ trials <- cv_pred_error(base_model, aug_model)
 t.test(mse ~ model, data = trials)
 ```
 
-## Prediction of error for Categorical Variables
+## Exploring data with models
+The maximum error rate
+The 10,000 runners in Runners can't all start at the same time. They line up behind the start (the line-up goes for about half a mile). There is a handful of elite runners who are given spots right at the start line, but everyone else gets in line.
 
+The start_position variable categorizes the enthusiasm of the runners based on how close they maneuvered to the start line before the gun. The variable is categorical, with levels "calm", "eager", and "mellow". The context for this exercise is whether other variables in Runners can account for start_position. Since the response variable start_time is categorical, rpart() is an appropriate architecture.
+
+In this exercise, you'll investigate the prediction performance of what is sometimes called the null model. This is a model with no explanatory variables, the equivalent to "I don't know what might explain that." The output of the null model will be the same for every input.
+
+You might think that random guessing of the output would be just about the same as the output of the null model. So you'll also look at the prediction performance of random guessing.
 ```{r PECV}
 ## The maximum error rate
 
@@ -276,5 +285,194 @@ null_model_output$random_guess <- mosaic::shuffle(Runners$start_position)
 with(data = null_model_output, mean(start_position != random_guess, na.rm = TRUE))
 ```
 
+A non-null model
+In the previous exercise, you saw that the null model performs better at classification than random guessing. The error rate you found for the null model was 58.5%, whereas random guessing gave an error of about 66%.
 
+In this exercise, you'll build a model of start_position as a function of age and sex.
+
+```{r nnm}
+# Train the model
+model <- rpart(start_position ~ age + sex, data = Runners, cp = 0.001)
+
+# Get model output with the training data as input
+model_output <- evaluate_model(model, data = Runners, type = "class")
+
+# Find the error rate
+with(data = model_output, mean(start_position != model_output, na.rm = TRUE))
+```
+
+A better model?
+In the previous two exercises, you compared a null model of start_position to a model using age and sex as explanatory variables. You didn't use cross validation, so the calculated error rates are biased to be low. In this exercise, you'll apply a simple cross validation test: splitting the data into training and testing sets.
+
+Your job is to evaluate the models on the testing sets and calculate the error rate.
+
+A hint about interpreting the results: it's often the case that explanatory variables that you think should contribute to prediction in fact do not. Being able to reliably discern when potential explanatory variables do not help is a key skill in modeling.
+
+```{r BM}
+Training_data <- read.csv("Training_data.csv")
+Testing_data <- read.csv("Testing_data.csv")
+# Train the models 
+null_model <- rpart(start_position ~ all_the_same, data = Training_data, cp = 0.001)
+model_1 <- rpart(start_position ~ age, data = Training_data, cp = 0.001)
+model_2 <- rpart(start_position ~ age + sex, data = Training_data, cp = 0.001)
+
+# Find the out-of-sample error rate
+null_output <- evaluate_model(null_model, data = Testing_data, type = "class")
+model_1_output <- evaluate_model(model_1, data = Testing_data, type = "class")
+model_2_output <- evaluate_model(model_2, data = Testing_data, type = "class")
+
+# Calculate the error rates
+null_rate <- with(data = null_output, mean(start_position != model_output, na.rm = TRUE))
+model_1_rate <- with(data = model_1_output, mean(start_position != model_output, na.rm = TRUE))
+model_2_rate <- with(data = model_2_output, mean(start_position != model_output, na.rm = TRUE))
+
+# Display the error rates
+null_rate
+model_1_rate
+model_2_rate
+```
+
+Evaluating a recursive partitioning model
+Consider this model formula about runners' net times: net ~ age + sex. The graphic shows the recursive partitioning for this formula. At the very bottom of the tree, in circles, are values for the response variable. At the very top is the root. (Modeling convention is to draw such trees upside down compared to the familiar botantical form, where the roots are at the bottom.)
+
+Training an rpart() model amounts to finding a set of divisions of the cases. Starting with all the cases at the root, the model divides them up into two groups: males on the left and females on the right. For males, a further split is made based on age: those younger than 50 and those 50 and over. Similarly, females are also split on age, with a cut-point of 46 years. So, for a 40 year-old female, the model output is 93 (with the same units as the response variable: minutes).
+
+The rpart() function uses a sensible default for when to stop dividing subgroups. You can exercise some control over this with the cp argument.
+
+Using the console, train a model with the same formula as used in the graphic, but with a value of cp = 0.001. Display the model as a tree. Your commands will look like this:
+
+model_2 <- rpart(___, data = Runners, cp = 0.001)
+prp(model_2, type = 3)
+The prp() function plots the model as a tree. type = 3 is one of several available formats. In this model (with cp = 0.001), what is the model output for a 58 year-old female?
+
+```{r erpm}
+model_2 <- rpart(net ~ age + sex, data = Runners, cp = 0.001)
+prp(model_2, type = 3)
+```
+
+Exploring birth-weight data
+The Birth_weight data frame comes from a study of the risks factors for being underweight at birth. Let's explore the factors that might be related to birth weight.
+
+One way to explore data is by building models with explanatory variables that you think are important, but in my view this is really confirmation rather than exploration. For instance, consider these models. The first involves explanatory variables that relate to social or lifestyle choices and the second involves biological variables. (Note: income is given as one of 8 levels, from poorest to richest. baby_wt is in ounces: 105 ounces is one kilogram.)
+
+model_1 <- rpart(baby_wt ~ smoke + income, 
+                 data = Birth_weight)
+model_2 <- rpart(baby_wt ~ mother_age + mother_wt, 
+                 data = Birth_weight)
+Build these models and look at them, e.g.:
+
+prp(model_1, type = 3)
+The results might suggest to you that some of these explanatory variables are important and others aren't.
+
+Now build a "bigger" model, combining all of those variables. Based on this "bigger" model, interpret the relationship among the explanatory variables as they relate to baby_wt. Select the single true statement from among these:
+
+```{r EbwD}
+model_1 <- rpart(baby_wt ~ smoke + income, data = Birth_weight)
+model_2 <- rpart(baby_wt ~ mother_age + mother_wt, data = Birth_weight)
+prp(model_1, type = 3)
+prp(model_2, type=3)
+
+model_3 <- rpart(baby_wt ~ smoke + income +mother_age + mother_wt, data = Birth_weight)
+prp(model_3, type = 3)
+```
+
+Exploring more broadly
+Sometimes it makes sense just to roll the dice and see what comes up. In the context of modeling, this means throwing a big set of potential explanatory variables into a model and seeing if the process of model training finds something of interest. (Only the rpart() architecture provides an opportunity to automatically choose a subset of the explanatory variables. lm() will put every variable you give it into the model.)
+
+Let's return to Birth_weight and train a recursive partitioning model with the formula baby_wt ~ . The single period to the right of the tilde is shorthand for "use all the other variables in the data." In training the model, rpart() will partition the cases using the single most effective explanatory variable, and use the same logic to subdivide groups. (That's what the "recursive" means in recursive partitioning: go through the process of building a model for each subgroup.)
+
+In the console, train the model baby_wt ~ . on the Birth_weight data and plot the model tree using prp(your_model, type = 3).
+
+You'll see that gestation is identified as an important variable. That's not surprising, since that's the natural pattern: babies get bigger the longer they are in the womb.
+
+Is smoking related to gestation period? Explore using models like gestation ~ . - baby_wt. (This means "explain gestation by all the other variables except baby weight.")
+
+Choose the statement below that's supported by your explorations:
+
+```{r EMB}
+model_all <- rpart(baby_wt ~ . , data = Birth_weight)
+prp(model_all, type = 3)
+
+model_3 <- rpart(gestation ~ ., data = Birth_weight)
+prp(model_3, type = 3)
+```
+
+# Covariate and effect size
+
+House prices
+Your employer, a real estate firm, wants you to model the value of various amenities in houses. Today's assignment is to calculate the value of a fireplace. For this purpose, they have provided you with a dataset, Houses_for_sale.
+
+A newcomer to modeling might assume that the way to address this question is with a simple model: price ~ fireplaces. Let's start there.
+
+As you'll see, a covariate can make a big difference!
+
+```{r Hp}
+# Train the model price ~ fireplaces
+simple_model <- lm(price ~ fireplaces, data = Houses_for_sale)
+
+# Evaluate simple_model
+evaluate_model(simple_model) #House price with and without a fireplace
+
+# Calculate the difference in model price
+naive_worth <- 238522.7 - 171823.9
+
+# Train another model including living_area
+sophisticated_model <-lm(price ~ fireplaces + living_area, data = Houses_for_sale)
+
+# Evaluate that model
+evaluate_model(sophisticated_model)
+
+# Find price difference for fixed living_area
+sophisticated_worth <- 242319.5 - 233357.1
+```
+
+Crime and poverty
+The data frame Crime gives some FBI statistics on crime in the various US states in 1960.
+
+The variable R gives the crime rate in each state.
+The variable X gives the number of families with low income (i.e. less than half the median).
+The variable W gives the average assets of families in the state.
+You're going to build separate models R ~ X and R ~ W to estimate what the effect on the crime rate is of each of those variables. Then you'll construct R ~ X + W, using each of the explanatory variables as a covariate for the other.
+
+```{r Cap}
+# Train model_1 and model_2
+model_1 <- lm(R ~ X, data = Crime)
+model_2 <- lm(R ~ W, data = Crime)
+
+# Evaluate each model...
+evaluate_model(model_1)
+evaluate_model(model_2)
+
+# ...and calculate the difference in output for each
+change_with_X <- 89.46721 - 106.82223
+change_with_W <- 103.70777 - 68.32909
+
+# Train model_3 using both X and W as explanatory variables
+model_3 <- lm(R ~ X + W, data = Crime)
+
+# Evaluate model_3
+evaluate_model(model_3)
+
+# Find the difference in output for each of X and W
+change_with_X_holding_W_constant <- 228.50366 - 134.86434
+change_with_W_holding_X_constant <- 134.86434 - 31.03422
+```
+
+Equal pay?
+Gender pay equity is a matter of considerable concern. That's the setting for this exercise. Keep in mind that the issue is complicated and the data for this exercise are very limited, so don't draw broad conclusions. Instead, focus on the methods: how does the introduction of covariates change the story told by the models?
+
+You'll be working with data (Trucking_jobs) from a trucking company, giving information about the earnings of 129 employees. The primary interest is whether earnings differ by sex.
+
+Potential covariates are:
+
+Simple personal information: age and hiredyears.
+Type of work done, as represented by the person's job title.
+You will build five models of earnings using a linear model architecture. The first has no covariates. Others include each of the covariates singly and the final one includes all of the covariates.
+
+earnings ~ sex
+earnings ~ sex + age
+earnings ~ sex + hiredyears
+earnings ~ sex + title
+earnings ~ sex + age + hiredyears + title
+In Statistical Modeling in R (Part 2), we'll introduce techniques for streamlining this process.
 

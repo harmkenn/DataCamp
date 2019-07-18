@@ -476,3 +476,103 @@ earnings ~ sex + title
 earnings ~ sex + age + hiredyears + title
 In Statistical Modeling in R (Part 2), we'll introduce techniques for streamlining this process.
 
+```{r Ep}
+# Train the five models
+model_1 <- lm(earnings ~ sex, data = Trucking_jobs)
+model_2 <- lm(earnings ~ sex + age, data = Trucking_jobs)
+model_3 <- lm(earnings ~ sex + hiredyears, data = Trucking_jobs)
+model_4 <- lm(earnings ~ sex + title, data = Trucking_jobs)
+model_5 <- lm(earnings ~ sex + age + hiredyears + title, data = Trucking_jobs)
+
+# Evaluate each model...
+evaluate_model(model_1)
+evaluate_model(model_2, age = 34)
+evaluate_model(model_3, hiredyears = 2)
+evaluate_model(model_4, title = "CUST SVC REP")
+evaluate_model(model_5, age = 34, hiredyears = 2,
+               title = "CUST SVC REP")
+
+# ...and calculate the gender difference in earnings 
+diff_1 <- 40236.35 - 35501.25
+diff_2 <- 35159.81 - 37514.13
+diff_3 <- 34369.26 - 37999.29 
+diff_4 <- 32968.66 - 32636.32
+diff_5 <- 31105.74 - 31090.46
+```
+
+Sex and death
+This exercise deals with the cost of life insurance. Data are from the AARP dataset in the statisticalModeling package.
+
+The cost of life insurance changes as a person ages. It also (usually) depends on the person's sex, since life expectancy for women in most countries is greater than that for men. And, of course, it depends on the coverage, the amount of life insurance bought.
+
+Your goal in this exercise is to find the effect size of Age, or Sex, and of Coverage. Keep in mind that the effect size for each variable is calculated holding each of the other explanatory variables constant.
+
+In the console:
+
+Train a linear model Cost ~ Age + Sex + Coverage.
+Use evaluate_model() to see the model output for several values of the inputs.
+Use effect_size() to measure how a change in the input value changes the output. Do this for each of Age, Sex and Coverage. (Remember, effect_size() takes two arguments: the model and a formula indicating which variable to vary when looking at the model output, e.g. ~ Age to get the effect size of Age on the model's response variable.)
+Which of these statements are true?
+
+The effect size of Age is a rate, while for Sex it's a difference.
+A change in Coverage from 50 to 75 corresponds to an increase in Cost of roughly 1.80 USD/month.
+Cost is greater for men than women.
+A person aging from 55 to 65 will see a change in Cost of 33 USD/month.
+The natural units of the effect size of Coverage are USD/month per USD, or more simply, 1/month.
+
+```{r Sad}
+model <- lm(Cost ~ Age + Sex, data = AARP)
+evaluate_model(model_1)
+effect_size(model_1, ~age)
+effect_size(model_1, ~sex)
+effect_size(model_1, ~.,  age = c(55, 65))
+effect_size(model_1, ~Cost,)
+
+effect_size(model, ~ Age)
+effect_size(model, ~ Sex)
+```
+
+How do GPAs compare?
+The performance of university and high-school students in the US are often summarized by a "gradepoint average" (GPA). The grade that a student earns in each course is translated to a numerical scale called a gradepoint: 4.0 is at the high end (corresponding to an "A") and 0 is at the low end (a fail).
+
+The GPA calculation is done, of course, by taking a student's gradepoints and averaging. But this is not the only way to do it. gpa_mod_1 in the editor shows a gradepoint average calculation using a linear model. The data, College_grades, give the grades in each course taken by each of 400+ students at an actual college in the midwest US. sid is the student's ID number. The formula gradepoint ~ sid can be read, "gradepoint is explained by who the student is."
+
+Evaluating the model for students "S32115" and "S32262" shows that they have very similar gradepoint averages: 3.66 and 3.33, respectively.
+
+The effect_size() calculation compares two levels of the inputs. You could get this result through simple subtraction of the evaluated model values. By default, effect_size() picks the levels to compare, but you can override this by providing specific evaluation level(s) of explanatory variables (e.g. sid = "S32115") and the to argument (e.g. to = "S32262").
+
+```{r GPAc}
+# Calculating the GPA 
+gpa_mod_1 <- lm(gradepoint ~ sid, data = College_grades)
+
+# The GPA for two students
+evaluate_model(gpa_mod_1, sid = c("S32115", "S32262"))
+
+# Use effect_size()
+effect_size(gpa_mod_1, ~ sid)
+
+# Specify from and to levels to compare
+effect_size(gpa_mod_1, ~ sid, sid = "S32115", to = "S32262")
+
+# A better model?
+gpa_mod_2 <- lm(gradepoint ~ sid + dept + level, data = College_grades)
+
+# Find difference between the same two students as before
+effect_size(gpa_mod_2, ~ sid, sid = "S32115", to = "S32262")
+```
+
+Housing Units
+Variables often have units: age is in years, price is in dollars or euros or renminbi, etc. In the Houses_for_sale data, the unit for price is dollars, for land_value it's also dollars, and for living_area it's square feet. fireplaces is a pure number, without units.
+
+In this exercise, you'll find the units of effect sizes. For quantitative explanatory variables, effect sizes always have the unit of the response variable divided by the unit of the explanatory variable.
+
+Using the Houses_for_sale data, build an lm() model of house price versus living_area, land_value, and fireplaces (all together).
+
+Which of these statements is true?
+
+```{r HU}
+model <- lm(price~living_area + land_value + fireplaces, data = Houses_for_sale)
+effect_size(model, ~ land_value)
+effect_size(model, ~ Sex)
+```
+

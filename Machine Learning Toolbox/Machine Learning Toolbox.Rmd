@@ -1,0 +1,324 @@
+---
+title: "Statstical Modeling Part 1"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+editor_options: 
+  chunk_output_type: console
+---
+
+# {.tabset .tabset-fade}
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(caret)
+library(MASS) #for the Boston dataset
+library(mlbench) # for the Sonar dataset
+```
+
+## Background
+
+https://campus.datacamp.com/courses/machine-learning-toolbox/regression-models-fitting-them-and-evaluating-their-performance?ex=1#
+
+http://topepo.github.io/caret/index.html
+
+## Regression models:
+
+In-sample error
+
+
+```{r ISE}
+# Fit a model to the mtcars data
+data(mtcars)
+model <- lm(mpg ~ hp, mtcars[1:20, ])
+
+# Predict in-sample
+predicted <- predict(model, mtcars[1:20, ], type = "response")
+
+# Calculate RMSE
+actual <- mtcars[1:20, "mpg"]
+sqrt(mean((predicted - actual) ^ 2))
+```
+
+In-sample RMSE for linear regression on diamonds
+As you saw in the video, included in the course is the diamonds dataset, which is a classic dataset from the ggplot2 package. The dataset contains physical attributes of diamonds as well as the price they sold for. One interesting modeling challenge is predicting diamond price based on their attributes using something like a linear regression.
+
+Recall that to fit a linear regression, you use the lm() function in the following format:
+
+mod <- lm(y ~ x, my_data)
+To make predictions using mod on the original data, you call the predict() function:
+
+pred <- predict(mod, my_data)
+
+```{r isrmse}
+# Fit lm model: model
+data("diamonds")
+model <- lm(price ~ ., diamonds)
+
+# Predict on full data: p
+p <- predict(model, diamonds, type = "response")
+
+# Compute errors: error
+actual <- diamonds$price
+error <- p - actual
+
+# Calculate RMSE
+sqrt(mean((p - actual) ^ 2))
+```
+
+Out-of-sample error
+
+```{r oose}
+# Fit a model to the mtcars data
+data(mtcars)
+model <- lm(mpg ~ hp, mtcars[1:20, ])
+
+# Predict in-sample
+predicted <- predict(model, mtcars[21:32, ], type = "response")
+
+# Calculate RMSE
+actual <- mtcars[21:32, "mpg"]
+sqrt(mean((predicted - actual) ^ 2))
+```
+
+Randomly order the data frame
+One way you can take a train/test split of a dataset is to order the dataset randomly, then divide it into the two sets. This ensures that the training set and test set are both random samples and that any biases in the ordering of the dataset (e.g. if it had originally been ordered by price or size) are not retained in the samples we take for training and testing your models. You can think of this like shuffling a brand new deck of playing cards before dealing hands.
+
+First, you set a random seed so that your work is reproducible and you get the same random split each time you run your script:
+
+set.seed(42)
+Next, you use the sample() function to shuffle the row indices of the diamonds dataset. You can later use these indices to reorder the dataset.
+
+rows <- sample(nrow(diamonds))
+Finally, you can use this random vector to reorder the diamonds dataset:
+
+diamonds <- diamonds[rows, ]
+
+```{r scramble}
+# Set seed
+set.seed(42)
+
+# Shuffle row indices: rows
+rows <- sample(nrow(diamonds))
+
+# Randomly order data
+shuffled_diamonds <- diamonds[rows, ]
+```
+
+Try an 80/20 split
+Now that your dataset is randomly ordered, you can split the first 80% of it into a training set, and the last 20% into a test set. You can do this by choosing a split point approximately 80% of the way through your data:
+
+split <- round(nrow(mydata) * .80)
+You can then use this point to break off the first 80% of the dataset as a training set:
+
+mydata[1:split, ]
+And then you can use that same point to determine the test set:
+
+mydata[(split + 1):nrow(mydata), ]
+
+```{r split}
+# Determine row to split on: split
+split <- round(nrow(shuffled_diamonds) * .80)
+
+# Create train
+train <- shuffled_diamonds[1:split, ]
+
+# Create test
+test <- shuffled_diamonds[(split + 1):nrow(diamonds), ]
+```
+
+Predict on test set
+Now that you have a randomly split training set and test set, you can use the lm() function as you did in the first exercise to fit a model to your training set, rather than the entire dataset. Recall that you can use the formula interface to the linear regression function to fit a model with a specified target variable using all other variables in the dataset as predictors:
+
+mod <- lm(y ~ ., training_data)
+You can use the predict() function to make predictions from that model on new data. The new dataset must have all of the columns from the training data, but they can be in a different order with different values. Here, rather than re-predicting on the training set, you can predict on the test set, which you did not use for training the model. This will allow you to determine the out-of-sample error for the model in the next exercise:
+
+p <- predict(model, new_data)
+
+```{r pots}
+# Fit lm model on train: model
+model <- lm(price ~ ., train)
+
+# Predict on test: p
+p <- predict(model, test)
+```
+
+Calculate test set RMSE by hand
+Now that you have predictions on the test set, you can use these predictions to calculate an error metric (in this case RMSE) on the test set and see how the model performs out-of-sample, rather than in-sample as you did in the first exercise. You first do this by calculating the errors between the predicted diamond prices and the actual diamond prices by subtracting the predictions from the actual values.
+
+Once you have an error vector, calculating RMSE is as simple as squaring it, taking the mean, then taking the square root:
+
+sqrt(mean(error^2))
+
+```{r CRMSE}
+# Compute errors: error
+error <- p - test[["price"]]
+
+# Calculate RMSE
+sqrt(mean(error^2))
+
+# Compute errors: error
+error <- p - test$price
+
+# Calculate RMSE
+sqrt(mean(error^2))
+```
+
+10-fold cross-validation
+As you saw in the video, a better approach to validating models is to use multiple systematic test sets, rather than a single random train/test split. Fortunately, the caret package makes this very easy to do:
+
+model <- train(y ~ ., my_data)
+caret supports many types of cross-validation, and you can specify which type of cross-validation and the number of cross-validation folds with the trainControl() function, which you pass to the trControl argument in train():
+
+model <- train(
+  y ~ ., 
+  my_data,
+  method = "lm",
+  trControl = trainControl(
+    method = "cv", 
+    number = 10,
+    verboseIter = TRUE
+  )
+)
+It's important to note that you pass the method for modeling to the main train() function and the method for cross-validation to the trainControl() function.
+
+```{r Tfcv}
+# Fit lm model using 10-fold CV: model
+model <- train(price ~ .,diamonds, method = "lm", trControl = trainControl(method = "cv",number = 10, verboseIter = TRUE))
+
+# Print model to console
+model
+```
+
+5-fold cross-validation
+In this course, you will use a wide variety of datasets to explore the full flexibility of the caret package. Here, you will use the famous Boston housing dataset, where the goal is to predict median home values in various Boston suburbs.
+
+You can use exactly the same code as in the previous exercise, but change the dataset used by the model:
+
+model <- train(
+  medv ~ ., 
+  Boston, # <- new!
+  method = "lm",
+  trControl = trainControl(
+    method = "cv", 
+    number = 10,
+    verboseIter = TRUE
+  )
+)
+Next, you can reduce the number of cross-validation folds from 10 to 5 using the number argument to the trainControl() argument:
+
+trControl = trainControl(
+  method = "cv", 
+  number = 5,
+  verboseIter = TRUE
+)
+
+```{r ffcv}
+# Fit lm model using 10-fold CV: model
+model <- train(medv ~ .,Boston, method = "lm", trControl = trainControl(method = "cv",number = 5, verboseIter = TRUE))
+
+# Print model to console
+model
+```
+
+5 x 5-fold cross-validation
+You can do more than just one iteration of cross-validation. Repeated cross-validation gives you a better estimate of the test-set error. You can also repeat the entire cross-validation procedure. This takes longer, but gives you many more out-of-sample datasets to look at and much more precise assessments of how well the model performs.
+
+One of the awesome things about the train() function in caret is how easy it is to run very different models or methods of cross-validation just by tweaking a few simple arguments to the function call. For example, you could repeat your entire cross-validation procedure 5 times for greater confidence in your estimates of the model's out-of-sample accuracy, e.g.:
+
+trControl = trainControl(
+  method = "repeatedcv", 
+  number = 5,
+  repeats = 5, 
+  verboseIter = TRUE
+)
+
+```{r fbffcv}
+# Fit lm model using 5 x 5-fold CV: model
+model <- train(
+  medv ~ ., 
+  Boston,
+  method = "lm",
+  trControl = trainControl(
+    method = "repeatedcv", 
+    number = 5,
+    repeats = 5, 
+    verboseIter = TRUE
+  )
+)
+
+# Print model to console
+model
+```
+
+Making predictions on new data
+Finally, the model you fit with the train() function has the exact same predict() interface as the linear regression models you fit earlier in this chapter.
+
+After fitting a model with train(), you can simply call predict() with new data, e.g:
+
+predict(my_model, new_data)
+
+```{r mpnd}
+# Predict on full Boston dataset
+predict(model, Boston)
+```
+
+## Classification Models
+
+Try a 60/40 split
+As you saw in the video, you'll be working with the Sonar dataset in this chapter, using a 60% training set and a 40% test set. We'll practice making a train/test split one more time, just to be sure you have the hang of it. Recall that you can use the sample() function to get a random permutation of the row indices in a dataset, to use when making train/test splits, e.g.:
+
+n_obs <- nrow(my_data)
+permuted_rows <- sample(n_obs)
+And then use those row indices to randomly reorder the dataset, e.g.:
+
+my_data <- my_data[permuted_rows, ]
+Once your dataset is randomly ordered, you can split off the first 60% as a training set and the last 40% as a test set.
+
+```{r t60/40 split}
+data(Sonar)
+
+# Get the number of observations
+n_obs <- nrow(Sonar)
+
+# Shuffle row indices: permuted_rows
+permuted_rows <- sample(n_obs)
+
+# Randomly order data: Sonar
+Sonar_shuffled <- Sonar[permuted_rows, ]
+
+# Identify row to split on: split
+split <- round(n_obs * 0.6)
+
+# Create train
+train <- Sonar_shuffled[1:split, ]
+
+# Create test
+test <- Sonar_shuffled[(split + 1):n_obs, ]
+
+nrow(train)/nrow(Sonar)
+```
+
+Fit a logistic regression model
+Once you have your random training and test sets you can fit a logistic regression model to your training set using the glm() function. glm() is a more advanced version of lm() that allows for more varied types of regression models, aside from plain vanilla ordinary least squares regression.
+
+Be sure to pass the argument family = "binomial" to glm() to specify that you want to do logistic (rather than linear) regression. For example:
+
+glm(Target ~ ., family = "binomial", dataset)
+Don't worry about warnings like glm.fit: algorithm did not converge or glm.fit: fitted probabilities numerically 0 or 1 occurred. These are common on smaller datasets and usually don't cause any issues. They typically mean your dataset is perfectly separable, which can cause problems for the math behind the model, but R's glm() function is almost always robust enough to handle this case with no problems.
+
+Once you have a glm() model fit to your dataset, you can predict the outcome (e.g. rock or mine) on the test set using the predict() function with the argument type = "response":
+
+predict(my_model, test, type = "response")
+
+```{r flrm}
+
+```
+

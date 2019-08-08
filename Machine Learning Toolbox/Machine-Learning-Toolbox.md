@@ -1,7 +1,7 @@
 ---
-title: "Statstical Modeling Part 1"
+title: "Machine Learning Toolbox"
 author: "Ken Harmon"
-date: "2019 July 18"
+date: "2019 August 08"
 output:
   html_document:  
     keep_md: true
@@ -674,6 +674,1404 @@ Don't worry about warnings like glm.fit: algorithm did not converge or glm.fit: 
 Once you have a glm() model fit to your dataset, you can predict the outcome (e.g. rock or mine) on the test set using the predict() function with the argument type = "response":
 
 predict(my_model, test, type = "response")
+
+
+```r
+# Fit glm model: model
+model <- glm(Class ~ ., family = "binomial", train)
+
+# Predict on test: p
+p <- predict(model, test, type = "response")
+```
+
+Calculate a confusion matrix
+As you saw in the video, a confusion matrix is a very useful tool for calibrating the output of a model and examining all possible outcomes of your predictions (true positive, true negative, false positive, false negative).
+
+Before you make your confusion matrix, you need to "cut" your predicted probabilities at a given threshold to turn probabilities into a factor of class predictions. Combine ifelse() with factor() as follows:
+
+pos_or_neg <- ifelse(probability_prediction > threshold, positive_class, negative_class)
+p_class <- factor(pos_or_neg, levels = levels(test_values))
+confusionMatrix() in caret improves on table() from base R by adding lots of useful ancillary statistics in addition to the base rates in the table. You can calculate the confusion matrix (and the associated statistics) using the predicted outcomes as well as the actual outcomes, e.g.:
+
+confusionMatrix(p_class, test_values)
+
+
+```r
+# If p exceeds threshold of 0.5, M else R: m_or_r
+m_or_r <- ifelse(p > .5, "M", "R")
+
+# Convert to factor: p_class
+p_class <- factor(m_or_r, levels = levels(test[["Class"]]))
+
+# Create confusion matrix
+confusionMatrix(p_class, test$Class)
+```
+
+```
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  M  R
+##          M  7 31
+##          R 32 13
+##                                           
+##                Accuracy : 0.241           
+##                  95% CI : (0.1538, 0.3473)
+##     No Information Rate : 0.5301          
+##     P-Value [Acc > NIR] : 1               
+##                                           
+##                   Kappa : -0.5258         
+##                                           
+##  Mcnemar's Test P-Value : 1               
+##                                           
+##             Sensitivity : 0.17949         
+##             Specificity : 0.29545         
+##          Pos Pred Value : 0.18421         
+##          Neg Pred Value : 0.28889         
+##              Prevalence : 0.46988         
+##          Detection Rate : 0.08434         
+##    Detection Prevalence : 0.45783         
+##       Balanced Accuracy : 0.23747         
+##                                           
+##        'Positive' Class : M               
+## 
+```
+
+Try another threshold
+In the previous exercises, you used a threshold of 0.50 to cut your predicted probabilities to make class predictions (rock vs mine). However, this classification threshold does not always align with the goals for a given modeling problem.
+
+For example, pretend you want to identify the objects you are really certain are mines. In this case, you might want to use a probability threshold of 0.90 to get fewer predicted mines, but with greater confidence in each prediction.
+
+The code pattern for cutting probabilities into predicted classes, then calculating a confusion matrix, was shown in Exercise 7 of this chapter.
+
+
+```r
+# If p exceeds threshold of 0.9, M else R: m_or_r
+m_or_r <- ifelse(p > .9, "M", "R")
+
+# Convert to factor: p_class
+p_class <- factor(m_or_r, levels = levels(test[["Class"]]))
+
+# Create confusion matrix
+confusionMatrix(p_class, test$Class)
+```
+
+```
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  M  R
+##          M  7 31
+##          R 32 13
+##                                           
+##                Accuracy : 0.241           
+##                  95% CI : (0.1538, 0.3473)
+##     No Information Rate : 0.5301          
+##     P-Value [Acc > NIR] : 1               
+##                                           
+##                   Kappa : -0.5258         
+##                                           
+##  Mcnemar's Test P-Value : 1               
+##                                           
+##             Sensitivity : 0.17949         
+##             Specificity : 0.29545         
+##          Pos Pred Value : 0.18421         
+##          Neg Pred Value : 0.28889         
+##              Prevalence : 0.46988         
+##          Detection Rate : 0.08434         
+##    Detection Prevalence : 0.45783         
+##       Balanced Accuracy : 0.23747         
+##                                           
+##        'Positive' Class : M               
+## 
+```
+
+
+```r
+# If p exceeds threshold of 0.9, M else R: m_or_r
+m_or_r <- ifelse(p > .1, "M", "R")
+
+# Convert to factor: p_class
+p_class <- factor(m_or_r, levels = levels(test[["Class"]]))
+
+# Create confusion matrix
+confusionMatrix(p_class, test$Class)
+```
+
+```
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  M  R
+##          M  7 31
+##          R 32 13
+##                                           
+##                Accuracy : 0.241           
+##                  95% CI : (0.1538, 0.3473)
+##     No Information Rate : 0.5301          
+##     P-Value [Acc > NIR] : 1               
+##                                           
+##                   Kappa : -0.5258         
+##                                           
+##  Mcnemar's Test P-Value : 1               
+##                                           
+##             Sensitivity : 0.17949         
+##             Specificity : 0.29545         
+##          Pos Pred Value : 0.18421         
+##          Neg Pred Value : 0.28889         
+##              Prevalence : 0.46988         
+##          Detection Rate : 0.08434         
+##    Detection Prevalence : 0.45783         
+##       Balanced Accuracy : 0.23747         
+##                                           
+##        'Positive' Class : M               
+## 
+```
+
+Plot an ROC curve
+As you saw in the video, an ROC curve is a really useful shortcut for summarizing the performance of a classifier over all possible thresholds. This saves you a lot of tedious work computing class predictions for many different thresholds and examining the confusion matrix for each.
+
+My favorite package for computing ROC curves is caTools, which contains a function called colAUC(). This function is very user-friendly and can actually calculate ROC curves for multiple predictors at once. In this case, you only need to calculate the ROC curve for one predictor, e.g.:
+
+colAUC(predicted_probabilities, actual, plotROC = TRUE)
+The function will return a score called AUC (more on that later) and the plotROC = TRUE argument will return the plot of the ROC curve for visual inspection.
+
+
+```r
+# Predict on test: p
+p <- predict(model, test, type = "response")
+
+# Make ROC curve
+colAUC(p, test$Class, plotROC = TRUE)
+```
+
+![](Machine-Learning-Toolbox_files/figure-html/PROCC-1.png)<!-- -->
+
+```
+##              [,1]
+## M vs. R 0.8161422
+```
+
+Customizing trainControl
+As you saw in the video, area under the ROC curve is a very useful, single-number summary of a model's ability to discriminate the positive from the negative class (e.g. mines from rocks). An AUC of 0.5 is no better than random guessing, an AUC of 1.0 is a perfectly predictive model, and an AUC of 0.0 is perfectly anti-predictive (which rarely happens).
+
+This is often a much more useful metric than simply ranking models by their accuracy at a set threshold, as different models might require different calibration steps (looking at a confusion matrix at each step) to find the optimal classification threshold for that model.
+
+You can use the trainControl() function in caret to use AUC (instead of acccuracy), to tune the parameters of your models. The twoClassSummary() convenience function allows you to do this easily.
+
+When using twoClassSummary(), be sure to always include the argument classProbs = TRUE or your model will throw an error! (You cannot calculate AUC with just class predictions. You need to have class probabilities as well.)
+
+
+```r
+# Create trainControl object: myControl
+myControl <- trainControl(
+  method = "cv",
+  number = 10,
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE, # IMPORTANT!
+  verboseIter = TRUE
+)
+```
+
+Using custom trainControl
+Now that you have a custom trainControl object, it's easy to fit caret models that use AUC rather than accuracy to tune and evaluate the model. You can just pass your custom trainControl object to the train() function via the trControl argument, e.g.:
+
+train(<standard arguments here>, trControl = myControl)
+This syntax gives you a convenient way to store a lot of custom modeling parameters and then use them across multiple different calls to train(). You will make extensive use of this trick in Chapter 5.
+
+
+```r
+# Train glm with custom trainControl: model
+model <- train(
+  Class ~ ., 
+  Sonar, 
+  method = "glm",
+  trControl = myControl
+)
+```
+
+```
+## + Fold01: parameter=none 
+## - Fold01: parameter=none 
+## + Fold02: parameter=none 
+## - Fold02: parameter=none 
+## + Fold03: parameter=none 
+## - Fold03: parameter=none 
+## + Fold04: parameter=none 
+## - Fold04: parameter=none 
+## + Fold05: parameter=none 
+## - Fold05: parameter=none 
+## + Fold06: parameter=none 
+## - Fold06: parameter=none 
+## + Fold07: parameter=none 
+## - Fold07: parameter=none 
+## + Fold08: parameter=none 
+## - Fold08: parameter=none 
+## + Fold09: parameter=none 
+## - Fold09: parameter=none 
+## + Fold10: parameter=none 
+## - Fold10: parameter=none 
+## Aggregating results
+## Fitting final model on full training set
+```
+
+```r
+# Print model to console
+model
+```
+
+```
+## Generalized Linear Model 
+## 
+## 208 samples
+##  60 predictor
+##   2 classes: 'M', 'R' 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 187, 187, 188, 187, 188, 188, ... 
+## Resampling results:
+## 
+##   ROC        Sens   Spec
+##   0.7255051  0.775  0.66
+```
+
+## Tuning model
+
+Fit a random forest
+As you saw in the video, random forest models are much more flexible than linear models, and can model complicated nonlinear effects as well as automatically capture interactions between variables. They tend to give very good results on real world data, so let's try one out on the wine quality dataset, where the goal is to predict the human-evaluated quality of a batch of wine, given some of the machine-measured chemical and physical properties of that batch.
+
+Fitting a random forest model is exactly the same as fitting a generalized linear regression model, as you did in the previous chapter. You simply change the method argument in the train function to be "ranger". The ranger package is a rewrite of R's classic randomForest package and fits models much faster, but gives almost exactly the same results. We suggest that all beginners use the ranger package for random forest modeling.
+
+
+```r
+wine <- read.csv("wine.csv")
+
+
+# Fit random forest: model
+model <- train(
+  quality ~ .,
+  tuneLength = 1,
+  data = wine, 
+  method = "ranger",
+  trControl = trainControl(
+    method = "cv", 
+    number = 5, 
+    verboseIter = TRUE
+  )
+)
+```
+
+```
+## + Fold1: mtry=3, min.node.size=5, splitrule=variance 
+## - Fold1: mtry=3, min.node.size=5, splitrule=variance 
+## + Fold1: mtry=3, min.node.size=5, splitrule=extratrees 
+## - Fold1: mtry=3, min.node.size=5, splitrule=extratrees 
+## + Fold2: mtry=3, min.node.size=5, splitrule=variance 
+## - Fold2: mtry=3, min.node.size=5, splitrule=variance 
+## + Fold2: mtry=3, min.node.size=5, splitrule=extratrees 
+## - Fold2: mtry=3, min.node.size=5, splitrule=extratrees 
+## + Fold3: mtry=3, min.node.size=5, splitrule=variance 
+## - Fold3: mtry=3, min.node.size=5, splitrule=variance 
+## + Fold3: mtry=3, min.node.size=5, splitrule=extratrees 
+## - Fold3: mtry=3, min.node.size=5, splitrule=extratrees 
+## + Fold4: mtry=3, min.node.size=5, splitrule=variance 
+## - Fold4: mtry=3, min.node.size=5, splitrule=variance 
+## + Fold4: mtry=3, min.node.size=5, splitrule=extratrees 
+## - Fold4: mtry=3, min.node.size=5, splitrule=extratrees 
+## + Fold5: mtry=3, min.node.size=5, splitrule=variance 
+## - Fold5: mtry=3, min.node.size=5, splitrule=variance 
+## + Fold5: mtry=3, min.node.size=5, splitrule=extratrees 
+## - Fold5: mtry=3, min.node.size=5, splitrule=extratrees 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting mtry = 3, splitrule = variance, min.node.size = 5 on full training set
+```
+
+```r
+# Print model to console
+model
+```
+
+```
+## Random Forest 
+## 
+## 100 samples
+##  13 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 81, 80, 79, 80, 80 
+## Resampling results across tuning parameters:
+## 
+##   splitrule   RMSE       Rsquared   MAE      
+##   variance    0.6484721  0.3367117  0.4909785
+##   extratrees  0.6855287  0.2620637  0.5086255
+## 
+## Tuning parameter 'mtry' was held constant at a value of 3
+## Tuning
+##  parameter 'min.node.size' was held constant at a value of 5
+## RMSE was used to select the optimal model using the smallest value.
+## The final values used for the model were mtry = 3, splitrule =
+##  variance and min.node.size = 5.
+```
+
+Try a longer tune length
+Recall from the video that random forest models have a primary tuning parameter of mtry, which controls how many variables are exposed to the splitting search routine at each split. For example, suppose that a tree has a total of 10 splits and mtry = 2. This means that there are 10 samples of 2 predictors each time a split is evaluated.
+
+Use a larger tuning grid this time, but stick to the defaults provided by the train() function. Try a tuneLength of 3, rather than 1, to explore some more potential models, and plot the resulting model using the plot function.
+
+
+```r
+# Fit random forest: model
+model <- train(
+  quality~.,
+  tuneLength = 3,
+  data = wine, 
+  method = "ranger",
+  trControl = trainControl(
+    method = "cv", 
+    number = 5, 
+    verboseIter = TRUE
+  )
+)
+```
+
+```
+## + Fold1: mtry= 2, min.node.size=5, splitrule=variance 
+## - Fold1: mtry= 2, min.node.size=5, splitrule=variance 
+## + Fold1: mtry= 7, min.node.size=5, splitrule=variance 
+## - Fold1: mtry= 7, min.node.size=5, splitrule=variance 
+## + Fold1: mtry=13, min.node.size=5, splitrule=variance 
+## - Fold1: mtry=13, min.node.size=5, splitrule=variance 
+## + Fold1: mtry= 2, min.node.size=5, splitrule=extratrees 
+## - Fold1: mtry= 2, min.node.size=5, splitrule=extratrees 
+## + Fold1: mtry= 7, min.node.size=5, splitrule=extratrees 
+## - Fold1: mtry= 7, min.node.size=5, splitrule=extratrees 
+## + Fold1: mtry=13, min.node.size=5, splitrule=extratrees 
+## - Fold1: mtry=13, min.node.size=5, splitrule=extratrees 
+## + Fold2: mtry= 2, min.node.size=5, splitrule=variance 
+## - Fold2: mtry= 2, min.node.size=5, splitrule=variance 
+## + Fold2: mtry= 7, min.node.size=5, splitrule=variance 
+## - Fold2: mtry= 7, min.node.size=5, splitrule=variance 
+## + Fold2: mtry=13, min.node.size=5, splitrule=variance 
+## - Fold2: mtry=13, min.node.size=5, splitrule=variance 
+## + Fold2: mtry= 2, min.node.size=5, splitrule=extratrees 
+## - Fold2: mtry= 2, min.node.size=5, splitrule=extratrees 
+## + Fold2: mtry= 7, min.node.size=5, splitrule=extratrees 
+## - Fold2: mtry= 7, min.node.size=5, splitrule=extratrees 
+## + Fold2: mtry=13, min.node.size=5, splitrule=extratrees 
+## - Fold2: mtry=13, min.node.size=5, splitrule=extratrees 
+## + Fold3: mtry= 2, min.node.size=5, splitrule=variance 
+## - Fold3: mtry= 2, min.node.size=5, splitrule=variance 
+## + Fold3: mtry= 7, min.node.size=5, splitrule=variance 
+## - Fold3: mtry= 7, min.node.size=5, splitrule=variance 
+## + Fold3: mtry=13, min.node.size=5, splitrule=variance 
+## - Fold3: mtry=13, min.node.size=5, splitrule=variance 
+## + Fold3: mtry= 2, min.node.size=5, splitrule=extratrees 
+## - Fold3: mtry= 2, min.node.size=5, splitrule=extratrees 
+## + Fold3: mtry= 7, min.node.size=5, splitrule=extratrees 
+## - Fold3: mtry= 7, min.node.size=5, splitrule=extratrees 
+## + Fold3: mtry=13, min.node.size=5, splitrule=extratrees 
+## - Fold3: mtry=13, min.node.size=5, splitrule=extratrees 
+## + Fold4: mtry= 2, min.node.size=5, splitrule=variance 
+## - Fold4: mtry= 2, min.node.size=5, splitrule=variance 
+## + Fold4: mtry= 7, min.node.size=5, splitrule=variance 
+## - Fold4: mtry= 7, min.node.size=5, splitrule=variance 
+## + Fold4: mtry=13, min.node.size=5, splitrule=variance 
+## - Fold4: mtry=13, min.node.size=5, splitrule=variance 
+## + Fold4: mtry= 2, min.node.size=5, splitrule=extratrees 
+## - Fold4: mtry= 2, min.node.size=5, splitrule=extratrees 
+## + Fold4: mtry= 7, min.node.size=5, splitrule=extratrees 
+## - Fold4: mtry= 7, min.node.size=5, splitrule=extratrees 
+## + Fold4: mtry=13, min.node.size=5, splitrule=extratrees 
+## - Fold4: mtry=13, min.node.size=5, splitrule=extratrees 
+## + Fold5: mtry= 2, min.node.size=5, splitrule=variance 
+## - Fold5: mtry= 2, min.node.size=5, splitrule=variance 
+## + Fold5: mtry= 7, min.node.size=5, splitrule=variance 
+## - Fold5: mtry= 7, min.node.size=5, splitrule=variance 
+## + Fold5: mtry=13, min.node.size=5, splitrule=variance 
+## - Fold5: mtry=13, min.node.size=5, splitrule=variance 
+## + Fold5: mtry= 2, min.node.size=5, splitrule=extratrees 
+## - Fold5: mtry= 2, min.node.size=5, splitrule=extratrees 
+## + Fold5: mtry= 7, min.node.size=5, splitrule=extratrees 
+## - Fold5: mtry= 7, min.node.size=5, splitrule=extratrees 
+## + Fold5: mtry=13, min.node.size=5, splitrule=extratrees 
+## - Fold5: mtry=13, min.node.size=5, splitrule=extratrees 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting mtry = 13, splitrule = variance, min.node.size = 5 on full training set
+```
+
+```r
+# Print model to console
+model
+```
+
+```
+## Random Forest 
+## 
+## 100 samples
+##  13 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 79, 80, 81, 80, 80 
+## Resampling results across tuning parameters:
+## 
+##   mtry  splitrule   RMSE       Rsquared   MAE      
+##    2    variance    0.6527076  0.3404939  0.4963580
+##    2    extratrees  0.6847222  0.2517920  0.5046799
+##    7    variance    0.6364057  0.3508543  0.4838560
+##    7    extratrees  0.6823771  0.2345015  0.5111203
+##   13    variance    0.6229532  0.3864590  0.4830788
+##   13    extratrees  0.6815077  0.2505217  0.5134303
+## 
+## Tuning parameter 'min.node.size' was held constant at a value of 5
+## RMSE was used to select the optimal model using the smallest value.
+## The final values used for the model were mtry = 13, splitrule =
+##  variance and min.node.size = 5.
+```
+
+```r
+# Plot model
+plot(model)
+```
+
+![](Machine-Learning-Toolbox_files/figure-html/Tltl-1.png)<!-- -->
+
+Fit a random forest with custom tuning
+Now that you've explored the default tuning grids provided by the train() function, let's customize your models a bit more.
+
+You can provide any number of values for mtry, from 2 up to the number of columns in the dataset. In practice, there are diminishing returns for much larger values of mtry, so you will use a custom tuning grid that explores 2 simple models (mtry = 2 and mtry = 3) as well as one more complicated model (mtry = 7).
+
+
+```r
+# Define the tuning grid: tuneGrid
+tuneGrid <- data.frame(
+  .mtry = c(2,3,7),
+  .splitrule = "variance",
+  .min.node.size = 5
+)
+
+
+# Fit random forest: model
+model <- train(
+  quality~.,
+  tuneGrid = tuneGrid,
+  data = wine, 
+  method = "ranger",
+  trControl = trainControl(
+    method = "cv", 
+    number = 5, 
+    verboseIter = TRUE
+  )
+)
+```
+
+```
+## + Fold1: mtry=2, splitrule=variance, min.node.size=5 
+## - Fold1: mtry=2, splitrule=variance, min.node.size=5 
+## + Fold1: mtry=3, splitrule=variance, min.node.size=5 
+## - Fold1: mtry=3, splitrule=variance, min.node.size=5 
+## + Fold1: mtry=7, splitrule=variance, min.node.size=5 
+## - Fold1: mtry=7, splitrule=variance, min.node.size=5 
+## + Fold2: mtry=2, splitrule=variance, min.node.size=5 
+## - Fold2: mtry=2, splitrule=variance, min.node.size=5 
+## + Fold2: mtry=3, splitrule=variance, min.node.size=5 
+## - Fold2: mtry=3, splitrule=variance, min.node.size=5 
+## + Fold2: mtry=7, splitrule=variance, min.node.size=5 
+## - Fold2: mtry=7, splitrule=variance, min.node.size=5 
+## + Fold3: mtry=2, splitrule=variance, min.node.size=5 
+## - Fold3: mtry=2, splitrule=variance, min.node.size=5 
+## + Fold3: mtry=3, splitrule=variance, min.node.size=5 
+## - Fold3: mtry=3, splitrule=variance, min.node.size=5 
+## + Fold3: mtry=7, splitrule=variance, min.node.size=5 
+## - Fold3: mtry=7, splitrule=variance, min.node.size=5 
+## + Fold4: mtry=2, splitrule=variance, min.node.size=5 
+## - Fold4: mtry=2, splitrule=variance, min.node.size=5 
+## + Fold4: mtry=3, splitrule=variance, min.node.size=5 
+## - Fold4: mtry=3, splitrule=variance, min.node.size=5 
+## + Fold4: mtry=7, splitrule=variance, min.node.size=5 
+## - Fold4: mtry=7, splitrule=variance, min.node.size=5 
+## + Fold5: mtry=2, splitrule=variance, min.node.size=5 
+## - Fold5: mtry=2, splitrule=variance, min.node.size=5 
+## + Fold5: mtry=3, splitrule=variance, min.node.size=5 
+## - Fold5: mtry=3, splitrule=variance, min.node.size=5 
+## + Fold5: mtry=7, splitrule=variance, min.node.size=5 
+## - Fold5: mtry=7, splitrule=variance, min.node.size=5 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting mtry = 7, splitrule = variance, min.node.size = 5 on full training set
+```
+
+```r
+# Print model to console
+model
+```
+
+```
+## Random Forest 
+## 
+## 100 samples
+##  13 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 80, 79, 80, 81, 80 
+## Resampling results across tuning parameters:
+## 
+##   mtry  RMSE       Rsquared   MAE      
+##   2     0.6751737  0.2774521  0.5188755
+##   3     0.6614311  0.3099066  0.5094203
+##   7     0.6557326  0.3076607  0.5002893
+## 
+## Tuning parameter 'splitrule' was held constant at a value of
+##  variance
+## Tuning parameter 'min.node.size' was held constant at a value
+##  of 5
+## RMSE was used to select the optimal model using the smallest value.
+## The final values used for the model were mtry = 7, splitrule =
+##  variance and min.node.size = 5.
+```
+
+```r
+# Plot model
+plot(model)
+```
+
+![](Machine-Learning-Toolbox_files/figure-html/frfwct-1.png)<!-- -->
+
+Make a custom trainControl
+The wine quality dataset was a regression problem, but now you are looking at a classification problem. This is a simulated dataset based on the "don't overfit" competition on Kaggle a number of years ago.
+
+Classification problems are a little more complicated than regression problems because you have to provide a custom summaryFunction to the train() function to use the AUC metric to rank your models. Start by making a custom trainControl, as you did in the previous chapter. Be sure to set classProbs = TRUE, otherwise the twoClassSummary for summaryFunction will break.
+
+
+```r
+# Create custom trainControl: myControl
+myControl <- trainControl(method = "cv", number = 10, summaryFunction = twoClassSummary, classProbs = TRUE, # IMPORTANT!
+  verboseIter = TRUE)
+```
+
+Fit glmnet with custom trainControl
+Now that you have a custom trainControl object, fit a glmnet model to the "don't overfit" dataset. Recall from the video that glmnet is an extension of the generalized linear regression model (or glm) that places constraints on the magnitude of the coefficients to prevent overfitting. This is more commonly known as "penalized" regression modeling and is a very useful technique on datasets with many predictors and few values.
+
+glmnet is capable of fitting two different kinds of penalized models, controlled by the alpha parameter:
+
+Ridge regression (or alpha = 0)
+Lasso regression (or alpha = 1)
+You'll now fit a glmnet model to the "don't overfit" dataset using the defaults provided by the caret package.
+
+
+```r
+overfit <- read.csv("overfit.csv")
+
+# Fit glmnet model: model
+model <- train(
+  y ~ ., 
+  overfit,
+  method = "glmnet",
+  trControl = myControl
+)
+```
+
+```
+## + Fold01: alpha=0.10, lambda=0.01013 
+## - Fold01: alpha=0.10, lambda=0.01013 
+## + Fold01: alpha=0.55, lambda=0.01013 
+## - Fold01: alpha=0.55, lambda=0.01013 
+## + Fold01: alpha=1.00, lambda=0.01013 
+## - Fold01: alpha=1.00, lambda=0.01013 
+## + Fold02: alpha=0.10, lambda=0.01013 
+## - Fold02: alpha=0.10, lambda=0.01013 
+## + Fold02: alpha=0.55, lambda=0.01013 
+## - Fold02: alpha=0.55, lambda=0.01013 
+## + Fold02: alpha=1.00, lambda=0.01013 
+## - Fold02: alpha=1.00, lambda=0.01013 
+## + Fold03: alpha=0.10, lambda=0.01013 
+## - Fold03: alpha=0.10, lambda=0.01013 
+## + Fold03: alpha=0.55, lambda=0.01013 
+## - Fold03: alpha=0.55, lambda=0.01013 
+## + Fold03: alpha=1.00, lambda=0.01013 
+## - Fold03: alpha=1.00, lambda=0.01013 
+## + Fold04: alpha=0.10, lambda=0.01013 
+## - Fold04: alpha=0.10, lambda=0.01013 
+## + Fold04: alpha=0.55, lambda=0.01013 
+## - Fold04: alpha=0.55, lambda=0.01013 
+## + Fold04: alpha=1.00, lambda=0.01013 
+## - Fold04: alpha=1.00, lambda=0.01013 
+## + Fold05: alpha=0.10, lambda=0.01013 
+## - Fold05: alpha=0.10, lambda=0.01013 
+## + Fold05: alpha=0.55, lambda=0.01013 
+## - Fold05: alpha=0.55, lambda=0.01013 
+## + Fold05: alpha=1.00, lambda=0.01013 
+## - Fold05: alpha=1.00, lambda=0.01013 
+## + Fold06: alpha=0.10, lambda=0.01013 
+## - Fold06: alpha=0.10, lambda=0.01013 
+## + Fold06: alpha=0.55, lambda=0.01013 
+## - Fold06: alpha=0.55, lambda=0.01013 
+## + Fold06: alpha=1.00, lambda=0.01013 
+## - Fold06: alpha=1.00, lambda=0.01013 
+## + Fold07: alpha=0.10, lambda=0.01013 
+## - Fold07: alpha=0.10, lambda=0.01013 
+## + Fold07: alpha=0.55, lambda=0.01013 
+## - Fold07: alpha=0.55, lambda=0.01013 
+## + Fold07: alpha=1.00, lambda=0.01013 
+## - Fold07: alpha=1.00, lambda=0.01013 
+## + Fold08: alpha=0.10, lambda=0.01013 
+## - Fold08: alpha=0.10, lambda=0.01013 
+## + Fold08: alpha=0.55, lambda=0.01013 
+## - Fold08: alpha=0.55, lambda=0.01013 
+## + Fold08: alpha=1.00, lambda=0.01013 
+## - Fold08: alpha=1.00, lambda=0.01013 
+## + Fold09: alpha=0.10, lambda=0.01013 
+## - Fold09: alpha=0.10, lambda=0.01013 
+## + Fold09: alpha=0.55, lambda=0.01013 
+## - Fold09: alpha=0.55, lambda=0.01013 
+## + Fold09: alpha=1.00, lambda=0.01013 
+## - Fold09: alpha=1.00, lambda=0.01013 
+## + Fold10: alpha=0.10, lambda=0.01013 
+## - Fold10: alpha=0.10, lambda=0.01013 
+## + Fold10: alpha=0.55, lambda=0.01013 
+## - Fold10: alpha=0.55, lambda=0.01013 
+## + Fold10: alpha=1.00, lambda=0.01013 
+## - Fold10: alpha=1.00, lambda=0.01013 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting alpha = 0.1, lambda = 0.0101 on full training set
+```
+
+```r
+# Print model to console
+model
+```
+
+```
+## glmnet 
+## 
+## 250 samples
+## 201 predictors
+##   2 classes: 'class1', 'class2' 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 225, 225, 225, 224, 225, 225, ... 
+## Resampling results across tuning parameters:
+## 
+##   alpha  lambda        ROC        Sens  Spec     
+##   0.10   0.0001012745  0.4646739  0.1   0.9574275
+##   0.10   0.0010127448  0.4652174  0.1   0.9701087
+##   0.10   0.0101274483  0.4699275  0.0   0.9875000
+##   0.55   0.0001012745  0.4074275  0.1   0.9530797
+##   0.55   0.0010127448  0.4223732  0.1   0.9532609
+##   0.55   0.0101274483  0.4527174  0.1   0.9831522
+##   1.00   0.0001012745  0.4052536  0.1   0.9317029
+##   1.00   0.0010127448  0.4119565  0.1   0.9403986
+##   1.00   0.0101274483  0.4498188  0.1   0.9748188
+## 
+## ROC was used to select the optimal model using the largest value.
+## The final values used for the model were alpha = 0.1 and lambda
+##  = 0.01012745.
+```
+
+```r
+# Print maximum ROC statistic
+max(model[["results"]][["ROC"]])
+```
+
+```
+## [1] 0.4699275
+```
+
+
+```r
+# Train glmnet with custom trainControl and tuning: model
+model <- train(y~., data = overfit,
+  tuneGrid = expand.grid(alpha = 0:1,lambda = seq(0.0001, 1, length = 20)),
+  method = "glmnet",
+  trControl = myControl
+)
+```
+
+```
+## + Fold01: alpha=0, lambda=1 
+## - Fold01: alpha=0, lambda=1 
+## + Fold01: alpha=1, lambda=1 
+## - Fold01: alpha=1, lambda=1 
+## + Fold02: alpha=0, lambda=1 
+## - Fold02: alpha=0, lambda=1 
+## + Fold02: alpha=1, lambda=1 
+## - Fold02: alpha=1, lambda=1 
+## + Fold03: alpha=0, lambda=1 
+## - Fold03: alpha=0, lambda=1 
+## + Fold03: alpha=1, lambda=1 
+## - Fold03: alpha=1, lambda=1 
+## + Fold04: alpha=0, lambda=1 
+## - Fold04: alpha=0, lambda=1 
+## + Fold04: alpha=1, lambda=1 
+## - Fold04: alpha=1, lambda=1 
+## + Fold05: alpha=0, lambda=1 
+## - Fold05: alpha=0, lambda=1 
+## + Fold05: alpha=1, lambda=1 
+## - Fold05: alpha=1, lambda=1 
+## + Fold06: alpha=0, lambda=1 
+## - Fold06: alpha=0, lambda=1 
+## + Fold06: alpha=1, lambda=1 
+## - Fold06: alpha=1, lambda=1 
+## + Fold07: alpha=0, lambda=1 
+## - Fold07: alpha=0, lambda=1 
+## + Fold07: alpha=1, lambda=1 
+## - Fold07: alpha=1, lambda=1 
+## + Fold08: alpha=0, lambda=1 
+## - Fold08: alpha=0, lambda=1 
+## + Fold08: alpha=1, lambda=1 
+## - Fold08: alpha=1, lambda=1 
+## + Fold09: alpha=0, lambda=1 
+## - Fold09: alpha=0, lambda=1 
+## + Fold09: alpha=1, lambda=1 
+## - Fold09: alpha=1, lambda=1 
+## + Fold10: alpha=0, lambda=1 
+## - Fold10: alpha=0, lambda=1 
+## + Fold10: alpha=1, lambda=1 
+## - Fold10: alpha=1, lambda=1 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting alpha = 1, lambda = 0.0527 on full training set
+```
+
+```r
+# Print model to console
+model
+```
+
+```
+## glmnet 
+## 
+## 250 samples
+## 201 predictors
+##   2 classes: 'class1', 'class2' 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 225, 224, 226, 224, 225, 225, ... 
+## Resampling results across tuning parameters:
+## 
+##   alpha  lambda      ROC        Sens  Spec     
+##   0      0.00010000  0.4624094  0.0   0.9742754
+##   0      0.05272632  0.4536232  0.0   0.9958333
+##   0      0.10535263  0.4601449  0.0   1.0000000
+##   0      0.15797895  0.4688406  0.0   1.0000000
+##   0      0.21060526  0.4751812  0.0   1.0000000
+##   0      0.26323158  0.4795290  0.0   1.0000000
+##   0      0.31585789  0.4817935  0.0   1.0000000
+##   0      0.36848421  0.4839674  0.0   1.0000000
+##   0      0.42111053  0.4796196  0.0   1.0000000
+##   0      0.47373684  0.4817935  0.0   1.0000000
+##   0      0.52636316  0.4859601  0.0   1.0000000
+##   0      0.57898947  0.4859601  0.0   1.0000000
+##   0      0.63161579  0.4816123  0.0   1.0000000
+##   0      0.68424211  0.4836957  0.0   1.0000000
+##   0      0.73686842  0.4836957  0.0   1.0000000
+##   0      0.78949474  0.4858696  0.0   1.0000000
+##   0      0.84212105  0.4815217  0.0   1.0000000
+##   0      0.89474737  0.4815217  0.0   1.0000000
+##   0      0.94737368  0.4815217  0.0   1.0000000
+##   0      1.00000000  0.4815217  0.0   1.0000000
+##   1      0.00010000  0.4250906  0.1   0.9443841
+##   1      0.05272632  0.5086957  0.0   1.0000000
+##   1      0.10535263  0.5000000  0.0   1.0000000
+##   1      0.15797895  0.5000000  0.0   1.0000000
+##   1      0.21060526  0.5000000  0.0   1.0000000
+##   1      0.26323158  0.5000000  0.0   1.0000000
+##   1      0.31585789  0.5000000  0.0   1.0000000
+##   1      0.36848421  0.5000000  0.0   1.0000000
+##   1      0.42111053  0.5000000  0.0   1.0000000
+##   1      0.47373684  0.5000000  0.0   1.0000000
+##   1      0.52636316  0.5000000  0.0   1.0000000
+##   1      0.57898947  0.5000000  0.0   1.0000000
+##   1      0.63161579  0.5000000  0.0   1.0000000
+##   1      0.68424211  0.5000000  0.0   1.0000000
+##   1      0.73686842  0.5000000  0.0   1.0000000
+##   1      0.78949474  0.5000000  0.0   1.0000000
+##   1      0.84212105  0.5000000  0.0   1.0000000
+##   1      0.89474737  0.5000000  0.0   1.0000000
+##   1      0.94737368  0.5000000  0.0   1.0000000
+##   1      1.00000000  0.5000000  0.0   1.0000000
+## 
+## ROC was used to select the optimal model using the largest value.
+## The final values used for the model were alpha = 1 and lambda = 0.05272632.
+```
+
+```r
+# Print maximum ROC statistic
+max(model[["results"]][["ROC"]])
+```
+
+```
+## [1] 0.5086957
+```
+
+## Preprocessing
+
+Apply median imputation
+In this chapter, you'll be using a version of the Wisconsin Breast Cancer dataset. This dataset presents a classic binary classification problem: 50% of the samples are benign, 50% are malignant, and the challenge is to identify which are which.
+
+This dataset is interesting because many of the predictors contain missing values and most rows of the dataset have at least one missing value. This presents a modeling challenge, because most machine learning algorithms cannot handle missing values out of the box. For example, your first instinct might be to fit a logistic regression model to this data, but prior to doing this you need a strategy for handling the NAs.
+
+Fortunately, the train() function in caret contains an argument called preProcess, which allows you to specify that median imputation should be used to fill in the missing values. In previous chapters, you created models with the train() function using formulas such as y ~ .. An alternative way is to specify the x and y arguments to train(), where x is an object with samples in rows and features in columns and y is a numeric or factor vector containing the outcomes. Said differently, x is a matrix or data frame that contains the whole dataset you'd use for the data argument to the lm() call, for example, but excludes the response variable column; y is a vector that contains just the response variable column.
+
+For this exercise, the argument x to train() is loaded in your workspace as breast_cancer_x and y as breast_cancer_y.
+
+
+```r
+breast_cancer_x <- read.csv("breast_cancer_x.csv") %>% select(-1)
+breast_cancer_y <- read.csv("breast_cancer_y.csv") %>% select(-1)
+breast_cancer_y <- as.vector(breast_cancer_y$x)
+
+
+# Apply median imputation: median_model
+median_model <- train(x = breast_cancer_x, y = breast_cancer_y, method = "glm", trControl = myControl,
+  preProcess = "medianImpute")
+```
+
+```
+## + Fold01: parameter=none 
+## - Fold01: parameter=none 
+## + Fold02: parameter=none 
+## - Fold02: parameter=none 
+## + Fold03: parameter=none 
+## - Fold03: parameter=none 
+## + Fold04: parameter=none 
+## - Fold04: parameter=none 
+## + Fold05: parameter=none 
+## - Fold05: parameter=none 
+## + Fold06: parameter=none 
+## - Fold06: parameter=none 
+## + Fold07: parameter=none 
+## - Fold07: parameter=none 
+## + Fold08: parameter=none 
+## - Fold08: parameter=none 
+## + Fold09: parameter=none 
+## - Fold09: parameter=none 
+## + Fold10: parameter=none 
+## - Fold10: parameter=none 
+## Aggregating results
+## Fitting final model on full training set
+```
+
+```r
+# Print median_model to console
+median_model
+```
+
+```
+## Generalized Linear Model 
+## 
+## 699 samples
+##   9 predictor
+##   2 classes: 'benign', 'malignant' 
+## 
+## Pre-processing: median imputation (9) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 629, 629, 629, 628, 629, 630, ... 
+## Resampling results:
+## 
+##   ROC        Sens       Spec     
+##   0.9913969  0.9694203  0.9461667
+```
+
+Use KNN imputation
+In the previous exercise, you used median imputation to fill in missing values in the breast cancer dataset, but that is not the only possible method for dealing with missing data.
+
+An alternative to median imputation is k-nearest neighbors, or KNN, imputation. This is a more advanced form of imputation where missing values are replaced with values from other rows that are similar to the current row. While this is a lot more complicated to implement in practice than simple median imputation, it is very easy to explore in caret using the preProcess argument to train(). You can simply use preProcess = "knnImpute" to change the method of imputation used prior to model fitting.
+
+
+```r
+# Apply KNN imputation: knn_model
+knn_model <- train(x = breast_cancer_x, y = breast_cancer_y, method = "glm", trControl = myControl,
+  preProcess = "knnImpute")
+```
+
+```
+## + Fold01: parameter=none 
+## - Fold01: parameter=none 
+## + Fold02: parameter=none 
+## - Fold02: parameter=none 
+## + Fold03: parameter=none 
+## - Fold03: parameter=none 
+## + Fold04: parameter=none 
+## - Fold04: parameter=none 
+## + Fold05: parameter=none 
+## - Fold05: parameter=none 
+## + Fold06: parameter=none 
+## - Fold06: parameter=none 
+## + Fold07: parameter=none 
+## - Fold07: parameter=none 
+## + Fold08: parameter=none 
+## - Fold08: parameter=none 
+## + Fold09: parameter=none 
+## - Fold09: parameter=none 
+## + Fold10: parameter=none 
+## - Fold10: parameter=none 
+## Aggregating results
+## Fitting final model on full training set
+```
+
+```r
+# Print knn_model to console
+knn_model
+```
+
+```
+## Generalized Linear Model 
+## 
+## 699 samples
+##   9 predictor
+##   2 classes: 'benign', 'malignant' 
+## 
+## Pre-processing: nearest neighbor imputation (9), centered (9), scaled (9) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 630, 629, 629, 629, 630, 628, ... 
+## Resampling results:
+## 
+##   ROC        Sens       Spec     
+##   0.9909863  0.9715459  0.9376667
+```
+
+Combining preprocessing methods
+The preProcess argument to train() doesn't just limit you to imputing missing values. It also includes a wide variety of other preProcess techniques to make your life as a data scientist much easier. You can read a full list of them by typing ?preProcess and reading the help page for this function.
+
+One set of preprocessing functions that is particularly useful for fitting regression models is standardization: centering and scaling. You first center by subtracting the mean of each column from each value in that column, then you scale by dividing by the standard deviation.
+
+Standardization transforms your data such that for each column, the mean is 0 and the standard deviation is 1. This makes it easier for regression models to find a good solution.
+
+
+```r
+# Fit glm with median imputation
+model <- train(x = breast_cancer_x, y = breast_cancer_y, method = "glm", trControl = myControl,
+  preProcess = "medianImpute")
+```
+
+```
+## + Fold01: parameter=none 
+## - Fold01: parameter=none 
+## + Fold02: parameter=none 
+## - Fold02: parameter=none 
+## + Fold03: parameter=none 
+## - Fold03: parameter=none 
+## + Fold04: parameter=none 
+## - Fold04: parameter=none 
+## + Fold05: parameter=none 
+## - Fold05: parameter=none 
+## + Fold06: parameter=none 
+## - Fold06: parameter=none 
+## + Fold07: parameter=none 
+## - Fold07: parameter=none 
+## + Fold08: parameter=none 
+## - Fold08: parameter=none 
+## + Fold09: parameter=none 
+## - Fold09: parameter=none 
+## + Fold10: parameter=none 
+## - Fold10: parameter=none 
+## Aggregating results
+## Fitting final model on full training set
+```
+
+```r
+# Print knn_model to console
+model
+```
+
+```
+## Generalized Linear Model 
+## 
+## 699 samples
+##   9 predictor
+##   2 classes: 'benign', 'malignant' 
+## 
+## Pre-processing: median imputation (9) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 629, 629, 629, 628, 629, 630, ... 
+## Resampling results:
+## 
+##   ROC       Sens       Spec     
+##   0.992494  0.9695169  0.9458333
+```
+
+```r
+# Update model with standardization
+model <- train(x = breast_cancer_x, y = breast_cancer_y, method = "glm", trControl = myControl,
+  preProcess = c("medianImpute","center","scale"))
+```
+
+```
+## + Fold01: parameter=none 
+## - Fold01: parameter=none 
+## + Fold02: parameter=none 
+## - Fold02: parameter=none 
+## + Fold03: parameter=none 
+## - Fold03: parameter=none 
+## + Fold04: parameter=none 
+## - Fold04: parameter=none 
+## + Fold05: parameter=none 
+## - Fold05: parameter=none 
+## + Fold06: parameter=none 
+## - Fold06: parameter=none 
+## + Fold07: parameter=none 
+## - Fold07: parameter=none 
+## + Fold08: parameter=none 
+## - Fold08: parameter=none 
+## + Fold09: parameter=none 
+## - Fold09: parameter=none 
+## + Fold10: parameter=none 
+## - Fold10: parameter=none 
+## Aggregating results
+## Fitting final model on full training set
+```
+
+```r
+# Print updated model
+model
+```
+
+```
+## Generalized Linear Model 
+## 
+## 699 samples
+##   9 predictor
+##   2 classes: 'benign', 'malignant' 
+## 
+## Pre-processing: median imputation (9), centered (9), scaled (9) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 629, 628, 629, 629, 629, 630, ... 
+## Resampling results:
+## 
+##   ROC        Sens       Spec     
+##   0.9910105  0.9716425  0.9291667
+```
+
+Remove near zero variance predictors
+As you saw in the video, for the next set of exercises, you'll be using the blood-brain dataset. This is a biochemical dataset in which the task is to predict the following value for a set of biochemical compounds:
+
+log((concentration of compound in brain) /
+      (concentration of compound in blood))
+This gives a quantitative metric of the compound's ability to cross the blood-brain barrier, and is useful for understanding the biological properties of that barrier.
+
+One interesting aspect of this dataset is that it contains many variables and many of these variables have extemely low variances. This means that there is very little information in these variables because they mostly consist of a single value (e.g. zero).
+
+Fortunately, caret contains a utility function called nearZeroVar() for removing such variables to save time during modeling.
+
+nearZeroVar() takes in data x, then looks at the ratio of the most common value to the second most common value, freqCut, and the percentage of distinct values out of the number of total samples, uniqueCut. By default, caret uses freqCut = 19 and uniqueCut = 10, which is fairly conservative. I like to be a little more aggressive and use freqCut = 2 and uniqueCut = 20 when calling nearZeroVar().
+
+
+```r
+bloodbrain_x <- read.csv("bloodbrain_x.csv") %>% select(-1)
+bloodbrain_y <- read.csv("bloodbrain_y.csv") %>% select(-1)
+bloodbrain_y <- as.vector(bloodbrain_y$x)
+
+# Identify near zero variance predictors: remove_cols
+remove_cols <- nearZeroVar(bloodbrain_x, names = TRUE, 
+                           freqCut = 2, uniqueCut = 20)
+
+# Get all column names from bloodbrain_x: all_cols
+all_cols <- names(bloodbrain_x)
+
+# Remove from data: bloodbrain_x_small
+bloodbrain_x_small <- bloodbrain_x[ , setdiff(all_cols, remove_cols)]
+```
+
+Fit model on reduced blood-brain data
+Now that you've reduced your dataset, you can fit a glm model to it using the train() function. This model will run faster than using the full dataset and will yield very similar predictive accuracy.
+
+Furthermore, zero variance variables can cause problems with cross-validation (e.g. if one fold ends up with only a single unique value for that variable), so removing them prior to modeling means you are less likely to get errors during the fitting process.
+
+bloodbrain_x, bloodbrain_y, remove, and bloodbrain_x_small are loaded in your workspace.
+
+Fit a glm model using the train() function and the reduced blood-brain dataset you created in the previous exercise.
+Print the result to the console.
+
+
+```r
+remove <- remove_cols
+
+# Fit model on reduced data: model
+model <- train(x = bloodbrain_x_small, y = bloodbrain_y, method = "glm")
+
+# Print model to console
+model
+```
+
+```
+## Generalized Linear Model 
+## 
+## 208 samples
+## 112 predictors
+## 
+## No pre-processing
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 208, 208, 208, 208, 208, 208, ... 
+## Resampling results:
+## 
+##   RMSE      Rsquared   MAE     
+##   1082.142  0.1091276  257.9763
+```
+
+Using PCA as an alternative to nearZeroVar()
+An alternative to removing low-variance predictors is to run PCA on your dataset. This is sometimes preferable because it does not throw out all of your data: many different low variance predictors may end up combined into one high variance PCA variable, which might have a positive impact on your model's accuracy.
+
+This is an especially good trick for linear models: the pca option in the preProcess argument will center and scale your data, combine low variance variables, and ensure that all of your predictors are orthogonal. This creates an ideal dataset for linear regression modeling, and can often improve the accuracy of your models.
+
+
+```r
+# Fit glm model using PCA: model
+model <- train(x = bloodbrain_x, y = bloodbrain_y, method = "glm", preProcess = "pca")
+
+# Print model to console
+model
+```
+
+```
+## Generalized Linear Model 
+## 
+## 208 samples
+## 132 predictors
+## 
+## Pre-processing: principal component signal extraction (132),
+##  centered (132), scaled (132) 
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 208, 208, 208, 208, 208, 208, ... 
+## Resampling results:
+## 
+##   RMSE       Rsquared   MAE      
+##   0.6095159  0.4174699  0.4614212
+```
+
+## Selecting Models
+
+Make custom train/test indices
+As you saw in the video, for this chapter you will focus on a real-world dataset that brings together all of the concepts discussed in the previous chapters.
+
+The churn dataset contains data on a variety of telecom customers and the modeling challenge is to predict which customers will cancel their service (or churn).
+
+In this chapter, you will be exploring two different types of predictive models: glmnet and rf, so the first order of business is to create a reusable trainControl object you can use to reliably compare them.
+
+
+```r
+churn_y <- read.csv("churn_y.csv")
+churn_y <- as.vector(churn_y$x)
+
+# Create custom indices: myFolds
+myFolds <- createFolds(churn_y, k = 5)
+
+# Create reusable trainControl object: myControl
+myControl <- trainControl(summaryFunction = twoClassSummary, classProbs = TRUE, # IMPORTANT!
+  verboseIter = TRUE, savePredictions = TRUE, index = myFolds)
+```
+
+Fit the baseline model
+Now that you have a reusable trainControl object called myControl, you can start fitting different predictive models to your churn dataset and evaluate their predictive accuracy.
+
+You'll start with one of my favorite models, glmnet, which penalizes linear and logistic regression models on the size and number of coefficients to help prevent overfitting.
+
+
+```r
+churn_x <- read.csv("churn_x.csv") %>% select(-1)
+
+# Fit glmnet model: model_glmnet
+model_glmnet <- train(x = churn_x, y = churn_y, metric = "ROC", method = "glmnet", trControl = myControl)
+```
+
+```
+## + Fold1: alpha=0.10, lambda=0.01821 
+## - Fold1: alpha=0.10, lambda=0.01821 
+## + Fold1: alpha=0.55, lambda=0.01821 
+## - Fold1: alpha=0.55, lambda=0.01821 
+## + Fold1: alpha=1.00, lambda=0.01821 
+## - Fold1: alpha=1.00, lambda=0.01821 
+## + Fold2: alpha=0.10, lambda=0.01821 
+## - Fold2: alpha=0.10, lambda=0.01821 
+## + Fold2: alpha=0.55, lambda=0.01821 
+## - Fold2: alpha=0.55, lambda=0.01821 
+## + Fold2: alpha=1.00, lambda=0.01821 
+## - Fold2: alpha=1.00, lambda=0.01821 
+## + Fold3: alpha=0.10, lambda=0.01821 
+## - Fold3: alpha=0.10, lambda=0.01821 
+## + Fold3: alpha=0.55, lambda=0.01821 
+## - Fold3: alpha=0.55, lambda=0.01821 
+## + Fold3: alpha=1.00, lambda=0.01821 
+## - Fold3: alpha=1.00, lambda=0.01821 
+## + Fold4: alpha=0.10, lambda=0.01821 
+## - Fold4: alpha=0.10, lambda=0.01821 
+## + Fold4: alpha=0.55, lambda=0.01821 
+## - Fold4: alpha=0.55, lambda=0.01821 
+## + Fold4: alpha=1.00, lambda=0.01821 
+## - Fold4: alpha=1.00, lambda=0.01821 
+## + Fold5: alpha=0.10, lambda=0.01821 
+## - Fold5: alpha=0.10, lambda=0.01821 
+## + Fold5: alpha=0.55, lambda=0.01821 
+## - Fold5: alpha=0.55, lambda=0.01821 
+## + Fold5: alpha=1.00, lambda=0.01821 
+## - Fold5: alpha=1.00, lambda=0.01821 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting alpha = 0.55, lambda = 0.0182 on full training set
+```
+
+Random forest with custom trainControl
+Another one of my favorite models is the random forest, which combines an ensemble of non-linear decision trees into a highly flexible (and usually quite accurate) model.
+
+Rather than using the classic randomForest package, you'll be using the ranger package, which is a re-implementation of randomForest that produces almost the exact same results, but is faster, more stable, and uses less memory. I highly recommend it as a starting point for random forest modeling in R.
+
+
+```r
+# Fit random forest: model_rf
+model_rf <- train(x = churn_x, y = churn_y, metric = "ROC", method = "ranger", trControl = myControl)
+```
+
+```
+## + Fold1: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold1: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold1: mtry=36, min.node.size=1, splitrule=gini 
+## - Fold1: mtry=36, min.node.size=1, splitrule=gini 
+## + Fold1: mtry=70, min.node.size=1, splitrule=gini 
+## - Fold1: mtry=70, min.node.size=1, splitrule=gini 
+## + Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold1: mtry=36, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry=36, min.node.size=1, splitrule=extratrees 
+## + Fold1: mtry=70, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry=70, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold2: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold2: mtry=36, min.node.size=1, splitrule=gini 
+## - Fold2: mtry=36, min.node.size=1, splitrule=gini 
+## + Fold2: mtry=70, min.node.size=1, splitrule=gini 
+## - Fold2: mtry=70, min.node.size=1, splitrule=gini 
+## + Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry=36, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry=36, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry=70, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry=70, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold3: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold3: mtry=36, min.node.size=1, splitrule=gini 
+## - Fold3: mtry=36, min.node.size=1, splitrule=gini 
+## + Fold3: mtry=70, min.node.size=1, splitrule=gini 
+## - Fold3: mtry=70, min.node.size=1, splitrule=gini 
+## + Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry=36, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry=36, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry=70, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry=70, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold4: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold4: mtry=36, min.node.size=1, splitrule=gini 
+## - Fold4: mtry=36, min.node.size=1, splitrule=gini 
+## + Fold4: mtry=70, min.node.size=1, splitrule=gini 
+## - Fold4: mtry=70, min.node.size=1, splitrule=gini 
+## + Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry=36, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry=36, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry=70, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry=70, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold5: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold5: mtry=36, min.node.size=1, splitrule=gini 
+## - Fold5: mtry=36, min.node.size=1, splitrule=gini 
+## + Fold5: mtry=70, min.node.size=1, splitrule=gini 
+## - Fold5: mtry=70, min.node.size=1, splitrule=gini 
+## + Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry=36, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry=36, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry=70, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry=70, min.node.size=1, splitrule=extratrees 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting mtry = 36, splitrule = extratrees, min.node.size = 1 on full training set
+```
+
+Create a resamples object
+Now that you have fit two models to the churn dataset, it's time to compare their out-of-sample predictions and choose which one is the best model for your dataset.
+
+You can compare models in caret using the resamples() function, provided they have the same training data and use the same trainControl object with preset cross-validation folds. resamples() takes as input a list of models and can be used to compare dozens of models at once (though in this case you are only comparing two models).
+
+
+```r
+# Create model_list
+model_list <- list(item1 = model_glmnet, item2 = model_rf)
+
+# Pass model_list to resamples(): resamples
+resamples <- resamples(model_list)
+
+# Summarize the results
+summary(resamples)
+```
+
+```
+## 
+## Call:
+## summary.resamples(object = resamples)
+## 
+## Models: item1, item2 
+## Number of resamples: 5 
+## 
+## ROC 
+##            Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## item1 0.4489390 0.4832007 0.5296198 0.5440319 0.6178286 0.6405714    0
+## item2 0.6731874 0.7002286 0.7095491 0.7060488 0.7180571 0.7292219    0
+## 
+## Sens 
+##            Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## item1 0.9195402 0.9482759 0.9542857 0.9552644 0.9657143 0.9885057    0
+## item2 0.9712644 0.9885714 0.9942529 0.9896749 0.9942857 1.0000000    0
+## 
+## Spec 
+##             Min.    1st Qu.     Median       Mean 3rd Qu. Max. NA's
+## item1 0.03846154 0.03846154 0.07692308 0.09476923    0.08 0.24    0
+## item2 0.00000000 0.00000000 0.00000000 0.01600000    0.00 0.08    0
+```
+
+Create a box-and-whisker plot
+caret provides a variety of methods to use for comparing models. All of these methods are based on the resamples() function. My favorite is the box-and-whisker plot, which allows you to compare the distribution of predictive accuracy (in this case AUC) for the two models.
+
+In general, you want the model with the higher median AUC, as well as a smaller range between min and max AUC.
+
+You can make this plot using the bwplot() function, which makes a box and whisker plot of the model's out of sample scores. Box and whisker plots show the median of each distribution as a line and the interquartile range of each distribution as a box around the median line. You can pass the metric = "ROC" argument to the bwplot() function to show a plot of the model's out-of-sample ROC scores and choose the model with the highest median ROC.
+
+If you do not specify a metric to plot, bwplot() will automatically plot 3 of them.
+
+
+```r
+# Create bwplot
+bwplot(resamples, metric = "ROC")
+```
+
+![](Machine-Learning-Toolbox_files/figure-html/cbwp-1.png)<!-- -->
+
+Create a scatterplot
+Another useful plot for comparing models is the scatterplot, also known as the xy-plot. This plot shows you how similar the two models' performances are on different folds.
+
+It's particularly useful for identifying if one model is consistently better than the other across all folds, or if there are situations when the inferior model produces better predictions on a particular subset of the data.
+
+
+```r
+# Create xyplot
+xyplot(resamples, metric = "ROC")
+```
+
+![](Machine-Learning-Toolbox_files/figure-html/cs-1.png)<!-- -->
+
+Ensembling models
+That concludes the course! As a teaser for a future course on making ensembles of caret models, I'll show you how to fit a stacked ensemble of models using the caretEnsemble package.
+
+caretEnsemble provides the caretList() function for creating multiple caret models at once on the same dataset, using the same resampling folds. You can also create your own lists of caret models.
+
+In this exercise, I've made a caretList for you, containing the glmnet and ranger models you fit on the churn dataset. Use the caretStack() function to make a stack of caret models, with the two sub-models (glmnet and ranger) feeding into another (hopefully more accurate!) caret model.
 
 
 

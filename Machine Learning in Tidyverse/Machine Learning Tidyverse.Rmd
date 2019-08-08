@@ -1,0 +1,111 @@
+---
+title: "Machine Learning Tidyverse"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+editor_options: 
+  chunk_output_type: console
+---
+
+# {.tabset .tabset-fade}
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(dslabs)
+gapminder <- gapminder %>% drop_na(population)
+
+```
+
+## Background
+
+https://campus.datacamp.com/courses/machine-learning-in-the-tidyverse/foundations-of-tidy-machine-learning?ex=1
+
+## Foundations
+
+Nesting your data
+In this course, you will work with a collection of economic and social indicators for 77 countries over a period of 52 years. This data is stored in the gapminder dataframe.
+
+In this exercise, you will transform your gapminder data into a nested dataframe by using the first tool needed to build the foundation of tidy machine learning skills: nest().
+
+Note: This is a more granular version than the dataset available from the gapminder package. This version is available in the dslabs package.
+
+```{r nyd}
+# Explore gapminder
+head(gapminder)
+
+# Prepare the nested dataframe gap_nested
+gap_nested <- gapminder %>% group_by(country) %>% nest()
+
+# Explore gap_nested
+head(gap_nested)
+```
+
+Unnesting your data
+As you've seen in the previous exercise, a nested dataframe is simply a way to shape your data. Essentially taking the group_by() windows and packaging them in corresponding rows.
+
+In the same way you can use the nest() function to break your data into nested chunks, you can use the unnest() function to expand the dataframes that are nested in these chunks.
+
+```{r unyd}
+# Create the unnested dataframe called gap_unnnested
+gap_unnested <- gap_nested %>% unnest() %>% arrange(year) %>% as.data.frame() 
+
+# Confirm that your data was not modified  
+identical(gapminder, gap_unnested)
+```
+
+Explore a nested cell
+In the first exercise, you successfully created a nested dataframe gap_nested. The data column contains tibbles for each country. In this exercise, you will explore one of these nested chunks.
+
+```{r enc}
+# Extract the data of Algeria
+algeria_df <- gap_nested$data[[2]]
+
+# Calculate the minimum of the population vector
+min(algeria_df$population)
+
+# Calculate the maximum of the population vector
+max(algeria_df$population)
+
+# Calculate the mean of the population vector
+mean(algeria_df$population)
+```
+
+Mapping your data
+In combination with mutate(), you can use map() to append the results of your calculation to a dataframe. Since the map() function always returns a vector of lists you must use unnest() to extract this information into a numeric vector.
+
+Here you will explore this functionality by calculating the mean population of each country in the gapminder dataset.
+
+```{r myd}
+# Calculate the mean population for each country
+pop_nested <- gap_nested %>% mutate(mean_pop = map(data, ~mean(.x$population)))
+
+# Take a look at pop_nested
+head(pop_nested)
+
+# Extract the mean_pop value by using unnest
+pop_mean <- pop_nested %>% unnest(mean_pop)
+
+# Take a look at pop_mean
+head(pop_mean)
+```
+
+Expecting mapped output
+When you know that the output of your mapped function is an expected type (here it is a numeric vector) you can leverage the map_*() family of functions to explicitly try to return that object type instead of a list.
+
+Here you will again calculate the mean population of each country, but instead, you will use map_dbl() to explicitly append the numeric vector returned by mean() to your dataframe.
+
+```{r Emo}
+# Calculate mean population and store result as a double
+pop_mean <- gap_nested %>% mutate(mean_pop = map_dbl(data, ~mean(.x$population)))
+
+# Take a look at pop_mean
+head(pop_mean)
+```
+

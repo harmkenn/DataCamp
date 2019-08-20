@@ -18,8 +18,12 @@ editor_options:
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
+select <- dplyr::select
 library(dslabs)
 gapminder <- gapminder %>% drop_na(population)
+gapminder <- read.csv("gapminder.csv") %>% select(-1) %>% as.tibble()
+library(broom)
+library(rsample)
 
 ```
 
@@ -107,5 +111,376 @@ pop_mean <- gap_nested %>% mutate(mean_pop = map_dbl(data, ~mean(.x$population))
 
 # Take a look at pop_mean
 head(pop_mean)
+```
+
+Mapping many models
+The gap_nested dataframe available in your workspace contains the gapminder dataset nested by country.
+
+You will use this data to build a linear model for each country to predict life expectancy using the year feature.
+
+Note: The term feature is synonymous with the terms variable or predictor. It refers to an attribute of your data that can be used to build a machine learning model.
+
+```{r mmm}
+# Build a linear model for each country
+gap_models <- gap_nested %>% mutate(model = map(data, ~lm(formula = life_expectancy~year, data = .x)))
+    
+# Extract the model for Algeria    
+algeria_model <- gap_models$model[[2]]
+
+# View the summary for the Algeria model
+summary(algeria_model)
+```
+
+Extracting model statistics tidily
+In this exercise, you will use the tidy() and glance() functions to extract information from algeria_model in a tidy manner.
+
+For a linear model, tidy() extracts the model coefficients while glance() returns the model statistics such as the R2.
+
+```{r Emst}
+# Extract the coefficients of the algeria_model as a dataframe
+tidy(algeria_model)
+
+# Extract the statistics of the algeria_model as a dataframe
+glance(algeria_model)
+```
+
+Augmenting your data
+From the results of glance(), you learned that using the available features the linear model fits well with an adjusted R2 of 0.99. The augment() function can help you explore this fit by appending the predictions to the original data.
+
+Here you will leverage this to compare the predicted values of life_expectancy with the original ones based on the year feature.
+
+```{r Ayd}
+# Build the augmented dataframe
+algeria_fitted <- augment(algeria_model)
+
+# Compare the predicted values with the actual values of life expectancy
+algeria_fitted %>% ggplot(aes(x = year)) +
+  geom_point(aes(y = life_expectancy)) + 
+  geom_line(aes(y = .fitted), color = "red")
+```
+
+## Multiple Models
+
+Tidy up the coefficients of your models
+In this exercise you will leverage the list column workflow along with the tidy() function from broom to extract and explore the coefficients for the 77 models you built.
+
+Remember the gap_models dataframe contains a model predicting life expectancy by year for 77 countries.
+
+```{r tucym}
+# Extract the coefficient statistics of each model into nested dataframes
+model_coef_nested <- gap_models %>% mutate(coef = map(model, ~tidy(.x)))
+    
+# Simplify the coef dataframes for each model    
+model_coef <- model_coef_nested %>% unnest(coef)
+
+# Plot a histogram of the coefficient estimates for year         
+model_coef %>% filter(term == "year") %>% ggplot(aes(x = estimate)) +
+  geom_histogram()
+```
+
+Glance at the fit of your models
+In this exercise you will use glance() to calculate how well the linear models fit the data for each country.
+
+```{r gfym}
+# Extract the fit statistics of each model into dataframes
+model_perf_nested <- gap_models %>% mutate(fit = map(model, ~glance(.x)))
+
+# Simplify the fit dataframes for each model    
+model_perf <- model_perf_nested %>% unnest(fit)
+    
+# Look at the first six rows of model_perf
+head(model_perf)
+```
+
+Best and worst fitting models
+In this exercise you will answer the following questions:
+
+Overall, how well do your models fit your data?
+Which are the best fitting models?
+Which models do not fit the data well?
+
+```{r bwfm}
+# Plot a histogram of rsquared for the 77 models    
+model_perf %>% ggplot(aes(x = r.squared)) + geom_histogram()
+  
+# Extract the 4 best fitting models
+best_fit <- model_perf %>% top_n(n = 4, wt = r.squared)
+
+# Extract the 4 models with the worst fit
+worst_fit <- model_perf %>% top_n(n = 4, wt = -r.squared)
+```
+
+Augment the fitted values of each model
+In this exercise you will prepare your four best and worst fitting models for further exploration by augmenting your model data with augment().
+
+```{r afvem}
+best_augmented <- best_fit %>% 
+  # Build the augmented dataframe for each country model
+  mutate(augmented = map(model, ~augment(.x))) %>% 
+  # Expand the augmented dataframes
+  unnest(augmented)
+
+worst_augmented <- worst_fit %>% 
+  # Build the augmented dataframe for each country model
+  mutate(augmented = map(model, ~augment(.x))) %>% 
+  # Expand the augmented dataframes
+  unnest(augmented)
+```
+
+Explore your best and worst fitting models
+Let's explore your four best and worst fitting models by comparing the fitted lines with the actual values.
+
+```{r EBWfm}
+# Compare the predicted values with the actual values of life expectancy 
+# for the top 4 best fitting models
+best_augmented %>% 
+  ggplot(aes(x = year)) +
+  geom_point(aes(y = life_expectancy)) + 
+  geom_line(aes(y = .fitted), color = "red") +
+  facet_wrap(~country, scales = "free_y")
+
+# Compare the predicted values with the actual values of life expectancy 
+# for the top 4 worst fitting models
+worst_augmented %>% 
+  ggplot(aes(x = year)) +
+  geom_point(aes(y = life_expectancy)) + 
+  geom_line(aes(y = .fitted), color = "red") +
+  facet_wrap(~country, scales = "free_y")
+```
+
+Build better models
+Earlier you built a collection of simple models to fit life expectancy using the year feature. Your previous analysis showed that some of these models didn't fit very well.
+
+In this exercise you will build multiple regression models for each country using all available features. 
+
+```{r bbm}
+
+
+# Build a linear model for each country using all features
+gap_fullmodel <- gap_nested %>% mutate(model = map(data, ~lm(life_expectancy~., data = .x)))
+
+fullmodel_perf <- gap_fullmodel %>% 
+  # Extract the fit statistics of each model into dataframes
+  mutate(fit = map(model, ~glance(.x))) %>% 
+  # Simplify the fit dataframes for each model
+  unnest(fit)
+  
+# View the performance for the four countries with the worst fitting 
+# four simple models you looked at before
+fullmodel_perf %>% 
+  filter(country %in% worst_fit$country) %>% 
+  select(country, adj.r.squared)
+```
+
+## Build and Tune
+
+The test-train split
+In a disciplined machine learning workflow it is crucial to withhold a portion of your data (testing data) from any decision-making process. This allows you to independently assess the performance of your model when it is finalized. The remaining data, the training data, is used to build and select the best model.
+
+In this exercise, you will use the rsample package to split your data to perform the initial train-test split of your gapminder data.
+
+Note: Since this is a random split of the data it is good practice to set a seed before splitting it.
+
+```{r tts}
+set.seed(42)
+
+# Prepare the initial split object
+gap_split <- initial_split(gapminder, prop = .75)
+
+# Extract the training dataframe
+training_data <- training(gap_split)
+
+# Extract the testing dataframe
+testing_data <- testing(gap_split)
+
+# Calculate the dimensions of both training_data and testing_data
+dim(training_data)
+dim(testing_data)
+```
+
+Cross-validation dataframes
+Now that you have withheld a portion of your data as testing data, you can use the remaining portion to find the best performing model.
+
+In this exercise, you will split the training data into a series of 5 train-validate sets using the vfold_cv() function from the rsample package.
+
+```{r cvd}
+set.seed(42)
+
+# Prepare the dataframe containing the cross validation partitions
+cv_split <- vfold_cv(training_data, v = 5)
+
+cv_data <- cv_split %>% 
+  mutate(
+    # Extract the train dataframe for each split
+    train = map(splits, ~training(.x)), 
+    # Extract the validate dataframe for each split
+    validate = map(splits, ~testing(.x))
+  )
+
+# Use head() to preview cv_data
+head(cv_data)
+```
+
+Build cross-validated models
+In this exercise, you will build a linear model predicting life_expectancy using all available features. You will do this for the train data of each cross-validation fold.
+
+```{r bcvm}
+# Build a model using the train data for each fold of the cross validation
+cv_models_lm <- cv_data %>% mutate(model = map(train, ~lm(formula = life_expectancy~., data = .x)))
+```
+
+Preparing for evaluation
+In order to measure the validate performance of your models you need compare the predicted values of life_expectancy for the observations from validate set to the actual values recorded. Here you will prepare both of these vectors for each partition.
+
+```{r pe}
+cv_prep_lm <- cv_models_lm %>% 
+  mutate(
+    # Extract the recorded life expectancy for the records in the validate dataframes
+    validate_actual = map(validate, ~.x$life_expectancy),
+    # Predict life expectancy for each validate set using its corresponding model
+    validate_predicted = map2(.x = model, .y = validate, ~predict(.x, .y))
+  )
+```
+
+Evaluate model performance
+Now that you have both the actual and predicted values of each fold you can compare them to measure performance.
+
+For this regression model, you will measure the Mean Absolute Error (MAE) between these two vectors. This value tells you the average difference between the actual and predicted values.
+
+```{r emp}
+library(Metrics)
+mae <- Metrics::mae
+# Calculate the mean absolute error for each validate fold       
+cv_eval_lm <- cv_prep_lm %>% 
+  mutate(validate_mae = map2_dbl(validate_actual, validate_predicted, ~mae(actual = .x, predicted = .y)))
+
+# Print the validate_mae column
+cv_eval_lm$validate_mae
+
+# Calculate the mean of validate_mae column
+mean(cv_eval_lm$validate_mae)
+```
+
+Build a random forest model
+Here you will use the same cross-validation data to build (using train) and evaluate (using validate) random forests for each partition. Since you are using the same cross-validation partitions as your regression models, you are able to directly compare the performance of the two models.
+
+Note: We will limit our random forests to contain 100 trees to ensure they finish fitting in a reasonable time. The default number of trees for ranger() is 500.
+
+```{r brfm}
+library(ranger)
+
+# Build a random forest model for each fold
+cv_models_rf <- cv_data %>% 
+  mutate(model = map(train, ~ranger(formula = life_expectancy~., data = .x,
+                                    num.trees = 100, seed = 42)))
+
+# Generate predictions using the random forest model
+cv_prep_rf <- cv_models_rf %>% 
+  mutate(validate_actual = map(validate, ~.x$life_expectancy), validate_predicted = map2(.x = model, .y = validate, ~predict(.x, .y)$predictions))
+```
+
+Evaluate a random forest model
+Similar to the linear regression model, you will use the MAE metric to evaluate the performance of the random forest model.
+
+```{r erfm}
+library(ranger)
+
+# Calculate validate MAE for each fold
+cv_eval_rf <- cv_prep_rf %>% 
+  mutate(validate_mae = map2_dbl(validate_actual, validate_predicted, ~mae(actual = .x, predicted = .y)))
+
+# Print the validate_mae column
+cv_eval_rf$validate_mae
+
+# Calculate the mean of validate_mae column
+mean(cv_eval_rf$validate_mae)
+```
+
+Fine tune your model
+Wow! That was a significant improvement over a regression model. Now let's see if you can further improve this performance by fine tuning your random forest models. To do this you will vary the mtry parameter when building your random forest models on your train data.
+
+The default value of mtry for ranger is the rounded down square root of the total number of features (6). This results in a value of 2.
+
+```{r ftym}
+# Prepare for tuning your cross validation folds by varying mtry
+cv_tune <- cv_data %>% crossing(mtry = 2:5) 
+
+# Build a model for each fold & mtry combination
+cv_model_tunerf <- cv_tune %>% mutate(model = map2(.x = train, .y = mtry, ~ranger(formula = life_expectancy~., 
+                                              data = .x, mtry = .y, 
+                                              num.trees = 100, seed = 42)))
+```
+
+The best performing parameter
+You've now built models where you've varied the random forest-specific hyperparameter mtry in the hopes of improving your model further. Now you will measure the performance of each mtry value across the 5 cross validation partitions to see if you can improve the model.
+
+Remember that the validate MAE you calculated two exercises ago of 0.795 was for the default mtry value of 2.
+
+```{r bpp}
+# Generate validate predictions for each model
+cv_prep_tunerf <- cv_model_tunerf %>% mutate(validate_actual = map(validate, ~.x$life_expectancy), validate_predicted = map2(.x = model, .y = validate, ~predict(.x, .y)$predictions))
+
+# Calculate validate MAE for each fold and mtry combination
+cv_eval_tunerf <- cv_prep_tunerf %>% 
+  mutate(validate_mae = map2_dbl(.x = validate_actual, .y = validate_predicted, ~mae(actual = .x, predicted = .y)))
+
+# Calculate the mean validate_mae for each mtry used  
+cv_eval_tunerf %>% 
+  group_by(mtry) %>% 
+  summarise(mean_mae = mean(validate_mae))
+```
+
+Build & evaluate the best model
+Using cross-validation you were able to identify the best model for predicting life_expectancy using all the features in gapminder. Now that you've selected your model, you can use the independent set of data (testing_data) that you've held out to estimate the performance of this model on new data.
+
+You will build this model using all training_data and evaluate using testing_data.
+
+```{r bebm}
+# Build the model using all training data and the best performing parameter
+best_model <- ranger(formula = life_expectancy~., data = training_data,
+                     mtry = 4, num.trees = 100, seed = 42)
+
+# Prepare the test_actual vector
+test_actual <- testing_data$life_expectancy
+
+# Predict life_expectancy for the testing_data
+test_predicted <- predict(best_model, testing_data)$predictions
+
+# Calculate the test MAE
+mae(test_actual, test_predicted)
+```
+
+## Classification Models
+
+Prepare train-test-validate parts
+In this exercise, you will leverage the tools that you have learned thus far to build a classification model to predict employee attrition.
+
+You will work with the attrition dataset, which contains 30 features about employees which you will use to predict if they have left the company.
+
+You will first prepare the training & testing data sets, then you will further split the training data using cross-validation so that you can search for the best performing model for this task.
+
+```{r pttvp}
+set.seed(42)
+
+attrition <- read.csv("attrition.csv") %>% select(-1)
+
+# Prepare the initial split object
+data_split <- initial_split(attrition, prop = 0.75)
+
+# Extract the training dataframe
+training_data <- training(data_split)
+
+# Extract the testing dataframe
+testing_data <- testing(data_split)
+
+cv_split <- vfold_cv(training_data, v = 5)
+
+cv_data <- cv_split %>% 
+  mutate(
+    # Extract the train dataframe for each split
+    train = map(splits, ~training(.x)),
+    # Extract the validate dataframe for each split
+    validate = map(splits, ~testing(.x))
+  )
 ```
 

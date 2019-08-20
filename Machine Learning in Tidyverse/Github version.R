@@ -9,15 +9,9 @@
 
 # Libraries ------------------------------------------
 
-library(tidyverse)
-library(modelr)
-library(gapminder)
-library(dslabs)
-library(broom)
-library(Metrics)
-library(rsample)
-library(gridExtra)
-library(ranger)
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, modelr, gapminder,dslabs, broom, Metrics, rsample, gridExtra, ranger)
+
 theme_set(theme_bw())
 
 

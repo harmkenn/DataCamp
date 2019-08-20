@@ -484,3 +484,57 @@ cv_data <- cv_split %>%
   )
 ```
 
+Build cross-validated models
+In this exercise, you will build logistic regression models for each fold in your cross-validation.
+
+You will build this using the glm() function and by setting the family argument to "binomial".
+
+```{r bcvm}
+# Build a model using the train data for each fold of the cross validation
+cv_models_lr <- cv_data %>% 
+  mutate(model = map(train, ~glm(formula = Attrition~., data = .x, family = "binomial")))
+```
+
+Predictions of a single model
+To calculate the performance of a classification model you need to compare the actual values of Attrition to those predicted by the model. When calculating metrics for binary classification tasks (such as precision and recall), the actual and predicted vectors must be converted to binary values.
+
+In this exercise, you will learn how to prepare these vectors using the model and validate dataframes from the first cross-validation fold as an example.
+
+```{r psm}
+# Extract the first model and validate 
+model <- cv_models_lr$model[[1]]
+validate <- cv_models_lr$validate[[1]]
+
+# Prepare binary vector of actual Attrition values in validate
+validate_actual <- validate$Attrition == "Yes"
+
+# Predict the probabilities for the observations in validate
+validate_prob <- predict(model, validate, type = "response")
+
+# Prepare binary vector of predicted Attrition values for validate
+validate_predicted <- validate_prob > 0.5
+```
+
+Performance of a single model
+Now that you have the binary vectors for the actual and predicted values of the model, you can calculate many commonly used binary classification metrics. In this exercise you will focus on:
+
+accuracy: rate of correctly predicted values relative to all predictions.
+precision: portion of predictions that the model correctly predicted as TRUE.
+recall: portion of actual TRUE values that the model correctly recovered.
+
+```{r psm}
+library(Metrics)
+
+# Compare the actual & predicted performance visually using a table
+table(validate_actual, validate_predicted)
+
+# Calculate the accuracy
+accuracy(validate_actual, validate_predicted)
+
+# Calculate the precision
+precision(validate_actual, validate_predicted)
+
+# Calculate the recall
+recall(validate_actual, validate_predicted)
+```
+

@@ -17,13 +17,14 @@ editor_options:
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-library(tidyverse)
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, modelr, gapminder,dslabs, broom, Metrics, rsample, gridExtra, ranger)
+
 select <- dplyr::select
-library(dslabs)
+
 gapminder <- gapminder %>% drop_na(population)
 gapminder <- read.csv("gapminder.csv") %>% select(-1) %>% as.tibble()
-library(broom)
-library(rsample)
+
 
 ```
 

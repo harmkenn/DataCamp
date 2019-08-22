@@ -17,13 +17,11 @@ editor_options:
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-if (!require("pacman")) install.packages("pacman")
+
 pacman::p_load(tidyverse, modelr, gapminder,dslabs, broom, Metrics, rsample, gridExtra, ranger)
 
-select <- dplyr::select
-
 gapminder <- gapminder %>% drop_na(population)
-gapminder <- read.csv("gapminder.csv") %>% select(-1) %>% as.tibble()
+gapminder <- read.csv("gapminder.csv") %>% select(-1) %>% as_tibble()
 
 
 ```
@@ -524,7 +522,6 @@ precision: portion of predictions that the model correctly predicted as TRUE.
 recall: portion of actual TRUE values that the model correctly recovered.
 
 ```{r psm}
-library(Metrics)
 
 # Compare the actual & predicted performance visually using a table
 table(validate_actual, validate_predicted)
@@ -538,4 +535,107 @@ precision(validate_actual, validate_predicted)
 # Calculate the recall
 recall(validate_actual, validate_predicted)
 ```
+
+Prepare for cross-validated performance
+Now that you know how to calculate the performance metrics for a single model, you are now ready to expand this for all the folds in the cross-validation dataframe.
+
+```{r pcvp} 
+cv_prep_lr <- cv_models_lr %>% 
+  mutate(
+    # Prepare binary vector of actual Attrition values in validate
+    validate_actual = map(validate, ~.x$Attrition == "Yes"),
+    # Prepare binary vector of predicted Attrition values for validate
+    validate_predicted = map2(.x = model, .y = validate, ~predict(.x, .y, type = "response") > 0.5)
+  )
+```
+
+Calculate cross-validated performance
+It is crucial to optimize models using a carefully selected metric aimed at achieving the goal of the model.
+
+Imagine that in this case you want to use this model to identify employees that are predicted to leave the company. Ideally, you want a model that can capture as many of the ready-to-leave employees as possible so that you can intervene. The corresponding metric that captures this is the recall metric. As such, you will exclusively use recall to optimize and select your models.
+
+```{r ccvp}
+# Calculate the validate recall for each cross validation fold
+cv_perf_recall <- cv_prep_lr %>% 
+  mutate(validate_recall = map2_dbl(validate_actual, validate_predicted, 
+                                    ~recall(actual = .x, predicted = .y)))
+
+# Print the validate_recall column
+cv_perf_recall$validate_recall
+
+# Calculate the average of the validate_recall column
+mean(cv_perf_recall$validate_recall)
+```
+
+Tune random forest models
+Now that you have a working logistic regression model you will prepare a random forest model to compare it with.
+
+```{r trfm}
+# Prepare for tuning your cross validation folds by varying mtry
+cv_tune <- cv_data %>%
+  crossing(mtry = c(2, 4, 8, 16)) 
+
+# Build a cross validation model for each fold & mtry combination
+cv_models_rf <- cv_tune %>% 
+  mutate(model = map2(train, mtry, ~ranger(formula = Attrition~., 
+                                           data = .x, mtry = .y,
+                                           num.trees = 100, seed = 42)))
+```
+
+Random forest performance
+It is now time to see whether the random forests models you built in the previous exercise are able to outperform the logistic regression model.
+
+Remember that the validate recall for the logistic regression model was 0.43.
+
+```{r rfp}
+cv_prep_rf <- cv_models_rf %>% 
+  mutate(
+    # Prepare binary vector of actual Attrition values in validate
+    validate_actual = map(validate, ~.x$Attrition == "Yes"),
+    # Prepare binary vector of predicted Attrition values for validate
+    validate_predicted = map2(.x = model, .y = validate, ~predict(.x, .y, type = "response")$predictions == "Yes")
+  )
+
+# Calculate the validate recall for each cross validation fold
+cv_perf_recall <- cv_prep_rf %>% 
+  mutate(recall = map2_dbl(.x = validate_actual, .y = validate_predicted, ~recall(actual = .x, predicted = .y)))
+
+# Calculate the mean recall for each mtry used  
+cv_perf_recall %>% 
+  group_by(mtry) %>% 
+  summarise(mean_recall = mean(recall))
+```
+
+Build final classification model
+Comparing the recall performance between the logistic regression model (0.4) and the best performing random forest model (0.2), you've learned that the model with the best performance is the logistic regression model. In this exercise, you will build the logistic regression model using all of the train data and you will prepare the necessary vectors for evaluating this model's test performance.
+
+```{r bfcm}
+# Build the logistic regression model using all training data
+best_model <- glm(formula = Attrition~., 
+                  data = training_data, family = "binomial")
+
+# Prepare binary vector of actual Attrition values for testing_data
+test_actual <- testing_data$Attrition == "Yes"
+
+# Prepare binary vector of predicted Attrition values for testing_data
+test_predicted <- predict(best_model, testing_data, type = "response") > 0.5
+```
+
+Measure final model performance
+Now its time to calculate the test performance of your final model (logistic regression). Here you will use the held out testing data to characterize the performance you would expect from this model when it is applied to new data.
+
+```{r mfmp}
+# Compare the actual & predicted performance visually using a table
+table(test_actual, test_predicted)
+
+# Calculate the test accuracy
+accuracy(test_actual, test_predicted)
+
+# Calculate the test precision
+precision(test_actual, test_predicted)
+
+# Calculate the test recall
+recall(test_actual, test_predicted)
+```
+
 

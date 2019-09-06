@@ -350,7 +350,7 @@ all_wars_matrix
 
 # star_wars_matrix and star_wars_matrix2 are available in your workspace
 star_wars_matrix  
-load(url("http://s3.amazonaws.com/assets.datacamp.com/course/intro_to_r/all_wars_matrix.RData"))
+#load(url("http://s3.amazonaws.com/assets.datacamp.com/course/intro_to_r/all_wars_matrix.RData"))
 movie_names <- c("A New Hope","The Empire Strikes Back","Return of the Jedi", "The Phantom Menace", "Attack of the Clones", "Revenge of the Sith")
 box_office_all <- c(461, 314.4, 290.5, 247.9, 309.3, 165.8)
 box_office_all2 <- c(474.5, 552.5, 310.7, 338.7, 380.3, 468.5)

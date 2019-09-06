@@ -1,0 +1,89 @@
+---
+title: "Machine Learning Tidyverse"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+editor_options: 
+  chunk_output_type: console
+---
+
+# {.tabset .tabset-fade}
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+pacman::p_load(tidyverse)
+
+```
+
+```{r eval = FALSE, echo = FALSE}
+setwd(dirname(rstudioapi::getSourceEditorContext()$path))
+```
+
+
+## Background
+
+https://campus.datacamp.com/courses/communicating-with-data-in-the-tidyverse/custom-ggplot2-themes?ex=2
+
+## ggplot2
+
+In this chapter, you will have a first look at the data you're going to work with throughout this course: the relationship between weekly working hours and monetary compensation in European countries, according to the International Labour Organization (ILO). After that, you'll dive right in and discover a stunning correlation by employing an exploratory visualization. You will then apply a custom look to that graphic – you'll turn an ordinary plot into an aesthetically pleasing and unique data visualization.
+
+Join the two data sets together
+In the video, you have learned that the inner_join() function of dplyr needs to be given a "key" on which two data frames are joined. Actually, multiple keys that need to match can be specified. In this first exercise, you are going to join two data sets by two keys. The data frames ilo_hourly_compensation and ilo_working_hours are already loaded for you and are available in your workspace.
+
+```{r jtdst}
+ilo_hourly_compensation <- read.csv("ilo_hourly_compensation.csv") %>% select(-1)
+ilo_working_hours <- read.csv("ilo_working_hours.csv") %>% select(-1)
+
+# Join both data frames
+ilo_data <- ilo_hourly_compensation %>% inner_join(ilo_working_hours, by = c("country", "year"))
+
+# Count the resulting rows
+ilo_data  %>% 
+    count()
+
+# Examine ilo_data
+ilo_data
+```
+
+Change variable types
+For displaying data in ggplot2 graphics, it is often helpful to convert all the variables to the right data type. Usually, categorical variables like country in this example should be converted to factors before plotting them. You can do so using as.factor(). In your data set, two columns are still of type "character" – use mutate() to turn them into factors.
+
+```{r cvt}
+# Turn year and country into a factor
+ilo_data_corrected <- ilo_data %>%
+  mutate(year = as.factor(as.numeric(year)), country = as.factor(country))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

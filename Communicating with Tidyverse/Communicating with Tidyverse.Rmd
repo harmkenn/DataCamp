@@ -62,10 +62,61 @@ ilo_data_corrected <- ilo_data %>%
   mutate(year = as.factor(as.numeric(year)), country = as.factor(country))
 ```
 
+Filter the data for plotting
+Use the filter() function of dplyr to remove non-European countries. A vector called european_countries has been created that contains all European countries which should remain in the data set. Here, the %in% operator introduced in the video might come in handy. Note that only a subset of European countries for which enough data exist is retained. For instance, Poland is missing.
 
+```{r fdp}
+european_countries <- readLines("european_countries.csv") 
 
+# Examine the European countries vector
+european_countries
 
+# Only retain European countries
+ilo_data <- ilo_data %>% filter(country %in% european_countries)
+```
 
+Some summary statistics
+Use dplyrs group_by() and summarize() to compute summary statistics for both years.
+
+```{r sss}
+# Examine the structure of ilo_data
+str(ilo_data)
+
+# Group and summarize the data
+ilo_data %>%
+  group_by(year) %>%
+  summarize(mean_hourly_compensation = mean(hourly_compensation),
+            mean_working_hours = mean(working_hours))
+```
+
+A basic scatter plot
+In this exercise, you will create a very basic scatter plot with ggplot2. This is mostly a repetition of stuff you've learnt in the prerequisites for this course, so it should be easy for you.
+
+```{r bsp}
+# Filter for 2006
+plot_data <- ilo_data %>% filter(year == "2006")
+  
+# Create the scatter plot
+ggplot(plot_data) +
+  geom_point(aes(x = working_hours, y = hourly_compensation))
+```
+
+Add labels to the plot
+As mentioned in the video, you're going to enhance the plot from the previous exercise by adding a title, a subtitle, and a caption to the plot as well as giving the axes meaningful names. You're going to use the labs() function to do this – try using ?labs in the console to see the available options.
+
+```{r alp}
+# Create the plot
+ggplot(plot_data) +
+  geom_point(aes(x = working_hours, y = hourly_compensation)) +
+  # Add labels
+  labs(
+    x = "Working hours per week",
+    y = "Hourly compensation",
+    title = "The more people work, the less compensation they seem to receive",
+    subtitle = "Working hours and hourly compensation in European countries, 2006",
+    caption = "Data source: ILO, 2017"
+  )
+```
 
 
 

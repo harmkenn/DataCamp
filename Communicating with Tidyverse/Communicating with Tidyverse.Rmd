@@ -18,7 +18,9 @@ editor_options:
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
-pacman::p_load(tidyverse)
+pacman::p_load(tidyverse, extrafont)
+font_import()
+loadfonts(device = "win")
 
 ```
 
@@ -94,7 +96,7 @@ In this exercise, you will create a very basic scatter plot with ggplot2. This i
 
 ```{r bsp}
 # Filter for 2006
-plot_data <- ilo_data %>% filter(year == "2006")
+plot_data <- ilo_data %>% filter(year == "2006") %>% as_tibble()
   
 # Create the scatter plot
 ggplot(plot_data) +
@@ -118,14 +120,118 @@ ggplot(plot_data) +
   )
 ```
 
+Apply a default theme
+As you've learnt in the videos, ggplot2 comes with a set of predefined themes. Try out some of them!
 
+```{r adt}
+# Save your current plot into a variable: ilo_plot
+ilo_plot <- ggplot(plot_data) +
+  geom_point(aes(x = working_hours, y = hourly_compensation)) +
+  labs(
+    x = "Working hours per week",
+    y = "Hourly compensation",
+    title = "The more people work, the less compensation they seem to receive",
+    subtitle = "Working hours and hourly compensation in European countries, 2006",
+    caption = "Data source: ILO, 2017"
+  )
 
+# Try out theme_minimal
+ilo_plot +
+  theme_minimal()
 
+# Try out any other possible theme function
+ilo_plot +
+  theme_light() 
+```
 
+Change the appearance of titles
+Besides applying defined theme presets, you can tweak your plot even more by altering different style attributes of it. Hint: You can reuse and overwrite the ilo_plot variable generated in the previous exercise – the current plot is already shown in the window on the right.
 
+```{r cat}
+ilo_plot <- ilo_plot +
+  theme_minimal() +
+  # Customize the "minimal" theme with another custom "theme" call
+  theme(
+    text = element_text(family = "Bookman"),
+    title = element_text(color = "gray25"),
+    plot.caption = element_text(color = "gray30"),
+    plot.subtitle = element_text(size = 12)
+  )
+  
+# Render the plot object
+ilo_plot
+```
 
+Alter background color and add margins
+Further customize the look of your plot with more arguments to the theme function call. You can continue working on your ilo_plot object created in the last exercise.
 
+```{r abcam}
+ilo_plot +
+  # "theme" calls can be stacked upon each other, so this is already the third call of "theme"
+  theme(
+    plot.background = element_rect(fill = "gray95"),
+    plot.margin = unit(c(5, 10, 5, 10), units = "mm")
+  )
+```
 
+## Visualizing Data
+
+Prepare the data set for the faceted plot
+You're now going to prepare your data set for producing the faceted scatter plot in the next exercise, as mentioned in the video. For this, the data set needs to contain only the years 1996 and 2006, because your plot will only have two facets. ilo_data has been pre-loaded for you.
+
+```{r pdsffp}
+# Filter ilo_data to retain the years 1996 and 2006
+ilo_data <- ilo_data %>%
+  filter(year == "1996" | year == "2006")
+```
+
+Add facets to the plot
+Use facet_grid() in order to add horizontal facets for 1996 and 2006 each, as detailed in the video.
+
+```{r afp}
+# Again, you save the plot object into a variable so you can save typing later on
+ilo_plot <- ggplot(ilo_data, aes(x = working_hours, y = hourly_compensation)) +
+  geom_point() +
+   labs(
+    x = "Working hours per week",
+    y = "Hourly compensation",
+    title = "The more people work, the less compensation they seem to receive",
+    subtitle = "Working hours and hourly compensation in European countries, 2006",
+    caption = "Data source: ILO, 2017"
+  ) +
+  # Add facets here
+  facet_grid(facets = . ~ year)
+ 
+ilo_plot
+```
+
+Define your own theme function
+In the video you saw how a lot of typing can be saved by replacing code chunks with function calls. You saw how a function is usually defined, now you will apply this knowledge in order to make your previous two theme() calls reusable.
+
+```{r dyotf}
+# For a starter, let's look at what you did before: adding various theme calls to your plot object
+ilo_plot +
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Bookman", color = "gray25"),
+    plot.subtitle = element_text(size = 12),
+    plot.caption = element_text(color = "gray30"),
+    plot.background = element_rect(fill = "gray95"),
+    plot.margin = unit(c(5, 10, 5, 10), units = "mm")
+  )
+      
+# Define your own theme function below
+theme_ilo <- function() {
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Bookman", color = "gray25"),
+    plot.subtitle = element_text(size = 12),
+    plot.caption = element_text(color = "gray30"),
+    plot.background = element_rect(fill = "gray95"),
+    plot.margin = unit(c(5, 10, 5, 10), units = "mm")
+  )
+}
+```
 
 
 

@@ -1,0 +1,30 @@
+---
+title: "The reduction in weekly working hours in Europe" 
+subtitle: "Looking at the development between 1996 and 2006"
+author: "Insert your name here"
+output: html_document
+---
+
+## Summary 
+
+This is where you are going to quickly summarize what you did.
+
+## Preparations 
+
+This is where you will load the necessary R packages.
+
+## Analysis
+
+### Data
+
+This is where you will load the data. 
+
+### Preprocessing
+
+This is where you will preprocess the data.
+
+### Results
+
+This is where you will plot the data.
+
+

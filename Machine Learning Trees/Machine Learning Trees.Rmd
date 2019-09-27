@@ -1,0 +1,65 @@
+---
+title: "Machine Learning Trees"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+editor_options: 
+  chunk_output_type: console
+---
+
+# {.tabset .tabset-fade}
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+pacman::p_load(tidyverse, DT, rpart, DMwR, caret, rpart.plot, rattle)
+theme_set(theme_bw())
+```
+
+```{r swd, eval=FALSE, echo=FALSE}
+# this is set to not run during the knit process
+# this sets the working directory to the file location
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+```
+
+## Classification Trees
+
+Build a classification tree
+Let's get started and build our first classification tree. A classification tree is a decision tree that performs a classification (vs regression) task.
+
+You will train a decision tree model to understand which loan applications are at higher risk of default using a subset of the German Credit Dataset. The response variable, called "default", indicates whether the loan went into a default or not, which means this is a binary classification problem (there are just two classes).
+
+You will use the rpart package to fit the decision tree and the rpart.plot package to visualize the tree.
+
+Instructions
+100 XP
+The data frame creditsub is in the workspace. This data frame is a subset of the original German Credit Dataset, which we will use to train our first classification tree model.
+
+Take a look at the data using the str() function.
+In R, formulas are used to model the response as a function of some set of predictors, so the formula here is default ~ ., which means use all columns (except the response column) as predictors.
+Fit the classification decision tree using the rpart() function from the rpart package. In the rpart() function, note that you'll also have to provide the training data frame.
+Using the model object that you create, plot the decision tree model using the rpart.plot() function from the rpart.plot package.
+
+
+```{r bct}
+creditsub <- read.csv("creditsub.csv")
+
+# Look at the data
+str(creditsub)
+
+# Create the model
+credit_model <- rpart(formula = default ~ ., data = creditsub, method = "class")
+
+# Display the results
+rpart.plot(x = credit_model, yesno = 2, type = 0, extra = 0)
+```
+

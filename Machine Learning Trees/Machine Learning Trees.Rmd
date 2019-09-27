@@ -63,3 +63,69 @@ credit_model <- rpart(formula = default ~ ., data = creditsub, method = "class")
 rpart.plot(x = credit_model, yesno = 2, type = 0, extra = 0)
 ```
 
+Train/test split
+For this exercise, you'll randomly split the German Credit Dataset into two pieces: a training set (80%) called credit_train and a test set (20%) that we will call credit_test. We'll use these two sets throughout the chapter.
+
+Instructions
+100 XP
+The credit data frame is loaded into the workspace.
+
+Define n, the number of rows in the credit data frame.
+Define n_train to be ~80% of n.
+Set a seed (for reproducibility) and then sample n_train rows to define the set of training set indices.
+Using row indices, subset the credit data frame to create two new datasets: credit_train and credit_test
+
+```{r tts}
+credit <- read.csv("credit.csv")
+
+# Total number of rows in the credit data frame
+n <- nrow(credit)
+
+# Number of rows for the training set (80% of the dataset)
+n_train <- round(.8 * n) 
+
+# Create a vector of indices which is an 80% random sample
+set.seed(123)
+train_indices <- sample(1:n, n_train)
+
+# Subset the credit data frame to training indices only
+credit_train <- credit[train_indices, ]  
+  
+# Exclude the training indices to create the test set
+credit_test <- credit[-train_indices, ] 
+```
+
+Train a classification tree model
+In this exercise, you will train a model on the newly created training set and print the model object to get a sense of the results.
+
+```{r tctm}
+# Train the model (to predict 'default')
+credit_model <- rpart(formula = default ~ ., data = credit_train, method = "class")
+
+# Look at the model output                      
+print(credit_model)
+```
+
+Compute confusion matrix
+As discussed in the previous video, there are a number of different metrics by which you can measure the performance of a classification model. In this exercise, we will evaluate the performance of the model using test set classification error. A confusion matrix is a convenient way to examine the per-class error rates for all classes at once.
+
+The confusionMatrix() function from the caret package prints both the confusion matrix and a number of other useful classification metrics such as "Accuracy" (fraction of correctly classified instances).
+
+The caret package has been loaded for you.
+
+Instructions
+100 XP
+Generate class predictions for the credit_test data frame using the credit_model object.
+Using the caret::confusionMatrix() function, compute the confusion matrix for the test set.
+
+```{r ccm}
+# Generate predicted classes using the model object
+class_prediction <- predict(object = credit_model,  
+                        newdata = credit_test,   
+                        type = "class")  
+                            
+# Calculate the confusion matrix for the test set
+confusionMatrix(data = class_prediction,       
+                reference = credit_test$default) 
+```
+

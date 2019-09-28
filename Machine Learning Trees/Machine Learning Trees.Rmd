@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, DT, rpart, DMwR, caret, rpart.plot, rattle, ModelMetrics)
+pacman::p_load(tidyverse, DT, rpart, DMwR, caret, rpart.plot, rattle, Metrics)
 theme_set(theme_bw())
 confusionMatrix <- caret::confusionMatrix
 ```
@@ -173,3 +173,99 @@ ce(actual = credit_test$default,
 ```
 
 ## Regression Trees
+
+Split the data
+These examples will use a subset of the Student Performance Dataset from UCI ML Dataset Repository.
+
+The goal of this exercise is to predict a student's final Mathematics grade based on the following variables: sex, age, address, studytime (weekly study time), schoolsup (extra educational support), famsup (family educational support), paid (extra paid classes within the course subject) and absences.
+
+The response is final_grade (numeric: from 0 to 20, output target).
+
+After initial exploration, split the data into training, validation, and test sets. In this chapter, we will introduce the idea of a validation set, which can be used to select a "best" model from a set of competing models.
+
+In Chapter 1, we demonstrated a simple way to split the data into two pieces using the sample() function. In this exercise, we will take a slightly different approach to splitting the data that allows us to split the data into more than two parts (here, we want three: train, validation, test). We still use the sample() function, but instead of sampling the indices themselves, we will assign each row to either the training, validation or test sets according to a probability distribution.
+
+The dataset grade is already in your workspace.
+
+Instructions
+100 XP
+Take a look at the data using the str() function.
+Set a seed (for reproducibility) and then sample n_train rows to define the set of training set indices.
+Draw a sample of size nrow(grade) from the number 1 to 3 (with replacement). You want approximately 70% of the sample to be 1 and the remaining 30% to be equally split between 2 and 3.
+Subset grade using the sample you just drew so that indices with the value 1 are in grade_train, indices with the value 2 are in grade_valid, and indices with 3 are in grade_test.
+
+```{r std}
+grade <- read.csv("grades.csv")
+
+# Look at the data
+str(grade)
+
+# Set seed and create assignment
+set.seed(1)
+assignment <- sample(1:3, size = nrow(grade), prob = c(.7,.15,.15), replace = TRUE)
+
+# Create a train, validation and tests from the original data frame 
+grade_train <- grade[assignment == 1, ]    # subset grade to training indices only
+grade_valid <- grade[assignment == 2, ]  # subset grade to validation indices only
+grade_test <- grade[assignment == 3, ]   # subset grade to test indices only
+```
+
+Train a regression tree model
+In this exercise, we will use the grade_train dataset to fit a regression tree using rpart() and visualize it using rpart.plot(). A regression tree plot looks identical to a classification tree plot, with the exception that there will be numeric values in the leaf nodes instead of predicted classes.
+
+This is very similar to what we did previously in Chapter 1. When fitting a classification tree, we use method = "class", however, when fitting a regression tree, we need to set method = "anova". By default, the rpart() function will make an intelligent guess as to what the method value should be based on the data type of your response column, but it's recommened that you explictly set the method for reproducibility reasons (since the auto-guesser may change in the future).
+
+The grade_train training set is loaded into the workspace.
+
+Instructions
+100 XP
+Using the grade_train dataframe and the given formula, train a regresion tree.
+Look at the model output by printing the model object.
+Plot the decision tree using rpart.plot().
+
+```{r trtm}
+# Train the model
+grade_model <- rpart(formula = final_grade ~ ., 
+                     data = grade_train,
+                     method = "anova")
+
+# Look at the model output                      
+print(grade_model)
+
+# Plot the tree model
+rpart.plot(x = grade_model, yesno = 2, type = 0, extra = 0)
+```
+
+Evaluate a regression tree model
+Predict the final grade for all students in the test set. The grade is on a 0-20 scale. Evaluate the model based on test set RMSE (Root Mean Squared Error). RMSE tells us approximately how far away our predictions are from the true values.
+
+Instructions
+100 XP
+First generate predictions on the grade_test data frame using the grade_model object.
+After generating test set predictions, use the rmse() function from the Metrics package to compute test set RMSE.
+
+```{r ertm}
+# Generate predictions on a test set
+pred <- predict(object = grade_model,   # model object 
+                newdata = grade_test)  # test dataset
+
+# Compute the RMSE
+rmse(actual = grade_test$final_grade, 
+     predicted = pred)
+```
+
+Tuning the model
+Tune (or "trim") the model using the prune() function by finding the best "CP" value (CP stands for "Complexity Parameter").
+
+Instructions
+100 XP
+Print the CP Table, a matrix of information on the optimal prunings (based on CP).
+Retrieve the optimal CP value; the value for CP which minimizes cross-validated error of the model.
+Use the prune() function trim the tree, snipping off the least important splits, based on CP.
+
+
+
+
+
+
+

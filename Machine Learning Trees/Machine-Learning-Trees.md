@@ -1,7 +1,7 @@
 ---
 title: "Machine Learning Trees"
 author: "Ken Harmon"
-date: "`r format(Sys.time(), '%Y %B %d')`"
+date: "2019 October 02"
 output:
   html_document:  
     keep_md: true
@@ -15,22 +15,11 @@ editor_options:
 
 # {.tabset .tabset-fade}
 
-```{r, echo=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-```
 
-```{r load_libraries, include=FALSE}
-# Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, DT, rpart, DMwR, caret, rpart.plot, rattle, Metrics, ipred)
-theme_set(theme_bw())
-confusionMatrix <- caret::confusionMatrix
-```
 
-```{r swd, eval=FALSE, echo=FALSE}
-# this is set to not run during the knit process
-# this sets the working directory to the file location
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-```
+
+
+
 
 ## Classification Trees
 
@@ -51,18 +40,32 @@ Fit the classification decision tree using the rpart() function from the rpart p
 Using the model object that you create, plot the decision tree model using the rpart.plot() function from the rpart.plot package.
 
 
-```{r bct}
+
+```r
 creditsub <- read.csv("creditsub.csv")
 
 # Look at the data
 str(creditsub)
+```
 
+```
+## 'data.frame':	522 obs. of  5 variables:
+##  $ months_loan_duration: int  48 42 24 36 30 12 48 12 24 15 ...
+##  $ percent_of_income   : int  2 2 3 2 4 3 3 1 4 2 ...
+##  $ years_at_residence  : int  2 4 4 2 2 1 4 1 4 4 ...
+##  $ age                 : int  22 45 53 35 28 25 24 22 60 28 ...
+##  $ default             : Factor w/ 2 levels "no","yes": 2 1 2 1 2 2 2 1 2 1 ...
+```
+
+```r
 # Create the model
 credit_model <- rpart(formula = default ~ ., data = creditsub, method = "class")
 
 # Display the results
 rpart.plot(x = credit_model, yesno = 2, type = 0, extra = 0)
 ```
+
+![](Machine-Learning-Trees_files/figure-html/bct-1.png)<!-- -->
 
 Train/test split
 For this exercise, you'll randomly split the German Credit Dataset into two pieces: a training set (80%) called credit_train and a test set (20%) that we will call credit_test. We'll use these two sets throughout the chapter.
@@ -76,7 +79,8 @@ Define n_train to be ~80% of n.
 Set a seed (for reproducibility) and then sample n_train rows to define the set of training set indices.
 Using row indices, subset the credit data frame to create two new datasets: credit_train and credit_test
 
-```{r tts}
+
+```r
 credit <- read.csv("credit.csv")
 
 # Total number of rows in the credit data frame
@@ -99,12 +103,46 @@ credit_test <- credit[-train_indices, ]
 Train a classification tree model
 In this exercise, you will train a model on the newly created training set and print the model object to get a sense of the results.
 
-```{r tctm}
+
+```r
 # Train the model (to predict 'default')
 credit_model <- rpart(formula = default ~ ., data = credit_train, method = "class")
 
 # Look at the model output                      
 print(credit_model)
+```
+
+```
+## n= 800 
+## 
+## node), split, n, loss, yval, (yprob)
+##       * denotes terminal node
+## 
+##   1) root 800 230 no (0.7125000 0.2875000)  
+##     2) checking_balance=> 200 DM,unknown 365  48 no (0.8684932 0.1315068) *
+##     3) checking_balance=< 0 DM,1 - 200 DM 435 182 no (0.5816092 0.4183908)  
+##       6) months_loan_duration< 22.5 259  85 no (0.6718147 0.3281853)  
+##        12) credit_history=critical,good,poor 235  68 no (0.7106383 0.2893617)  
+##          24) months_loan_duration< 11.5 70  11 no (0.8428571 0.1571429) *
+##          25) months_loan_duration>=11.5 165  57 no (0.6545455 0.3454545)  
+##            50) amount>=1282 112  30 no (0.7321429 0.2678571) *
+##            51) amount< 1282 53  26 yes (0.4905660 0.5094340)  
+##             102) purpose=business,education,furniture/appliances 34  12 no (0.6470588 0.3529412) *
+##             103) purpose=car,renovations 19   4 yes (0.2105263 0.7894737) *
+##        13) credit_history=perfect,very good 24   7 yes (0.2916667 0.7083333) *
+##       7) months_loan_duration>=22.5 176  79 yes (0.4488636 0.5511364)  
+##        14) savings_balance=> 1000 DM,unknown 29   7 no (0.7586207 0.2413793) *
+##        15) savings_balance=< 100 DM,100 - 500 DM,500 - 1000 DM 147  57 yes (0.3877551 0.6122449)  
+##          30) months_loan_duration< 47.5 119  54 yes (0.4537815 0.5462185)  
+##            60) amount>=2313.5 93  45 no (0.5161290 0.4838710)  
+##             120) amount< 3026 19   5 no (0.7368421 0.2631579) *
+##             121) amount>=3026 74  34 yes (0.4594595 0.5405405)  
+##               242) percent_of_income< 2.5 38  15 no (0.6052632 0.3947368)  
+##                 484) purpose=business,car,education 23   6 no (0.7391304 0.2608696) *
+##                 485) purpose=car0,furniture/appliances,renovations 15   6 yes (0.4000000 0.6000000) *
+##               243) percent_of_income>=2.5 36  11 yes (0.3055556 0.6944444) *
+##            61) amount< 2313.5 26   6 yes (0.2307692 0.7692308) *
+##          31) months_loan_duration>=47.5 28   3 yes (0.1071429 0.8928571) *
 ```
 
 Compute confusion matrix
@@ -119,7 +157,8 @@ Instructions
 Generate class predictions for the credit_test data frame using the credit_model object.
 Using the caret::confusionMatrix() function, compute the confusion matrix for the test set.
 
-```{r ccm}
+
+```r
 # Generate predicted classes using the model object
 class_prediction <- predict(object = credit_model,  
                         newdata = credit_test,   
@@ -128,6 +167,36 @@ class_prediction <- predict(object = credit_model,
 # Calculate the confusion matrix for the test set
 confusionMatrix(data = class_prediction,       
                 reference = credit_test$default) 
+```
+
+```
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  no yes
+##        no  117  44
+##        yes  13  26
+##                                           
+##                Accuracy : 0.715           
+##                  95% CI : (0.6471, 0.7764)
+##     No Information Rate : 0.65            
+##     P-Value [Acc > NIR] : 0.03046         
+##                                           
+##                   Kappa : 0.3023          
+##                                           
+##  Mcnemar's Test P-Value : 7.08e-05        
+##                                           
+##             Sensitivity : 0.9000          
+##             Specificity : 0.3714          
+##          Pos Pred Value : 0.7267          
+##          Neg Pred Value : 0.6667          
+##              Prevalence : 0.6500          
+##          Detection Rate : 0.5850          
+##    Detection Prevalence : 0.8050          
+##       Balanced Accuracy : 0.6357          
+##                                           
+##        'Positive' Class : no              
+## 
 ```
 
 Compare models with a different splitting criterion
@@ -142,7 +211,8 @@ Train a model, splitting the tree based on information index.
 Generate predictions on the validation set using both models.
 Classification error is the fraction of incorrectly classified instances. Compute and compare the test set classification error of the two models by using the ce() function.
 
-```{r cmdsc}
+
+```r
 # Train a gini-based model
 credit_model1 <- rpart(formula = default ~ ., 
                        data = credit_train, 
@@ -168,8 +238,19 @@ pred2 <- predict(object = credit_model2,
 # Compare classification error
 ce(actual = credit_test$default, 
    predicted = pred1)
+```
+
+```
+## [1] 0.285
+```
+
+```r
 ce(actual = credit_test$default, 
    predicted = pred2) 
+```
+
+```
+## [1] 0.285
 ```
 
 ## Regression Trees
@@ -194,12 +275,27 @@ Set a seed (for reproducibility) and then sample n_train rows to define the set 
 Draw a sample of size nrow(grade) from the number 1 to 3 (with replacement). You want approximately 70% of the sample to be 1 and the remaining 30% to be equally split between 2 and 3.
 Subset grade using the sample you just drew so that indices with the value 1 are in grade_train, indices with the value 2 are in grade_valid, and indices with 3 are in grade_test.
 
-```{r std}
+
+```r
 grade <- read.csv("grades.csv")
 
 # Look at the data
 str(grade)
+```
 
+```
+## 'data.frame':	395 obs. of  8 variables:
+##  $ final_grade: num  3 3 5 7.5 5 7.5 5.5 3 9.5 7.5 ...
+##  $ age        : int  18 17 15 15 16 16 16 17 15 15 ...
+##  $ address    : Factor w/ 2 levels "R","U": 2 2 2 2 2 2 2 2 2 2 ...
+##  $ studytime  : int  2 2 2 3 2 2 2 2 2 2 ...
+##  $ schoolsup  : Factor w/ 2 levels "no","yes": 2 1 2 1 1 1 1 2 1 1 ...
+##  $ famsup     : Factor w/ 2 levels "no","yes": 1 2 1 2 2 2 1 2 2 2 ...
+##  $ paid       : Factor w/ 2 levels "no","yes": 1 1 2 2 2 2 1 1 2 2 ...
+##  $ absences   : int  6 4 10 2 4 10 0 6 0 0 ...
+```
+
+```r
 # Set seed and create assignment
 set.seed(1)
 assignment <- sample(1:3, size = nrow(grade), prob = c(.7,.15,.15), replace = TRUE)
@@ -223,7 +319,8 @@ Using the grade_train dataframe and the given formula, train a regresion tree.
 Look at the model output by printing the model object.
 Plot the decision tree using rpart.plot().
 
-```{r trtm}
+
+```r
 # Train the model
 grade_model <- rpart(formula = final_grade ~ ., 
                      data = grade_train,
@@ -231,10 +328,37 @@ grade_model <- rpart(formula = final_grade ~ .,
 
 # Look at the model output                      
 print(grade_model)
+```
 
+```
+## n= 282 
+## 
+## node), split, n, deviance, yval
+##       * denotes terminal node
+## 
+##  1) root 282 1519.49700 5.271277  
+##    2) absences< 0.5 82  884.18600 4.323171  
+##      4) paid=no 50  565.50500 3.430000  
+##        8) famsup=yes 22  226.36360 2.272727 *
+##        9) famsup=no 28  286.52680 4.339286 *
+##      5) paid=yes 32  216.46880 5.718750  
+##       10) age>=17.5 10   82.90000 4.100000 *
+##       11) age< 17.5 22   95.45455 6.454545 *
+##    3) absences>=0.5 200  531.38000 5.660000  
+##      6) absences>=13.5 42  111.61900 4.904762 *
+##      7) absences< 13.5 158  389.43670 5.860759  
+##       14) schoolsup=yes 23   50.21739 4.847826 *
+##       15) schoolsup=no 135  311.60000 6.033333  
+##         30) studytime< 3.5 127  276.30710 5.940945 *
+##         31) studytime>=3.5 8   17.00000 7.500000 *
+```
+
+```r
 # Plot the tree model
 rpart.plot(x = grade_model, yesno = 2, type = 0, extra = 0)
 ```
+
+![](Machine-Learning-Trees_files/figure-html/trtm-1.png)<!-- -->
 
 Evaluate a regression tree model
 Predict the final grade for all students in the test set. The grade is on a 0-20 scale. Evaluate the model based on test set RMSE (Root Mean Squared Error). RMSE tells us approximately how far away our predictions are from the true values.
@@ -244,7 +368,8 @@ Instructions
 First generate predictions on the grade_test data frame using the grade_model object.
 After generating test set predictions, use the rmse() function from the Metrics package to compute test set RMSE.
 
-```{r ertm}
+
+```r
 # Generate predictions on a test set
 pred <- predict(object = grade_model,   # model object 
                 newdata = grade_test)  # test dataset
@@ -253,6 +378,10 @@ predk <- pred
 # Compute the RMSE
 rmse(actual = grade_test$final_grade, 
      predicted = pred)
+```
+
+```
+## [1] 2.278249
 ```
 
 Tuning the model
@@ -264,13 +393,32 @@ Print the CP Table, a matrix of information on the optimal prunings (based on CP
 Retrieve the optimal CP value; the value for CP which minimizes cross-validated error of the model.
 Use the prune() function trim the tree, snipping off the least important splits, based on CP.
 
-```{r ttm}
+
+```r
 # Plot the "CP Table"
 plotcp(grade_model)
+```
 
+![](Machine-Learning-Trees_files/figure-html/ttm-1.png)<!-- -->
+
+```r
 # Print the "CP Table"
 print(grade_model$cptable)
+```
 
+```
+##           CP nsplit rel error    xerror       xstd
+## 1 0.06839852      0 1.0000000 1.0066743 0.09169976
+## 2 0.06726713      1 0.9316015 1.0185398 0.08663026
+## 3 0.03462630      2 0.8643344 0.8923588 0.07351895
+## 4 0.02508343      3 0.8297080 0.9046335 0.08045100
+## 5 0.01995676      4 0.8046246 0.8920489 0.08153881
+## 6 0.01817661      5 0.7846679 0.9042142 0.08283114
+## 7 0.01203879      6 0.7664912 0.8833557 0.07945742
+## 8 0.01000000      7 0.7544525 0.8987112 0.08200148
+```
+
+```r
 # Retrieve optimal cp value based on cross-validated error
 opt_index <- which.min(grade_model$cptable[, "xerror"])
 cp_opt <- grade_model$cptable[opt_index, "CP"]
@@ -283,6 +431,8 @@ grade_model_opt <- prune(tree = grade_model,
 rpart.plot(x = grade_model_opt, yesno = 2, type = 0, extra = 0)
 ```
 
+![](Machine-Learning-Trees_files/figure-html/ttm-2.png)<!-- -->
+
 Generate a grid of hyperparameter values
 Use expand.grid() to generate a grid of maxdepth and minsplit values.
 
@@ -292,7 +442,8 @@ Establish a list of possible values for minsplit and maxdepth
 Use the expand.grid() function to generate a data frame containing all combinations
 Take a look at the resulting grid object
 
-```{r gghv}
+
+```r
 # Establish a list of possible values for minsplit and maxdepth
 minsplit <- seq(1, 4, 1)
 maxdepth <- seq(1, 6, 1)
@@ -302,9 +453,25 @@ hyper_grid <- expand.grid(minsplit = minsplit, maxdepth = maxdepth)
 
 # Check out the grid
 head(hyper_grid)
+```
 
+```
+##   minsplit maxdepth
+## 1        1        1
+## 2        2        1
+## 3        3        1
+## 4        4        1
+## 5        1        2
+## 6        2        2
+```
+
+```r
 # Print the number of grid combinations
 nrow(hyper_grid)
+```
+
+```
+## [1] 24
 ```
 
 Generate a grid of models
@@ -317,7 +484,8 @@ Write a loop that trains a model for each row in hyper_grid and adds it to the g
 The loop will by indexed by the rows of hyper_grid.
 For each row, there is a unique combination of the minsplit and maxdepth values that will be used to train a model.
 
-```{r ggm}
+
+```r
 # Number of potential models in the grid
 num_models <- nrow(hyper_grid)
 
@@ -356,7 +524,8 @@ The model with the smallest validation set RMSE will be designated as the "best 
 Inspect the model parameters of the best model.
 Generate predictions on the test set using the best model to compute test set RMSE.
 
-```{r etg}
+
+```r
 # Number of potential models in the grid
 num_models <- length(grade_models)
 
@@ -383,7 +552,38 @@ best_model <- grade_models[[which.min(rmse_values)]]
 
 # Print the model paramters of the best model
 best_model$control
+```
 
+```
+## $minsplit
+## [1] 2
+## 
+## $minbucket
+## [1] 1
+## 
+## $cp
+## [1] 0.01
+## 
+## $maxcompete
+## [1] 4
+## 
+## $maxsurrogate
+## [1] 5
+## 
+## $usesurrogate
+## [1] 2
+## 
+## $surrogatestyle
+## [1] 0
+## 
+## $maxdepth
+## [1] 1
+## 
+## $xval
+## [1] 10
+```
+
+```r
 # Compute test set RMSE on best_model
 pred <- predict(object = best_model,
                 newdata = grade_test)
@@ -391,11 +591,18 @@ rmse(actual = grade_test$final_grade,
      predicted = pred)
 ```
 
+```
+## [1] 2.124109
+```
+
 Plot the results
 
-```{r ptr}
+
+```r
 plot(grade_test$final_grade, predk)
 ```
+
+![](Machine-Learning-Trees_files/figure-html/ptr-1.png)<!-- -->
 
 ## Bagging Trees
 
@@ -412,8 +619,8 @@ The credit_train and credit_test datasets from Chapter 1 are already loaded in t
 Use the bagging() function to train a bagged tree model.
 Inspect the model by printing it.
 
-```{r tbtm}
 
+```r
 # Bagging is a randomized model, so let's set a seed (123) for reproducibility
 set.seed(123)
 
@@ -424,6 +631,16 @@ credit_model <- bagging(formula = default ~ .,
 
 # Print the model
 print(credit_model)
+```
+
+```
+## 
+## Bagging classification trees with 25 bootstrap replications 
+## 
+## Call: bagging.data.frame(formula = default ~ ., data = credit_train, 
+##     coob = TRUE)
+## 
+## Out-of-bag estimate of misclassification error:  0.2537
 ```
 
 Prediction and confusion matrix
@@ -441,17 +658,66 @@ Use the predict() function with type = "class" to generate predicted labels on t
 Take a look at the prediction using the print() function.
 Calculate the confusion matrix using the confusionMatrix function.
 
-```{r pcm}
+
+```r
 # Generate predicted classes using the model object
 class_prediction <- predict(object = credit_model, 
                             newdata = credit_test,  
                             type = "class")         # return classification labels
 # Print the predicted classes
 print(class_prediction)
-                            
+```
+
+```
+##   [1] no  no  no  no  yes no  no  no  no  no  no  no  no  yes no  no  no 
+##  [18] no  no  no  yes no  no  no  no  no  yes no  no  no  no  no  no  no 
+##  [35] no  no  yes yes no  yes no  yes no  no  no  no  no  no  no  yes no 
+##  [52] yes no  yes yes no  yes no  yes no  no  yes no  no  yes yes no  yes
+##  [69] no  no  no  yes yes no  no  no  no  no  no  yes no  no  no  no  yes
+##  [86] no  no  yes no  no  no  no  no  yes yes no  no  no  no  no  no  yes
+## [103] no  no  yes no  no  no  no  no  no  no  no  no  no  no  no  no  no 
+## [120] no  yes no  yes no  no  yes yes no  yes no  no  no  no  no  yes no 
+## [137] yes yes no  no  no  no  yes no  no  no  yes no  no  no  no  yes no 
+## [154] no  no  no  no  no  no  yes no  no  yes no  yes no  no  no  no  no 
+## [171] no  no  no  no  no  no  no  no  no  no  no  no  yes yes yes no  yes
+## [188] no  no  no  no  no  yes no  no  no  yes no  no  yes
+## Levels: no yes
+```
+
+```r
 # Calculate the confusion matrix for the test set
 confusionMatrix(data = class_prediction,         
                 reference = credit_test$default)  
+```
+
+```
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  no yes
+##        no  119  33
+##        yes  11  37
+##                                           
+##                Accuracy : 0.78            
+##                  95% CI : (0.7161, 0.8354)
+##     No Information Rate : 0.65            
+##     P-Value [Acc > NIR] : 4.557e-05       
+##                                           
+##                   Kappa : 0.4787          
+##                                           
+##  Mcnemar's Test P-Value : 0.001546        
+##                                           
+##             Sensitivity : 0.9154          
+##             Specificity : 0.5286          
+##          Pos Pred Value : 0.7829          
+##          Neg Pred Value : 0.7708          
+##              Prevalence : 0.6500          
+##          Detection Rate : 0.5950          
+##    Detection Prevalence : 0.7600          
+##       Balanced Accuracy : 0.7220          
+##                                           
+##        'Positive' Class : no              
+## 
 ```
 
 Predict on a test set and compute AUC
@@ -466,7 +732,8 @@ Instructions
 Use the predict() function with type = "prob" to generate numeric predictions on the credit_test dataset.
 Compute the AUC using the auc() function from the Metrics package.
 
-```{r pts c AUC}
+
+```r
 # Generate predictions on the test set
 pred <- predict(object = credit_model, 
                 newdata = credit_test,
@@ -474,13 +741,35 @@ pred <- predict(object = credit_model,
 
 # `pred` is a matrix
 class(pred)
-                
+```
+
+```
+## [1] "matrix"
+```
+
+```r
 # Look at the pred format
 head(pred)                
-                
+```
+
+```
+##        no  yes
+## [1,] 0.92 0.08
+## [2,] 0.92 0.08
+## [3,] 1.00 0.00
+## [4,] 1.00 0.00
+## [5,] 0.16 0.84
+## [6,] 0.84 0.16
+```
+
+```r
 # Compute the AUC (`actual` must be a binary vector)
 auc(actual = ifelse(credit_test$default == "yes", 1, 0), 
     predicted = pred[,"yes"])   
+```
+
+```
+## [1] 0.8084066
 ```
 
 

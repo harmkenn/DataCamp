@@ -479,8 +479,92 @@ class(pred)
 head(pred)                
                 
 # Compute the AUC (`actual` must be a binary vector)
-auc(actual = ifelse(credit_test$default == "yes", 1, 0), 
+credit_ipred_model_test_auc<-auc(actual = ifelse(credit_test$default == "yes", 1, 0), 
     predicted = pred[,"yes"])   
 ```
+
+Cross-validate a bagged tree model in caret
+Use caret::train() with the "treebag" method to train a model and evaluate the model using cross-validated AUC. The caret package allows the user to easily cross-validate any model across any relevant performance metric. In this case, we will use 5-fold cross validation and evaluate cross-validated AUC (Area Under the ROC Curve).
+
+Instructions
+100 XP
+The credit_train dataset is in your workspace. You will use this data frame as the training data.
+
+First specify a ctrl object, which is created using the caret::trainControl() function.
+In the trainControl() function, you can specify many things. We will set: method = "cv", number = 5 for 5-fold cross-validation. Also, two options that are required if you want to use AUC as the metric: classProbs = TRUE and summaryFunction = twoClassSummary.
+
+```{r cvbtmc}
+# Specify the training configuration
+ctrl <- trainControl(method = "cv",     # Cross-validation
+                     number = 5,        # 5 folds
+                     classProbs = TRUE,                  # For AUC
+                     summaryFunction = twoClassSummary)  # For AUC
+
+# Cross validate the credit model using "treebag" method; 
+# Track AUC (Area under the ROC curve)
+set.seed(1)  # for reproducibility
+credit_caret_model <- train(default ~ ., 
+                            data = credit_train, 
+                            method = "treebag",
+                            metric = "ROC",
+                            trControl = ctrl)
+                      
+# Look at the model object
+print(credit_caret_model)
+
+# Inspect the contents of the model list 
+names(credit_caret_model)
+
+# Print the CV AUC
+credit_caret_model$results[,"ROC"]
+```
+
+Generate predictions from the caret model
+Generate predictions on a test set for the caret model.
+
+Instructions
+100 XP
+First generate predictions on the credit_test data frame using the credit_caret_model object.
+After generating test set predictions, use the auc() function from the Metrics package to compute AUC.
+
+```{r gpcm}
+# Generate predictions on the test set
+pred <- predict(object = credit_caret_model, 
+                newdata = credit_test,
+                type = "prob")
+
+# Compute the AUC (`actual` must be a binary (or 1/0 numeric) vector)
+credit_caret_model_test_auc<-auc(actual = ifelse(credit_test$default == "yes", 1, 0), predicted = pred[,"yes"])
+```
+
+Compare test set performance to CV performance
+In this excercise, you will print test set AUC estimates that you computed in previous exercises. These two methods use the same code underneath, so the estimates should be very similar.
+
+The credit_ipred_model_test_auc object stores the test set AUC from the model trained using the ipred::bagging() function.
+The credit_caret_model_test_auc object stores the test set AUC from the model trained using the caret::train() function with method = "treebag".
+Lastly, we will print the 5-fold cross-validated estimate of AUC that is stored within the credit_caret_model object. This number will be a more accurate estimate of the true model performance since we have averaged the performance over five models instead of just one.
+
+On small datasets like this one, the difference between test set model performance estimates and cross-validated model performance estimates will tend to be more pronounced. When using small data, it's recommended to use cross-validated estimates of performance because they are more stable.
+
+Instructions
+100 XP
+Instructions
+100 XP
+Print the object credit_ipred_model_test_auc.
+Print the object credit_caret_model_test_auc.
+Compare these to the 5-fold cross validated AUC.
+
+```{r ctspca}
+# Print ipred::bagging test set AUC estimate
+print(credit_ipred_model_test_auc)
+
+# Print caret "treebag" test set AUC estimate
+print(credit_caret_model_test_auc)
+                
+# Compare to caret 5-fold cross-validated AUC
+credit_caret_model$results[,"ROC"]
+```
+
+## Random Forest
 
 

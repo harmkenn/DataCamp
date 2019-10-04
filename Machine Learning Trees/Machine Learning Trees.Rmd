@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, DT, rpart, DMwR, caret, rpart.plot, rattle, Metrics, ipred)
+pacman::p_load(tidyverse, DT, rpart, DMwR, caret, rpart.plot, rattle, Metrics, ipred, randomForest)
 theme_set(theme_bw())
 confusionMatrix <- caret::confusionMatrix
 ```
@@ -567,4 +567,24 @@ credit_caret_model$results[,"ROC"]
 
 ## Random Forest
 
+Train a Random Forest model
+Here you will use the randomForest() function from the randomForest package to train a Random Forest classifier to predict loan default.
+
+Instructions
+100 XP
+The credit_train and credit_test datasets (from Chapter 1 & 3) are already loaded in the workspace.
+
+Use the randomForest::randomForest() function to train a Random Forest model on the credit_train dataset.
+The formula used to define the model is the same as in previous chapters -- we want to predict "default" as a function of all the other columns in the training set.
+Inspect the model output.
+
+```{r trfm}
+# Train a Random Forest
+set.seed(1)  # for reproducibility
+credit_model <- randomForest(formula = default ~ ., 
+                             data = credit_train)
+                             
+# Print the model output                             
+print(credit_model)
+```
 

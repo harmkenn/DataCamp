@@ -435,7 +435,7 @@ summary {
 
 <h1 class="title toc-ignore">Machine Learning Trees</h1>
 <h4 class="author">Ken Harmon</h4>
-<h4 class="date">2019 October 02</h4>
+<h4 class="date">2019 October 05</h4>
 
 </div>
 
@@ -973,6 +973,181 @@ credit_caret_model$results[,&quot;ROC&quot;]</code></pre>
 </div>
 <div id="random-forest" class="section level2">
 <h2>Random Forest</h2>
+<p>Train a Random Forest model Here you will use the randomForest() function from the randomForest package to train a Random Forest classifier to predict loan default.</p>
+<p>Instructions 100 XP The credit_train and credit_test datasets (from Chapter 1 &amp; 3) are already loaded in the workspace.</p>
+<p>Use the randomForest::randomForest() function to train a Random Forest model on the credit_train dataset. The formula used to define the model is the same as in previous chapters – we want to predict “default” as a function of all the other columns in the training set. Inspect the model output.</p>
+<pre class="r"><code># Train a Random Forest
+set.seed(1)  # for reproducibility
+credit_model &lt;- randomForest(formula = default ~ ., 
+                             data = credit_train)
+                             
+# Print the model output                             
+print(credit_model)</code></pre>
+<pre><code>## 
+## Call:
+##  randomForest(formula = default ~ ., data = credit_train) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 4
+## 
+##         OOB estimate of  error rate: 24.12%
+## Confusion matrix:
+##      no yes class.error
+## no  527  43   0.0754386
+## yes 150  80   0.6521739</code></pre>
+<p>Evaluate out-of-bag error Here you will plot the OOB error as a function of the number of trees trained, and extract the final OOB error of the Random Forest model from the trained model object.</p>
+<p>Instructions 100 XP The credit_model trained in the previous exercise is loaded in the workspace. Get the OOB error rate for the Random Forest model. Plot the OOB error rate against the number of trees in the forest.</p>
+<pre class="r"><code># Grab OOB error matrix &amp; take a look
+err &lt;- credit_model$err.rate
+head(err)</code></pre>
+<pre><code>##            OOB        no       yes
+## [1,] 0.3170732 0.2150000 0.5517241
+## [2,] 0.3525641 0.2400000 0.6083916
+## [3,] 0.3310924 0.2091346 0.6145251
+## [4,] 0.3333333 0.2154812 0.6192893
+## [5,] 0.3264746 0.1992263 0.6367925
+## [6,] 0.3040000 0.1872659 0.5925926</code></pre>
+<pre class="r"><code># Look at final OOB error rate (last row in err matrix)
+oob_err &lt;- err[nrow(err), &quot;OOB&quot;]
+print(oob_err)</code></pre>
+<pre><code>##     OOB 
+## 0.24125</code></pre>
+<pre class="r"><code># Plot the model trained in the previous exercise
+plot(credit_model)
+
+# Add a legend since it doesn&#39;t have one by default
+legend(x = &quot;right&quot;, 
+       legend = colnames(err),
+       fill = 1:ncol(err))</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Evaluate model performance on a test set Use the caret::confusionMatrix() function to compute test set accuracy and generate a confusion matrix. Compare the test set accuracy to the OOB accuracy.</p>
+<p>Instructions 100 XP Generate class predictions for the credit_test data frame using the credit_model object. Using the caret::confusionMatrix() function, compute the confusion matrix for the test set. Compare the test set accuracy reported from the confusion matrix to the OOB accuracy. The OOB error is stored in oob_err, which is already in your workspace, and so OOB accuracy is just 1 - oob_err.</p>
+<pre class="r"><code># Generate predicted classes using the model object
+class_prediction &lt;- predict(object = credit_model,  # model object 
+                            newdata = credit_test,  # test dataset
+                            type = &quot;class&quot;)         # return classification labels
+                            
+# Calculate the confusion matrix for the test set
+cm &lt;- confusionMatrix(data = class_prediction,          # predicted classes
+                      reference = credit_test$default)  # actual classes
+print(cm)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  no yes
+##        no  123  40
+##        yes   7  30
+##                                        
+##                Accuracy : 0.765        
+##                  95% CI : (0.7, 0.8219)
+##     No Information Rate : 0.65         
+##     P-Value [Acc &gt; NIR] : 0.0002983    
+##                                        
+##                   Kappa : 0.4205       
+##                                        
+##  Mcnemar&#39;s Test P-Value : 3.046e-06    
+##                                        
+##             Sensitivity : 0.9462       
+##             Specificity : 0.4286       
+##          Pos Pred Value : 0.7546       
+##          Neg Pred Value : 0.8108       
+##              Prevalence : 0.6500       
+##          Detection Rate : 0.6150       
+##    Detection Prevalence : 0.8150       
+##       Balanced Accuracy : 0.6874       
+##                                        
+##        &#39;Positive&#39; Class : no           
+## </code></pre>
+<pre class="r"><code># Compare test set accuracy to OOB accuracy
+paste0(&quot;Test Accuracy: &quot;, cm$overall[1])</code></pre>
+<pre><code>## [1] &quot;Test Accuracy: 0.765&quot;</code></pre>
+<pre class="r"><code>paste0(&quot;OOB Accuracy: &quot;, 1 - oob_err)</code></pre>
+<pre><code>## [1] &quot;OOB Accuracy: 0.75875&quot;</code></pre>
+<p>Evaluate test set AUC In Chapter 3, we learned about the AUC metric for evaluating binary classification models. In this exercise, you will compute test set AUC for the Random Forest model.</p>
+<p>Instructions 100 XP Use the predict() function with type = “prob” to generate numeric predictions on the credit_test dataset. Compute the AUC using the auc() function from the Metrics package.</p>
+<pre class="r"><code># Generate predictions on the test set
+pred &lt;- predict(object = credit_model, 
+                newdata = credit_test,
+                type = &quot;prob&quot;)
+
+# `pred` is a matrix
+class(pred)</code></pre>
+<pre><code>## [1] &quot;matrix&quot; &quot;votes&quot;</code></pre>
+<pre class="r"><code># Look at the pred format
+head(pred)                </code></pre>
+<pre><code>##       no   yes
+## 1  0.904 0.096
+## 3  0.902 0.098
+## 7  1.000 0.000
+## 9  0.970 0.030
+## 12 0.216 0.784
+## 22 0.826 0.174</code></pre>
+<pre class="r"><code># Compute the AUC (`actual` must be a binary 1/0 numeric vector)
+auc(actual = ifelse(credit_test$default == &quot;yes&quot;, 1, 0), 
+    predicted = pred[,&quot;yes&quot;])   </code></pre>
+<pre><code>## [1] 0.8187363</code></pre>
+<p>Tuning a Random Forest via mtry In this exercise, you will use the randomForest::tuneRF() to tune mtry (by training several models). This function is a specific utility to tune the mtry parameter based on OOB error, which is helpful when you want a quick &amp; easy way to tune your model. A more generic way of tuning Random Forest parameters will be presented in the following exercise.</p>
+<p>Instructions 100 XP Use the tuneRF() function in place of the randomForest() function to train a series of models with different mtry values and examine the the results. Note that (unfortunately) the tuneRF() interface does not support the typical formula input that we’ve been using, but instead uses two arguments, x (matrix or data frame of predictor variables) and y (response vector; must be a factor for classification). The tuneRF() function has an argument, ntreeTry that defaults to 50 trees. Set nTreeTry = 500 to train a random forest model of the same size as you previously did. After tuning the forest, this function will also plot model performance (OOB error) as a function of the mtry values that were evaluated. Keep in mind that if we want to evaluate the model based on AUC instead of error (accuracy), then this is not the best way to tune a model, as the selection only considers (OOB) error.</p>
+<pre class="r"><code># Execute the tuning process
+set.seed(1)              
+res &lt;- tuneRF(x = subset(credit_train, select = -default),
+              y = credit_train$default,
+              ntreeTry = 500)</code></pre>
+<pre><code>## mtry = 4  OOB error = 24.12% 
+## Searching left ...
+## mtry = 2     OOB error = 23.88% 
+## 0.01036269 0.05 
+## Searching right ...
+## mtry = 8     OOB error = 23.62% 
+## 0.02072539 0.05</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre class="r"><code># Look at results
+print(res)</code></pre>
+<pre><code>##       mtry OOBError
+## 2.OOB    2  0.23875
+## 4.OOB    4  0.24125
+## 8.OOB    8  0.23625</code></pre>
+<pre class="r"><code># Find the mtry value that minimizes OOB Error
+mtry_opt &lt;- res[,&quot;mtry&quot;][which.min(res[,&quot;OOBError&quot;])]
+print(mtry_opt)</code></pre>
+<pre><code>## 8.OOB 
+##     8</code></pre>
+<pre class="r"><code># If you just want to return the best RF model (rather than results)
+# you can set `doBest = TRUE` in `tuneRF()` to return the best RF model
+# instead of a set performance matrix.</code></pre>
+<p>Tuning a Random Forest via tree depth In Chapter 2, we created a manual grid of hyperparameters using the expand.grid() function and wrote code that trained and evaluated the models of the grid in a loop. In this exercise, you will create a grid of mtry, nodesize and sampsize values. In this example, we will identify the “best model” based on OOB error. The best model is defined as the model from our grid which minimizes OOB error.</p>
+<p>Keep in mind that there are other ways to select a best model from a grid, such as choosing the best model based on validation AUC. However, for this exercise, we will use the built-in OOB error calculations instead of using a separate validation set.</p>
+<p>Instructions 100 XP Create a grid of mtry, nodesize and sampsize values. Write a simple loop to train all the models and choose the best one based on OOB error. Print the set of hyperparameters which produced the best model.</p>
+<pre class="r"><code># Establish a list of possible values for mtry, nodesize and sampsize
+mtry &lt;- seq(4, ncol(credit_train) * 0.8, 2)
+nodesize &lt;- seq(3, 8, 2)
+sampsize &lt;- nrow(credit_train) * c(0.7, 0.8)
+
+# Create a data frame containing all combinations 
+hyper_grid &lt;- expand.grid(mtry = mtry, nodesize = nodesize, sampsize = sampsize)
+
+# Create an empty vector to store OOB error values
+oob_err &lt;- c()
+
+# Write a loop over the rows of hyper_grid to train the grid of models
+for (i in 1:nrow(hyper_grid)) {
+
+    # Train a Random Forest model
+    model &lt;- randomForest(formula = default ~ ., 
+                          data = credit_train,
+                          mtry = hyper_grid$mtry[i],
+                          nodesize = hyper_grid$nodesize[i],
+                          sampsize = hyper_grid$sampsize[i])
+                          
+    # Store OOB error for the model                      
+    oob_err[i] &lt;- model$err.rate[nrow(model$err.rate), &quot;OOB&quot;]
+}
+
+# Identify optimal set of hyperparmeters based on OOB error
+opt_i &lt;- which.min(oob_err)
+print(hyper_grid[opt_i,])</code></pre>
+<pre><code>##   mtry nodesize sampsize
+## 2    6        3      560</code></pre>
 </div>
 </div>
 

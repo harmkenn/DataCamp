@@ -1,0 +1,183 @@
+---
+title: "Working With Geospacial Data"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:  
+    keep_md: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+editor_options: 
+  chunk_output_type: console
+---
+
+# {.tabset .tabset-fade}
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+pacman::p_load(tidyverse, ggmap)
+theme_set(theme_bw())
+register_google(key = "AIzaSyAfnLNZjvYdMx-cyga_qA1oJ6P36dRGalA") 
+
+```
+
+## Google Mapping API
+
+https://cloud.google.com/maps-platform/
+
+```{r swd, eval=FALSE, echo=FALSE}
+# this is set to not run during the knit process
+# this sets the working directory to the file location
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+```
+
+## Basic Mapping
+
+Grabbing a background map
+There are two steps to adding a map to a ggplot2 plot with ggmap:
+
+Download a map using get_map()
+Display the map using ggmap()
+As an example, let's grab a map for New York City:
+
+library(ggmap)
+
+nyc <- c(lon = -74.0059, lat = 40.7128)
+nyc_map <- get_map(location = nyc, zoom = 10)
+get_map() has a number of arguments that control what kind of map to get, but for now you'll mostly stick with the defaults. The most important argument is the first, location, where you can provide a longitude and latitude pair of coordinates where you want the map centered. (We found these for NYC from a quick google search of "coordinates nyc".) The next argument, zoom, takes an integer between 3 and 21 and controls how far the mapped is zoomed in. In this exercise, you'll set a third argument, scale, equal to 1. This controls the resolution of the downloaded maps and you'll set it lower (the default is 2) to reduce how long it takes for the downloads.
+
+Displaying the map is then as simple as calling ggmap() with your downloaded map as the only argument: ggmap(nyc_map)
+
+Your turn! We are going to be looking at house sales in Corvallis, but you probably have no idea where that is! Let's find out.
+
+Instructions
+100 XP
+We've created for you a pair of coordinates called corvallis. Get a map centered on Corvallis at the following zoom levels and use ggmap() to plot each. Don't forget to set scale = 1 to reduce download times.
+
+zoom = 5 (Corvallis is in the State of Oregon on the West Coast of the USA.)
+zoom = 13 (The Willamette River runs through town, and Corvallis is the home of Oregon State University.)
+
+```{r gbm}
+
+corvallis <- c(lon = -123.2620, lat = 44.5646)
+
+# Get map at zoom level 5: map_5
+map_5 <- get_map(corvallis, zoom = 5, scale = 1)
+
+# Plot map at zoom level 5
+ggmap(map_5)
+
+# Get map at zoom level 13: corvallis_map
+corvallis_map <- get_map(corvallis, zoom = 13, scale = 1)
+
+# Plot map at zoom level 13
+ggmap(corvallis_map)
+```
+
+Putting it all together
+You now have a nice map of Corvallis, but how do you put the locations of the house sales on top?
+
+Similar to ggplot(), you can add layers of data to a ggmap() call (e.g. + geom_point()). It's important to note, however, that ggmap() sets the map as the default dataset and also sets the default aesthetic mappings.
+
+This means that if you want to add a layer from something other than the map (e.g. sales), you need to explicitly specify both the mapping and data arguments to the geom.
+
+What does this look like? You've seen how you might make a basic plot of the sales:
+
+ggplot(sales, aes(lon, lat)) + 
+  geom_point()
+An equivalent way to specify the same plot is:
+
+ggplot() + 
+  geom_point(aes(lon, lat), data = sales)
+Here, we've specified the data and mapping in the call to geom_point() rather than ggplot(). The benefit of specifying the plot this way is you can swap out ggplot() for a call to ggmap() and get a map in the background of the plot.
+
+Instructions
+100 XP
+The ggmap package has been loaded for you and corvallis_map from the previous exercise is available in your workspace.
+
+First, take a look at the head() of the sales data. Can you see the columns specifying the location of the house?
+Swap out the call to ggplot() with a call to ggmap() with corvallis_map.
+
+```{r piat}
+sales <- read.csv("sales.csv") %>% as_tibble()
+
+# Look at head() of sales
+head(sales)
+
+# Swap out call to ggplot() with call to ggmap()
+ggmap(corvallis_map) +
+  geom_point(aes(lon, lat), data = sales)
+```
+
+Insight through aesthetics
+Adding a map to your plot of sales explains some of the structure in the data: there are no house sales East of the Willamette River or on the Oregon State University campus. This structure is really just a consequence of where houses are in Corvallis; you can't have a house sale where there are no houses!
+
+The value of displaying data spatially really comes when you add other variables to the display through the properties of your geometric objects, like color or size. You already know how to do this with ggplot2 plots: add additional mappings to the aesthetics of the geom.
+
+Let's see what else you can learn about these houses in Corvallis.
+
+NOTE: Many exercises in this course will require you to create more than one plot. You can toggle between plots with the arrows at the bottom of the 'Plots' window and zoom in on a plot by clicking the arrows on the tab at the top of the 'Plots' window.
+
+Instructions 3/3
+34 XP
+Map the color of the points to year_built. How has Corvallis developed as a town?
+
+Map the size of the points to bedrooms. Are there areas of houses with fewer or more bedrooms?
+
+Map the color of the points to price per squarefoot (i.e. price / finished_squarefeet). Are there areas with better "value" than others? What makes this plot unsuccessful?
+
+```{r itta}
+# Map color to year_built
+ggmap(corvallis_map) +
+    geom_point(aes(lon, lat, color = year_built), data = sales)
+# Map size to bedrooms
+ggmap(corvallis_map) +
+    geom_point(aes(lon, lat, size = bedrooms), data = sales)
+# Map color to price / finished_squarefeet
+ggmap(corvallis_map) +
+    geom_point(aes(lon, lat, color = price / finished_squarefeet), data = sales)
+```
+
+Different maps
+The default Google map downloaded by get_map() is useful when you need major roads, basic terrain, and places of interest, but visually it can be a little busy. You want your map to add to your data, not distract from it, so it can be useful to have other "quieter" options.
+
+Sometimes you aren't really interested in the roads and places, but more what's on the ground (e.g. grass, trees, desert, or snow), in which case switching to a satellite view might be more useful. You can get Google satellite images by changing the maptype argument to "satellite".
+
+You can grab Stamen Maps by using source = "stamen" in get_map(), along with specifying a maptype argument. You can see all possible values for the maptype argument by looking at ?get_map, but they correspond closely to the "flavors" described on the Stamen Maps site. I like the "toner" variations, as they are greyscale and a bit simpler than the Google map.
+
+Let's try some other maps for your plot of house sales.
+
+Instructions 2/2
+50 XP
+Edit your original call to get_map() to get a "satellite" image from Google by adding a maptype argument.
+Display a plot of house sales coloured by year_built using the satellite map.
+Edit your original call to get_map() to get a toner map from Stamen by adding a source argument and a maptype argument.
+Display a plot of house sales coloured by year_built using the toner map.
+
+```{r dm}
+corvallis <- c(lon = -123.2620, lat = 44.5646)
+
+# Add a maptype argument to get a satellite map
+corvallis_map_sat <- get_map(corvallis, zoom = 13, maptype = "satellite")
+ 
+ 
+# Edit to display satellite map
+ggmap(corvallis_map_sat) +
+  geom_point(aes(lon, lat, color = year_built), data = sales)
+
+corvallis <- c(lon = -123.2620, lat = 44.5646)
+ 
+# Add source and maptype to get toner map from Stamen Maps
+corvallis_map_bw <- get_map(corvallis, zoom = 13, source = "stamen", maptype = "toner")
+
+# Edit to display toner map
+ggmap(corvallis_map_bw) +
+  geom_point(aes(lon, lat, color = year_built), data = sales)
+```
+

@@ -738,3 +738,89 @@ opt_i <- which.min(oob_err)
 print(hyper_grid[opt_i,])
 ```
 
+## GBM 
+
+Train a GBM model
+Here you will use the gbm() function to train a GBM classifier to predict loan default. You will train a 10,000-tree GBM on the credit_train dataset, which is pre-loaded into your workspace.
+
+Using such a large number of trees (10,000) is probably not optimal for a GBM model, but we will build more trees than we need and then select the optimal number of trees based on early performance-based stopping. The best GBM model will likely contain fewer trees than we started with.
+
+For binary classification, gbm() requires the response to be encoded as 0/1 (numeric), so we will have to convert from a "no/yes" factor to a 0/1 numeric response column.
+
+Also, the the gbm() function requires the user to specify a distribution argument. For a binary classification problem, you should set distribution = "bernoulli". The Bernoulli distribution models a binary response.
+
+Instructions
+100 XP
+Convert from a "no/yes" factor to a 0/1 numeric response column using the ifelse() function.
+Train a 10,000-tree GBM model.
+
+```{r tGBMm}
+# Convert "yes" to 1, "no" to 0
+credit_train$default <- ifelse(credit_train$default == "yes", 1, 0)
+
+# Train a 10000-tree GBM model
+set.seed(1)
+credit_model <- gbm(formula = default ~ ., 
+                    distribution = "bernoulli", 
+                    data = credit_train,
+                    n.trees = 10000)
+                    
+# Print the model object                    
+print(credit_model) 
+
+# summary() prints variable importance
+summary(credit_model) 
+```
+
+Prediction using a GBM model
+The gbm package uses a predict() function to generate predictions from a model, similar to many other machine learning packages in R. When you see a function like predict() that works on many different types of input (a GBM model, a RF model, a GLM model, etc), that indicates that predict() is an "alias" for a GBM-specific version of that function. The GBM specific version of that function is predict.gbm(), but for convenience sake, we can just use predict() (either works).
+
+One thing that's particular to the predict.gbm() however, is that you need to specify the number of trees used in the prediction. There is no default, so you have to specify this manually. For now, we can use the same number of trees that we specified when training the model, which is 10,000 (though this may not be the optimal number to use).
+
+Another argument that you can specify is type, which is only relevant to Bernoulli and Poisson distributed outcomes. When using Bernoulli loss, the returned value is on the log odds scale by default and for Poisson, it's on the log scale. If instead you specify type = "response", then gbm converts the predicted values back to the same scale as the outcome. This will convert the predicted values into probabilities for Bernoulli and expected counts for Poisson.
+
+Instructions
+100 XP
+Generate predictions on the test set, using 10,000 trees.
+Generate predictions on the test set using type = "response" and 10,000 trees.
+Compare the ranges of the two sets of predictions.
+
+```{r puGBMm}
+# Since we converted the training response col, let's also convert the test response col
+credit_test$default <- ifelse(credit_test$default == "yes", 1, 0)
+
+# Generate predictions on the test set
+preds1 <- predict(object = credit_model, 
+                  newdata = credit_test,
+                  n.trees = 10000)
+
+# Generate predictions on the test set (scale to response)
+preds2 <- predict(object = credit_model, 
+                  newdata = credit_test,
+                  n.trees = 10000,
+                  type = "response")
+
+# Compare the range of the two sets of predictions
+range(preds1)
+range(preds2)
+```
+
+Evaluate test set AUC
+Compute test set AUC of the GBM model for the two sets of predictions. We will notice that they are the same value. That's because AUC is a rank-based metric, so changing the actual values does not change the value of the AUC.
+
+However, if we were to use a scale-aware metric like RMSE to evaluate performance, we would want to make sure we converted the predictions back to the original scale of the response.
+
+Instructions
+100 XP
+The preds1 and preds2 prediction vectors from the previous exercise are pre-loaded into the workspace.
+
+Compute AUC of the predictions.
+Compute AUC of the predictions (scaled to response).
+Notice that the AUC is the same!
+
+```{r etsAUC}
+# Generate the test set AUCs using the two sets of preditions & compare
+auc(actual = credit_test$default, predicted = preds1)  #default
+auc(actual = credit_test$default, predicted = preds2)  #rescaled
+```
+

@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, ggmap)
+pacman::p_load(tidyverse, ggmap, sp)
 theme_set(theme_bw())
 register_google(key = "AIzaSyAfnLNZjvYdMx-cyga_qA1oJ6P36dRGalA") 
 
@@ -286,5 +286,102 @@ geom_path(aes(group = group))
 # Add a polygon layer with fill mapped to ward, and group to group
 ggplot(ward_sales, aes(lon, lat)) +
 geom_polygon(aes(fill = as.factor(ward), group = group))
+```
+
+Choropleth map
+Now that you understand drawing polygons, let's get your polygons on a map. Remember, you replace your ggplot() call with a ggmap() call and the original ggplot() call moves to the base_layer() argument, then you add your polygon layer as usual:
+
+ggmap(corvallis_map_bw,
+      base_layer = ggplot(ward_sales,
+                          aes(lon, lat))) +
+  geom_polygon(aes(group = group, fill = ward))
+Try it out in the console now!
+
+Uh oh, things don't look right. Wards 1, 3 and 8 look jaggardy and wrong. What's happened? Part of the ward boundaries are beyond the map boundary. Due to the default settings in ggmap(), any data off the map is dropped before plotting, so some polygon boundaries are dropped and when the remaining points are joined up you get the wrong shapes.
+
+Don't worry, there is a solution: ggmap() provides some arguments to control this behaviour. Arguments extent = "normal" along with maprange = FALSE force the plot to use the data range rather than the map range to define the plotting boundaries.
+
+Instructions 3/3
+30 XP
+Update the ggmap() call to fix the polygon cropping.
+Set extent to "normal" and maprange to FALSE.
+Update the plot, swapping the polygon fill color from ward to num_sales.
+Update the plot again, mapping fill to avg_price. Also, set alpha to 0.8 in your call to geom_polygon() to allow the map to show through.
+
+```{r cm}
+# Fix the polygon cropping
+ggmap(corvallis_map_bw, 
+      base_layer = ggplot(ward_sales, aes(lon, lat)), extent = "normal", maprange = FALSE) +
+  geom_polygon(aes(group = group, fill = ward))
+
+# Repeat, but map fill to num_sales
+ggmap(corvallis_map_bw, 
+      base_layer = ggplot(ward_sales, aes(lon, lat)),
+      extent = "normal", maprange = FALSE) +
+  geom_polygon(aes(group = group, fill = num_sales))
+
+# Repeat again, but map fill to avg_price
+ggmap(corvallis_map_bw, 
+      base_layer = ggplot(ward_sales, aes(lon, lat)),
+      extent = "normal", maprange = FALSE) +
+  geom_polygon(aes(group = group, fill = avg_price), alpha = .8)
+```
+
+Raster data as a heatmap
+The predicted house prices in preds are called raster data: you have a variable measured (or in this case predicted) at every location in a regular grid.
+
+Looking at head(preds) in the console, you can see the lat values stepping up in intervals of about 0.002, as lon is constant. After 40 rows, lon increases by about 0.003, as lat runs through the same values. For each lat/lon location, you also have a predicted_price. You'll see later in Chapter 3, that a more useful way to think about (and store) this kind of data is in a matrix.
+
+When data forms a regular grid, one approach to displaying it is as a heatmap. geom_tile() in ggplot2 draws a rectangle that is centered on each location that fills the space between it and the next location, in effect tiling the whole space. By mapping a variable to the fill aesthetic, you end up with a heatmap.
+
+Instructions 3/3
+0 XP
+Create a simple dot plot of the locations in preds by adding a geom_point() layer to the first ggplot() call. Verify that the locations form a regular grid.
+To the second ggplot(), swap geom_point() for geom_tile(), where predicted_price is mapped to fill. Remember that fill is an argument to aes(), which is the first and only argument in your call to geom_tile().
+Create a ggmap() using the corvallis_map_bw map.
+Add a geom_tile() layer with lon, lat, and predicted_price aesthetics from the second plot.
+Use preds as the layer's data.
+Set the layer's alpha transparency to 0.8.
+
+```{r rdhm}
+preds <- read.csv("preds.csv")
+
+# Add a geom_point() layer
+ggplot(preds, aes(lon, lat)) + geom_point()
+
+# Add a tile layer with fill mapped to predicted_price
+ggplot(preds, aes(lon, lat)) + geom_tile(aes(fill=predicted_price))
+
+# Use ggmap() instead of ggplot()
+ggmap(corvallis_map_bw) +
+  geom_tile(aes(lon, lat, fill = predicted_price), 
+            data = preds, alpha = 0.8)
+```
+
+## Points and Polygons
+
+Let's take a look at a spatial object
+We've loaded a particular sp object into your workspace: countries_sp. There are special print(), summary() and plot() methods for these objects. What's a method? It's a special version of a function that gets used based on the type of object you pass to it. It's common when a package creates new types of objects for it to contain methods for simple exploration and display.
+
+In practice, this means you can call plot(countries_sp) and if there is a method for the class of countries_sp, it gets called. The print() method is the one called when you just type an object's name in the console.
+
+Can you figure out what kind of object this countries_sp is? Can you see what coordinate system this spatial data uses? What does the data in the object describe?
+
+Instructions
+100 XP
+Print countries_sp. Why isn't this very useful?.
+Call summary() on countries_sp.
+Call plot() on countries_sp.
+
+```{r splook}
+
+# Print countries_sp
+print(countries_sp)
+
+# Call summary() on countries_sp
+summary(countries_sp)
+
+# Call plot() on countries_sp
+plot(countries_sp)
 ```
 

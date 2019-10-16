@@ -21,11 +21,14 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, ggmap, sp)
+pacman::p_load(tidyverse, ggmap, sp, tmap, raster, rasterVis)
 theme_set(theme_bw())
 register_google(key = "AIzaSyAfnLNZjvYdMx-cyga_qA1oJ6P36dRGalA") 
 
 ```
+
+https://campus.datacamp.com/courses/working-with-geospatial-data-in-r
+https://github.com/cwickham/geospatial
 
 ## Google Mapping API
 
@@ -374,6 +377,7 @@ Call summary() on countries_sp.
 Call plot() on countries_sp.
 
 ```{r splook}
+load(file = "countries_sp.rda")
 
 # Print countries_sp
 print(countries_sp)
@@ -384,4 +388,551 @@ summary(countries_sp)
 # Call plot() on countries_sp
 plot(countries_sp)
 ```
+
+What's inside a spatial object?
+What did you learn about the methods in the previous exercise? print() gives a printed form of the object, but it is often too long and not very helpful. summary() provides a much more concise description of the object, including its class (in this case SpatialPolygons), the extent of the spatial data, and the coordinate reference system information (you'll learn more about this in Chapter 4). plot() displays the contents, in this case drawing a map of the world.
+
+But, how is that information stored in the SpatialPolygons object? In this exercise you'll explore the structure of this object. You already know about using str() to look at R objects, but what you might not know is that it takes an optional argument max.level that restricts how far down the hierarchy of the object str() prints. This can be useful to limit how much information you have to handle.
+
+Let's see if you can get a handle on how this object is structured.
+
+Instructions
+100 XP
+Call str() on countries_sp. This won't be very helpful, except to convince you this is a complicated stucture!
+Call str() on countries_sp, setting max.level to 2. What is at the highest level of this object? Can you see where things might be stored?
+
+```{r wiiso}
+# Call str() on countries_sp
+str(countries_sp)
+
+# Call str() on countries_sp with max.level = 2
+str(countries_sp, max.level = 2)
+```
+
+A more complicated spatial object
+You probably noticed something a little different about the structure of countries_sp. It looked a lot like a list, but instead of the elements being proceeded by $ in the output they were instead proceeded by an @. This is because the sp classes are S4 objects, so instead of having elements they have slots and you access them with @. You'll learn more about this in the next video.
+
+Right now, let's take a look at another object countries_spdf. It's a little more complicated than countries_sp, but you are now well-equipped to figure out how this object differs.
+
+Take a look!
+
+Instructions
+100 XP
+Call summary() on countries_sp and then on this new object countries_spdf (one at a time). What kind of object is this? What differs between this and countries_sp?
+Call str() with max.level = 2 on countries_spdf. How does the structure differ from countries_sp?
+Call plot() on countries_spdf.
+
+```{r mcso}
+load(file = "countries_spdf.rda")
+
+# Call summary() on countries_spdf and countries_sp
+summary(countries_spdf)
+summary(countries_sp)
+
+
+# Call str() with max.level = 2 on countries_spdf
+str(countries_spdf, max.level = 2)
+
+# Plot countries_spdf
+plot(countries_spdf)
+```
+
+Walking the hierarchy
+Let's practice accessing slots by exploring the way polygons are stored inside SpatialDataFrame objects. Remember there are two ways to access slots in an S4 object:
+
+x@slot_name # or...
+slot(x, "slot_name")
+So, to take a look at the polygons slot of countries_spdf you simply do countries_spdf@polygons. You can try it, but you'll get a long and not very informative output. Let's look at the high level structure instead.
+
+Try running the following code in the console:
+
+str(countries_spdf@polygons, max.level = 2)
+Still a pretty long output, but scroll back to the top and take a look. What kind of object is this? It's just a list, but inside its elements are another kind of sp class: Polygons. There are 177 list elements. Any guesses what they might represent?
+
+Let's dig into one of these elements.
+
+Instructions
+100 XP
+Create a new variable called one that contains the 169th element of the list in the polygons slot of countries_spdf. Use double bracket subsetting (i.e. [[...]] to extract this element.
+Print one.
+Call summary() on one. What slots does this object have?
+Call str() on one with max.level = 2.
+
+```{r wth}
+# 169th element of countries_spdf@polygons: one
+one <- countries_spdf@polygons[[169]]
+
+# Print one
+print(one)
+
+# Call summary() on one
+summary(one)
+
+# Call str() on one with max.level = 2
+str(one, max.level = 2)
+```
+
+Further down the rabbit hole
+In the last exercise, the SpatialPolygonsDataFrame had a list of Polygons in its polygons slot, and each of those Polygons objects also had a Polygons slot. So, many polygons...but you aren't at the bottom of the hierarchy yet!
+
+Let's take another look at the 169th element in the Polygons slot of countries_spdf. Run this code from the previous exercise:
+
+one <- countries_spdf@polygons[[169]]
+str(one, max.level = 2)
+The Polygons slot has a list inside with 10 elements. What are these objects? Let's keep digging....
+
+Instructions
+100 XP
+Call str() with max.level = 2 on the Polygons slot of one.
+Call str() with max.level = 2 on the 6th element of the Polygons slot of one. Do you see something that looks like it might be spatial data?
+Call plot() on the coords slot of the 6th element of the Polygons slot of one. Do you recognise what data this object contains?
+
+```{r fdrh}
+one <- countries_spdf@polygons[[169]]
+
+# str() with max.level = 2, on the Polygons slot of one
+str(one@Polygons, max.level = 2)
+
+# str() with max.level = 2, on the 6th element of the one@Polygons
+str(one@Polygons[[6]], max.level = 2)
+
+# Call plot on the coords slot of 6th element of one@Polygons
+plot(one@Polygons[[6]]@coords)
+```
+
+Subsetting by index
+The subsetting of Spatial___DataFrame objects is built to work like subsetting a data frame. You think about subsetting the data frame, but in practice what is returned is a new Spatial___DataFrame with only the rows of data you want and the corresponding spatial objects.
+
+The simplest kind of subsetting is by index. For example, if x is a data frame you know x[1, ] returns the first row. If x is a Spatial___DataFrame, you get a new Spatial___DataFrame that contains the first row of data and the spatial data that correspond to that row.
+
+The benefit of returning a Spatial___DataFrame is you can use all the same methods as on the object before subsetting.
+
+Let's test it out on the 169th country!
+
+Instructions
+100 XP
+Create a new variable usa by subsetting the 169th element of countries_spdf.
+Call summary() on usa. Verify usa is still a SpatialPolygonsDataFrame.
+Call str() with max.level = 2 on usa. Verify there is only one element of the polygons slot and only one row in the data slot.
+Call plot() on usa.
+
+```{r sbi}
+# Subset the 169th object of countries_spdf: usa
+usa <- countries_spdf[169,]
+
+# Look at summary() of usa
+summary(usa)
+
+# Look at str() of usa
+str(usa, max.level = 2)
+
+# Call plot() on usa
+plot(usa)
+```
+
+Accessing data in sp objects
+It's quite unusual to know exactly the indices of elements you want to keep, and far more likely you want to subset based on data attributes. You've seen the data associated with a Spatial___DataFrame lives in the data slot, but you don't normally access this slot directly.
+
+Instead,$ and [[ subsetting on a Spatial___DataFrame pulls columns directly from the data frame. That is, if x is a Spatial___DataFrame object, then either x$col_name or x[["col_name"]] pulls out the col_name column from the data frame. Think of this like a shortcut; instead of having to pull the right column from the object in the data slot (i.e. x@data$col_name), you can just use x$col_name.
+
+Let's start by confirming the object in the data slot is just a regular data frame, then practice pulling out columns.
+
+Instructions
+100 XP
+Call head() and str() (one at a time) on the data slot of countries_spdf. Verify that this object is just a regular data frame.
+Pull out the name column of countries_spdf using $.
+Pull out the subregion column of countries_spdf using [[.
+
+```{r adso}
+# Call head() and str() on the data slot of countries_spdf
+head(countries_spdf@data)
+str(countries_spdf@data)
+
+# Pull out the name column using $
+countries_spdf$name
+
+# Pull out the subregion column using [[
+countries_spdf[["subregion"]]
+```
+
+Subsetting based on data attributes
+Subsetting based on data attributes is a combination of creating a logical from the columns of your data frame and subsetting the Spatial___DataFrame object. This is similar to how you subset an ordinary data frame.
+
+Create a logical from a column, let's say countries in Asia:
+
+in_asia <- countries_spdf$region == "Asia"
+in_asia
+Then, use the logical to select rows of the Spatial___DataFrame object:
+
+countries_spdf[in_asia, ]
+Can you subset out New Zealand and plot it?
+
+Instructions
+100 XP
+Create a logical vector called is_nz that tests if the name column is equal to "New Zealand".
+Create a new spatial object called nz by using is_nz to subset countries_spdf.
+Plot nz.
+
+```{r sbda}
+# Create logical vector: is_nz
+is_nz <- countries_spdf$name == "New Zealand"
+
+# Subset countries_spdf using is_nz: nz
+nz <- countries_spdf[is_nz,]
+
+# Plot nz
+plot(nz)
+```
+
+tmap, a package that works with sp objects
+You've had to learn quite a few new things just to be able to understand and do basic manipulation of these spatial objects defined by sp, but now you get to experience some payoff! There are a number of neat packages that expect spatial data in sp objects and which make working with spatial data easy.
+
+Let's take a look at the tmap package for creating maps. You'll learn more about its philosophy and structure in the next video, but first we want you to see how easy it is to use.
+
+tmap has the qtm() function for quick thematic maps. It follows the ideas of qplot() from ggplot2 but with a couple of important differences. Instead of expecting data in a data frame like ggplot2(), it expects data in a spatial object and uses the argument shp to specify it. Another important difference is that tmap doesn't use non-standard evaluation (see the Writing Functions in R course for more about this), so variables need to be surrounded by quotes when specifying mappings.
+
+Try this example in the console:
+
+library(tmap)
+qtm(shp = countries_spdf, fill = "population")
+How easy was that!? Can you make a choropleth of another variable contained in countries_spdf: gdp?
+
+Instructions
+100 XP
+Using the example as a guide, create a choropleth map of the gdp variable using qtm().
+
+```{r tmap}
+library(sp)
+library(tmap)
+
+# Use qtm() to create a choropleth map of gdp
+qtm(shp = countries_spdf, fill = "gdp")
+```
+
+Building a plot in layers
+Now that you know a bit more about tmap(), let's build up your previous plot of population in layers and make a few tweaks to improve it. You start with a tm_shape() layer that defines the data you want to use, then add a tm_fill() layer to color-in your polygons using the variable population:
+
+tm_shape(countries_spdf) +
+  tm_fill(col = "population") 
+Probably the biggest problem with the resulting plot is that the color scale isn't very informative: the first color (palest yellow) covers all countries with population less than 200 million! Since the color scale is associated with the tm_fill() layer, tweaks to this scale happen in this call. You'll learn a lot more about color in Chapter 3, but for now, know that the style argument controls how the breaks are chosen.
+
+Your plot also needs some country outlines. You can add a tm_borders() layer for this, but let's not make them too visually strong. Perhaps a brown would be nice.
+
+The benefit of using spatial objects becomes really clear when you switch the kind of plot you make. Let's also try a bubble plot where the size of the bubbles correspond to population. If you were using ggplot2, this would involve a lot of reshaping of your data. With tmap, you just switch out a layer.
+
+Instructions
+100 XP
+Add style = "quantile" to tm_fill(). This chooses the breaks in the color scale based on equal numbers of observations in each interval.
+To the same plot, add a tm_borders() layer with col = "burlywood4".
+Create new plot the same as the first, but instead of tm_fill() add a tm_bubbles() layer with size mapped to population.
+
+```{r bpil}
+library(sp)
+library(tmap)
+
+# Add style argument to the tm_fill() call
+tm_shape(countries_spdf) +
+  tm_fill(col = "population", style = "quantile") +
+  # Add a tm_borders() layer 
+  tm_borders(col = "burlywood4")
+
+# New plot, with tm_bubbles() instead of tm_fill()
+tm_shape(countries_spdf) +
+  tm_bubbles(size = "population", style = "quantile") +
+  # Add a tm_borders() layer 
+  tm_borders(col = "burlywood4")
+```
+
+Why is Greenland so big?
+Take a closer look at the plot. Why does Greenland look bigger than the contiguous US when it's actually only about one-third the size?
+
+When you plot longitude and latitude locations on the x- and y-axes of a plot, you are treating 1 degree of longitude as the same size no matter where you are. However, because the earth is roughly spherical, the distance described by 1 degree of longitude depends on your latitude, varying from 111km at the equator, to 0 km at the poles.
+
+The way you have taken positions on a sphere and drawn them in a two dimensional plane is described by a projection. The default you've used here (also known as an Equirectangular projection) distorts the width of areas near the poles. Every projection involves some kind of distortion (since a sphere isn't a plane!), but different projections try to preserve different properties (e.g. areas, angles or distances).
+
+In tmap, tm_shape() takes an argument projection that allows you to swap projections for the plot.
+
+(Note: changing the projection of a ggplot2 plot is done using the coord_map() function. See ?coord_map() for more details.)
+
+Instructions
+100 XP
+To help you see the differences between projections, we've added a tm_grid() layer which adds equispaced longitude and latitude lines to the plot.
+
+Within your tm_shape() call:
+
+Try a Hobo–Dyer projection (projection = "hd"), designed to preserve area.
+In a second plot, try a Robinson projection (projection = "robin"), designed as a compromise between preserving local angles and area.
+Just for fun, repeat the previous plot, but add tm_style_classic() to see how tmap can control all aspects of the maps display.
+
+```{r wigsb}
+library(sp)
+library(tmap)
+
+# Switch to a Hobo–Dyer projection
+tm_shape(countries_spdf, projection = "hd") +
+  tm_grid(n.x = 11, n.y = 11) +
+  tm_fill(col = "population", style = "quantile")  +
+  tm_borders(col = "burlywood4") 
+
+# Switch to a Robinson projection
+tm_shape(countries_spdf, projection = "robin") +
+  tm_grid(n.x = 11, n.y = 11) +
+  tm_fill(col = "population", style = "quantile")  +
+  tm_borders(col = "burlywood4") 
+
+# Add tm_style_classic() to your plot
+tm_shape(countries_spdf, projection = "robin") +
+  tm_grid(n.x = 11, n.y = 11) +
+  tm_fill(col = "population", style = "quantile")  +
+  tm_borders(col = "burlywood4") +
+  tm_style("classic")
+```
+
+Saving a tmap plot
+Saving tmap plots is easy with the tmap_save() function. The first argument, tm, is the plot to save and the second, filename, is the file to save it to. If you leave tm unspecified, the last tmap plot printed will be saved.
+
+The extension of the file name specifies the file type, for example .png or .pdf for static plots. One really neat thing about tmap is that you can save an interactive version which leverages the leaflet package. To get an interactive version, use tmap_save() but use the file name extension .html.
+
+Instructions
+100 XP
+Save your plot from the previous exercise in the following ways. Neither plot will display in your workspace, but you'll be able to take a look at them once you complete the exercise.
+
+Save it as a static plot by specifying the filename population.png.
+Save it as an interactice plot by specifying the filename population.html.
+
+```{r satp}
+library(sp)
+library(tmap)
+
+# Plot from last exercise
+tm_shape(countries_spdf) +
+  tm_grid(n.x = 11, n.y = 11, projection = "longlat") +
+  tm_fill(col = "population", style = "quantile")  +
+  tm_borders(col = "burlywood4")
+
+# Save a static version "population.png"
+tmap_save(filename = "population.png")
+
+# Save an interactive version "population.html"
+tm_shape(countries_spdf) +
+  tm_grid(n.x = 11, n.y = 11, projection = "longlat") +
+  tm_fill(col = "population", style = "quantile")  +
+  tm_borders(col = "burlywood4")
+
+tmap_save(filename = "population.html")
+```
+
+## Raster
+
+What's a raster object?
+Just like sp classes, the raster classes have methods to help with basic viewing and manipulation of objects, like print() and summary(), and you can always dig deeper into their structure with str().
+
+Let's jump in and take a look at a raster we've loaded for you, pop. Keep an eye out for a few things:
+
+Can you see where the coordinate information is kept?
+Can you tell from the summary() how big the raster is?
+What do you think might be stored in this raster?
+Instructions
+100 XP
+Print pop to the console.
+Call str() on pop with max.level = 2.
+Call summary() on pop.
+
+```{r wiaro}
+load(file = "pop.rda")
+
+library(raster)
+
+# Print pop
+print(pop)
+
+# Call str() on pop, with max.level = 2
+str(pop, max.level = 2)
+
+# Call summary on pop
+summary(pop)
+```
+
+Some useful methods
+pop is a RasterLayer object, which contains the population around the Boston and NYC areas. Each grid cell simply contains a count of the number of people that live inside that cell.
+
+You saw in the previous exercise that print() gives a useful summary of the object including the coordinate reference system, the size of the grid (both in number of rows and columns and geographical coordinates), and some basic info on the values stored in the grid. But it was very succinct; what if you want to see some of the values in the object?
+
+The first way is to simply plot() the object. There is a plot() method for raster objects that creates a heatmap of the values.
+
+If you want to extract the values from a raster object you can use the values() function, which pulls out a vector of the values. There are 316,800 values in the pop raster, so you won't want to print them all out, but you can use str() and head() to take a peek.
+
+Instructions
+100 XP
+Call plot() on pop. Can you see where NYC is?
+Call str() on values(pop).
+Call head() on values(pop).
+
+```{r sum}
+# Call plot() on pop
+plot(pop)
+
+# Call str() on values(pop)
+str(values(pop))
+
+# Call head() on values(pop)
+head(values(pop))
+```
+
+A more complicated object
+The raster package provides the RasterLayer object, but also a couple of more complicated objects: RasterStack and RasterBrick. These two objects are designed for storing many rasters, all of the same extents and dimension (a.k.a. multi-band, or multi-layer rasters).
+
+You can think of RasterLayer like a matrix, but RasterStack and RasterBrick objects are more like three dimensional arrays. One additional thing you need to know to handle them is how to specify a particular layer.
+
+You can use $ or [[ subsetting on a RasterStack or RasterBrick to grab one layer and return a new RasterLayer object. For example, if x is a RasterStack, x$layer_name or x[["layer_name"]] will return a RasterLayer with only the layer called layer_name in it.
+
+Let's look at a RasterStack object called pop_by_age that covers the same area as pop but now contains layers for population broken into few different age groups.
+
+Instructions
+100 XP
+Print pop_by_age. Can you see the names of all the layers?
+Subset out the under_1 layer using [[ subsetting.
+Plot the under_1 layer by passing your code from the previous instruction to plot().
+
+```{r amco}
+load(file = "pop_by_age.rda")
+
+# Print pop_by_age
+pop_by_age
+
+# Subset out the under_1 layer using [[
+pop_by_age[["under_1"]]
+
+# Plot the under_1 layer
+plot(pop_by_age[["under_1"]])
+```
+
+A package that uses Raster objects
+You saw the tmap package makes visualizing spatial classes in sp easy. The good news is that it works with the raster classes too! You simply pass your Raster___ object as the shp argument to the tm_shape() function, and then add a tm_raster() layer like this:
+
+tm_shape(raster_object) +
+    tm_raster()
+When working with a RasterStack or a RasterBrick object, such as the pop_by_age object you created in the last exercise, you can display one of its layers using the col (short for "color") argument in tm_raster(), surrounding the layer name in quotes.
+
+You'll work with tmap throughout the course, but we also want to show you another package, rasterVis, also designed specifically for visualizing raster objects. There are a few different functions you can use in rasterVis to make plots, but let's just try one of them for now: levelplot().
+
+Instructions
+100 XP
+Use tmap to plot the pop object, by specifying pop as the shp argument to tm_shape() and adding a tm_raster() layer.
+Use tmap to plot the under_1 layer of pop_by_age, a RasterStack object.
+Call the rasterVis function levelplot() on pop.
+
+```{r apturo}
+library(tmap)
+
+# Specify pop as the shp and add a tm_raster() layer
+tm_shape(pop) +
+  tm_raster()
+
+# Plot the under_1 layer in pop_by_age
+tm_shape(pop_by_age) +
+  tm_raster(col = "under_1")
+
+library(rasterVis)
+# Call levelplot() on pop
+levelplot(pop)
+```
+
+Adding a custom continuous color palette to ggplot2 plots
+The most versatile way to add a custom continuous scale to ggplot2 plots is with scale_color_gradientn() or scale_fill_gradientn(). How do you know which to use? Match the function to the aesthetic you have mapped. For example, in your plot of predicted house price from Chapter 1, you mapped fill to price, so you'd need to use scale_fill_gradientn().
+
+These two functions take an argument colors where you pass a vector of colors that defines your palette. This is where the versatility comes in. You can generate your palette in any way you choose, automatically using something like RColorBrewer or viridisLite, or manually by specifying colors by name or hex code.
+
+The scale___gradientn() functions handle how these colors are mapped to values of your variable, although there is control available through the values argument.
+
+Let's play with some alternative color scales for your predicted house price heatmap from Chapter 1 (we've dropped the map background to reduce computation time, so you can see your plots quickly).
+
+Instructions 3/3
+0 XP
+Create a palette called blups from 9 steps on the RColorBrewer palette "BuPu".
+Add scale_fill_gradientn() and pass the blups palette as the colors argument.
+Create a palette called vir from 9 steps on the viridis() palette from viridisLite.
+Add scale_fill_gradientn() and pass the vir palette as the colors argument.
+Create a palette called mag from 9 steps on the magma() palette from viridisLite.
+Add scale_fill_gradientn() and pass the mag palette as the colors argument.
+
+```{r accc}
+library(RColorBrewer)
+# 9 steps on the RColorBrewer "BuPu" palette: blups
+blups <- brewer.pal(9, "BuPu")
+
+# Add scale_fill_gradientn() with the blups palette
+ggplot(preds) +
+  geom_tile(aes(lon, lat, fill = predicted_price), alpha = 0.8) +
+  scale_fill_gradientn(colors = blups)
+
+library(viridisLite)
+# viridisLite viridis palette with 9 steps: vir
+vir <- viridis(9)
+
+# Add scale_fill_gradientn() with the vir palette
+ggplot(preds) +
+  geom_tile(aes(lon, lat, fill = predicted_price), alpha = 0.8) +
+  scale_fill_gradientn(colors = vir)
+
+library(viridisLite)
+# mag: a viridisLite magma palette with 9 steps
+mag <- magma(9)
+
+# Add scale_fill_gradientn() with the mag palette
+ggplot(preds) +
+  geom_tile(aes(lon, lat, fill = predicted_price), alpha = 0.8) +
+  scale_fill_gradientn(colors = mag) 
+```
+
+Adding a custom continuous color palette to ggplot2 plots
+The most versatile way to add a custom continuous scale to ggplot2 plots is with scale_color_gradientn() or scale_fill_gradientn(). How do you know which to use? Match the function to the aesthetic you have mapped. For example, in your plot of predicted house price from Chapter 1, you mapped fill to price, so you'd need to use scale_fill_gradientn().
+
+These two functions take an argument colors where you pass a vector of colors that defines your palette. This is where the versatility comes in. You can generate your palette in any way you choose, automatically using something like RColorBrewer or viridisLite, or manually by specifying colors by name or hex code.
+
+The scale___gradientn() functions handle how these colors are mapped to values of your variable, although there is control available through the values argument.
+
+Let's play with some alternative color scales for your predicted house price heatmap from Chapter 1 (we've dropped the map background to reduce computation time, so you can see your plots quickly).
+
+Instructions 3/3
+0 XP
+Create a palette called blups from 9 steps on the RColorBrewer palette "BuPu".
+Add scale_fill_gradientn() and pass the blups palette as the colors argument.
+Create a palette called vir from 9 steps on the viridis() palette from viridisLite.
+Add scale_fill_gradientn() and pass the vir palette as the colors argument.
+Create a palette called mag from 9 steps on the magma() palette from viridisLite.
+Add scale_fill_gradientn() and pass the mag palette as the colors argument.
+
+```{r accc}
+library(RColorBrewer)
+# 9 steps on the RColorBrewer "BuPu" palette: blups
+blups <- brewer.pal(9, "BuPu")
+
+# Add scale_fill_gradientn() with the blups palette
+ggplot(preds) +
+  geom_tile(aes(lon, lat, fill = predicted_price), alpha = 0.8) +
+  scale_fill_gradientn(colors = blups)
+
+library(viridisLite)
+# viridisLite viridis palette with 9 steps: vir
+vir <- viridis(9)
+
+# Add scale_fill_gradientn() with the vir palette
+ggplot(preds) +
+  geom_tile(aes(lon, lat, fill = predicted_price), alpha = 0.8) +
+  scale_fill_gradientn(colors = vir)
+
+library(viridisLite)
+# mag: a viridisLite magma palette with 9 steps
+mag <- magma(9)
+
+# Add scale_fill_gradientn() with the mag palette
+ggplot(preds) +
+  geom_tile(aes(lon, lat, fill = predicted_price), alpha = 0.8) +
+  scale_fill_gradientn(colors = mag) 
+```
+
+
+
+
 

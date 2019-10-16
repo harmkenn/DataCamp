@@ -932,6 +932,7 @@ ggplot(preds) +
   scale_fill_gradientn(colors = mag) 
 ```
 
+<<<<<<< HEAD
 Custom palette in tmap
 Unlike ggplot2, where setting a custom color scale happens in a scale_ call, colors in tmap layers are specified in the layer in which they are mapped. For example, take a plot of the age_18_24 variable from prop_by_age:
 
@@ -973,6 +974,8 @@ tm_shape(prop_by_age) +
   tm_raster("age_18_24", palette = rev(mag)) +
   tm_legend(position = c("right", "bottom"))
 ```
+=======
+>>>>>>> 60ee52f107279bd411b4dfbfc8bd2ec6d429b657
 
 
 

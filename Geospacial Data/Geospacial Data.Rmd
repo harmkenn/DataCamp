@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, ggmap, sp, tmap, raster, rasterVis)
+pacman::p_load(tidyverse, ggmap, sp, tmap, raster, rasterVis, rgdal, tigris)
 theme_set(theme_bw())
 register_google(key = "AIzaSyAfnLNZjvYdMx-cyga_qA1oJ6P36dRGalA") 
 
@@ -975,7 +975,444 @@ tm_shape(prop_by_age) +
   tm_legend(position = c("right", "bottom"))
 ```
 
+An interval scale example
+Let's return to your plot of the proportion of the population that is between 18 and 24:
 
+tm_shape(prop_by_age) +
+  tm_raster("age_18_24", palette = vir) +
+  tm_legend(position = c("right", "bottom"))
+Your plot was problematic because most of the proportions fell in the lowest color level and consequently you didn't see much detail in your plot. One way to solve this problem is this: instead of breaking the range of your variable into equal length bins, you can break it into more useful categories.
 
+Let's start by replicating the tmap default bins: five categories, cut using "pretty" breaks. Then you can try out a few of the other methods to cut a variable into intervals. Using the classIntervals() function directly gives you quick feedback on what the breaks will be, but the best way to try out a set of breaks is to plot them.
 
+(As an aside, another way to solve this kind of problem is to look for a transform of the variable so that equal length bins of the transformed scale are more useful.)
+
+Instructions
+100 XP
+Call classIntervals() on values(prop_by_age[["age_18_24"]]) with n = 5 and style = "pretty". See the problem? 130,770 of your grid cells end up in the first bin.
+Now call classIntervals() as above, but with style = "quantile".
+Use the equisized bins by passing the n and style arguments into the tm_raster() layer of your plot.
+Make a histogram of values(prop_by_age[["age_18_24"]]). Where would you make the breaks?
+Create your own breaks in tm_raster() by specifying breaks = c(0.025, 0.05, 0.1, 0.2, 0.25, 0.3, 1).
+Save your final plot as a leaflet plot using save_tmap() and the filename "prop_18-24.html".
+
+```{r aise}
+mag <- viridisLite::magma(7)
+
+library(classInt)
+
+# Create 5 "pretty" breaks with classIntervals()
+classIntervals(values(prop_by_age[["age_18_24"]]), 
+               n = 5, style = "pretty")
+
+# Create 5 "quantile" breaks with classIntervals()
+classIntervals(values(prop_by_age[["age_18_24"]]), 
+               n = 5, style = "quantile")
+
+# Use 5 "quantile" breaks in tm_raster()
+tm_shape(prop_by_age) +
+  tm_raster("age_18_24", palette = mag, style = "quantile") +
+  tm_legend(position = c("right", "bottom"))
+
+# Create histogram of proportions
+hist(values(prop_by_age)[, "age_18_24"])
+
+# Use fixed breaks in tm_raster()
+tm_shape(prop_by_age) +
+  tm_raster("age_18_24", palette = mag,
+    style = "fixed", breaks = c(0.025, 0.05, 0.1, 0.2, 0.25, 0.3, 1))
+
+# Save your plot to "prop_18-24.html"
+tmap_save(filename = "prop_18-24.html")
+```
+
+A diverging scale example
+Let's take a look at another dataset where the default color scale isn't appropriate. This raster, migration, has an estimate of the net number of people who have moved into each cell of the raster between the years of 1990 and 2000. A positive number indicates a net immigration, and a negative number an emigration. Take a look:
+
+tm_shape(migration) +
+  tm_raster() +
+  tm_legend(outside = TRUE, 
+            outside.position = c("bottom"))
+The default color scale doesn't look very helpful, but tmap is actually doing something quite clever: it has automatically chosen a diverging color scale. A diverging scale is appropriate since large movements of people are large positive numbers or large (in magnitude) negative numbers. Zero (i.e. no net migration) is a natural midpoint.
+
+tmap chooses a diverging scale when there are both positive and negative values in the mapped variable and chooses zero as the midpoint. This isn't always the right approach. Imagine you are mapping a relative change as percentages; 100% might be the most intuitive midpoint. If you need something different, the best way to proceed is to generate a diverging palette (with an odd number of steps, so there is a middle color) and specify the breaks yourself.
+
+Let's see if you can get a more informative map by adding a diverging scale yourself.
+
+(Data source: de Sherbinin, A., M. Levy, S. Adamo, K. MacManus, G. Yetman, V. Mara, L. Razafindrazay, B. Goodrich, T. Srebotnjak, C. Aichele, and L. Pistolesi. 2015. Global Estimated Net Migration Grids by Decade: 1970-2000. Palisades, NY: NASA Socioeconomic Data and Applications Center (SEDAC). http://dx.doi.org/10.7927/H4319SVC Accessed 27 Sep 2016)
+
+Instructions
+100 XP
+Print migration to verify this is a RasterLayer object and take a look at the range in migration values.
+Generate a diverging palette, called red_gray, of 7 colors from the "RdGy" palette in RColorBrewer.
+Use the diverging set of colors, red_gray, as the palette for your plot. This uses your colors, but the breaks aren't useful.
+Add fixed breaks for the color scale of: c(-5e6, -5e3, -5e2, -5e1, 5e1, 5e2, 5e3, 5e6)
+
+```{r adse}
+# Print migration
+load(file = "migration.rda")
+migration
+
+# Diverging "RdGy" palette
+red_gray <- brewer.pal(7, "RdGy")
+
+# Use red_gray as the palette 
+tm_shape(migration) +
+  tm_raster(palette = red_gray) +
+  tm_legend(outside = TRUE, outside.position = c("bottom"))
+
+# Add fixed breaks 
+tm_shape(migration) +
+  tm_raster(palette = red_gray, style = "fixed", 
+     breaks = c(-5e6, -5e3, -5e2, -5e1, 5e1, 5e2, 5e3, 5e6)) +
+  tm_legend(outside = TRUE, outside.position = c("bottom"))
+```
+
+A qualitative example
+Finally, let's look at an example of a categorical variable. The land_cover raster contains a gridded categorization of the earth's surface. Have a look at land_cover by printing it:
+
+land_cover
+You will notice that the values are numeric, but there are attributes that map these numbers to categories (just like the way factors work).
+
+Choosing colors for categorical variables depends a lot on the purpose of the graphic. When you want the categories to have roughly equal visual weight -- that is, you don't want one category to stand out more than the others -- one approach is to use colors of varying hues, but equal chroma (a measure of vibrancy) and lightness (this is default for discrete color scales in ggplot2 and can be generated using the hcl() function).
+
+The RColorBrewer qualitative palettes balance having equal visual weight colors with ease of color identification. The "paired" and "accent" schemes deviate from this by providing pairs of colors of different lightness and a palette with some more intense colors that may be used to highlight certain categories, respectively.
+
+For this particular data, it might make more sense to choose intuitive colors, like green for forest and blue for water. Whichever is more appropriate, setting new colors is just a matter of passing in a vector of colors through the palette argument in the corresponding tm_*** layer.
+
+Instructions
+100 XP
+Instructions
+100 XP
+Plot the land_cover raster by combining tm_shape() and tm_raster(). By default tmap uses the RColorBrewer "Set3" qualitative palette.
+Examine the code for hcl_cols, which mimics the palette used by ggplot2. Then plot the land_cover raster again, passing hcl_cols to the palette argument to tm_raster().
+Call levels() on land_cover to see the categories.
+This time, use intuitive_cols as the palette and add a tm_legend() layer with the argument position = c("left", "bottom").
+
+```{r aqe}
+library(raster)
+
+load(file = "land_cover.rda")
+
+# Plot land_cover
+tm_shape(land_cover) +
+  tm_raster() 
+
+# Palette like the ggplot2 default
+hcl_cols <- hcl(h = seq(15, 375, length = 9), 
+                c = 100, l = 65)[-9]
+
+# Use hcl_cols as the palette
+tm_shape(land_cover) +
+  tm_raster(palette = hcl_cols) 
+
+# Examine levels of land_cover
+levels(land_cover)
+
+# A set of intuitive colors
+intuitive_cols <- c(
+  "darkgreen",
+  "darkolivegreen4",
+  "goldenrod2",
+  "seagreen",
+  "wheat",
+  "slategrey",
+  "white",
+  "lightskyblue1"
+)
+
+# Use intuitive_cols as palette
+tm_shape(land_cover) +
+  tm_raster(palette = intuitive_cols) +
+  tm_legend(position = c("left", "bottom"))
+```
+
+## Data Import and Projections
+
+Reading in a shapefile
+Shapefiles are one of the most common ways spatial data are shared and are easily read into R using readOGR() from the rgdal package. readOGR() has two important arguments: dsn and layer. Exactly what you pass to these arguments depends on what kind of data you are reading in. You learned in the video that for shapefiles, dsn should be the path to the directory that holds the files that make up the shapefile and layer is the file name of the particular shapefile (without any extension).
+
+For your map, you want neighborhood boundaries. We downloaded the Neighborhood Tabulation Areas, as defined by the City of New York, from the Open Data Platform of the Department of City Planning. The download was in the form of a zip archive and we have put the result of unzipping the downloaded file in your working directory.
+
+You'll use the dir() function from base R to examine the contents of your working directory, then read in the shapefile to R.
+
+Instructions
+100 XP
+Instructions
+100 XP
+Use dir() with no arguments to find out the name of the directory of the shapefile.
+Use dir(), passing in the path to the shapefile directory, to see the files inside.
+Now you know the directory and file name. Use readOGR() to read the neighborhood shapefile into an object called neighborhoods.
+Check the contents by calling summary() on neighborhoods.
+Check the contents by plotting neighborhoods.
+
+```{r risf}
+library(sp)
+library(rgdal)
+
+# https://www1.nyc.gov/site/planning/data-maps/open-data/dwn-nynta.page
+
+# Use dir() to find directory name
+dir()
+
+# Call dir() with directory name
+dir("nynta_19c")
+
+# Read in shapefile with readOGR(): neighborhoods
+neighborhoods <- readOGR("nynta_19c", "nynta")
+
+# summary() of neighborhoods
+summary(neighborhoods)
+
+# Plot neighborhoods
+plot(neighborhoods)
+```
+
+Reading in a raster file
+Raster files are most easily read in to R with the raster() function from the raster package. You simply pass in the filename (including the extension) of the raster as the first argument, x.
+
+The raster() function uses some native raster package functions for reading in certain file types (based on the extension in the file name) and otherwise hands the reading of the file on to readGDAL() from the rgdal package. The benefit of not using readGDAL() directly is simply that raster() returns a RasterLayer object.
+
+A common kind of raster file is the GeoTIFF, with file extension .tif or .tiff. We've downloaded a median income raster from the US census and put it in your working directory.
+
+Let's take a look and read it in.
+
+Instructions
+100 XP
+Instructions
+100 XP
+Use dir() to take a look in your working directory.
+Use dir() again to look inside the directory nyc_grid_data.
+Use raster() to read in the median income raster to the variable income_grid by passing in the complete path to the .tif file.
+Use summary() to verify the raster is stored in a RasterLayer.
+Use plot() to verify the raster's contents.
+
+```{r riarf}
+library(raster) 
+
+# Call dir()
+dir()
+
+# Call dir() on the directory
+dir("nyc_grid_data")
+
+# Use raster() with file path: income_grid
+income_grid <- raster("nyc_grid_data/m5602ahhi00.tif")
+
+# Call summary() on income_grid
+summary(income_grid)
+
+# Call plot() on income_grid
+plot(income_grid)
+```
+
+Getting data using a package
+Reading in spatial data from a file is one way to get spatial data into R, but there are also some packages that provide commonly used spatial data. For example, the rnaturalearth package provides data from Natural Earth, a source of high resolution world maps including coastlines, states, and populated places. In fact, this was the source of the data from Chapter 2.
+
+You will be examining median income at the census tract level in New York County (a.k.a. the Bourough of Manhattan), but to do this you'll need to know the boundaries of the census tracts. The tigris package in R provides a way to easily download and import shapefiles based on US Census geographies. You'll use the tracts() function to download tract boundaries, but tigris also provides states(), counties(), places() and many other functions that match the various levels of geographic entities defined by the Census.
+
+Let's grab the spatial data for the tracts.
+
+Instructions
+100 XP
+Call tracts() with state = "NY", county = "New York", and cb = TRUE. Store the result in nyc_tracts.
+Use summary() on nyc_tracts to verify the retuned object is a SpatialPolygonsDataFrame.
+Plot nyc_tracts to check the contents with plot().
+
+```{r gduap}
+library(sp)
+library(tigris)
+
+# Call tracts(): nyc_tracts
+nyc_tracts <- tracts(state = "NY", county = "New York", cb = TRUE)
+
+# Call summary() on nyc_tracts
+summary(nyc_tracts)
+
+# Plot nyc_tracts
+plot(nyc_tracts)
+```
+
+Merging data from different CRS/projections
+Every spatial object has a coordinate reference system (CRS) associated with it. Generally, this is set when the data are imported and will be read directly from the spatial files. This is how the neighborhoods and nyc_tracts obtained their coordinate system information.
+
+Both the sp and raster packages have a proj4string() function that returns the CRS of the object it's called on.
+
+Trying to work with spatial data using different CRSs is a bit like trying to work with a dataset in miles and another in kilometers. They are measuring the same thing, but the numbers aren't directly comparable.
+
+Let's take a look at our two polygon objects.
+
+Instructions
+100 XP
+Call proj4string() on neighborhoods, then again on nyc_tracts. Verify the two strings are different.
+Take a look at the head() of the coordinates() of neighborhoods and repeat for nyc_tracts. Can you see the problem? nyc_tracts has x coordinates around -70, but neighborhoods is around 1,000,000!
+Plot neighborhoods, then plot nyc_tracts with col = "red" and add = TRUE to add them on top.
+
+```{r mdfdCRS}
+library(sp)
+
+# proj4string() on nyc_tracts and neighborhoods
+proj4string(nyc_tracts)
+proj4string(neighborhoods)
+
+# coordinates() on nyc_tracts and neighborhoods
+head(coordinates(nyc_tracts))
+head(coordinates(neighborhoods))
+
+# plot() neighborhoods and nyc_tracts
+plot(neighborhoods)
+plot(nyc_tracts, add = TRUE, col = "red")
+```
+
+Converting from one CRS/projection to another
+The process of converting from one CRS or projection to another is handled by the spTransform() methods in the rgdal package. spTransform() has methods for all sp objects including SpatialPolygonsDataFrame, but doesn't work on raster objects. This is because transforming a raster is a little more complicated; the transformed rectangular grid will no longer be rectangular. You can look at ?raster::projectRaster if you are curious about transforming rasters.
+
+Transformation is simple. The first argument to spTransform(), x, is the spatial object to be transformed and the second, CRS, is a specification of the desired CRS. The CRS can be specified by a PROJ4 string, which you could construct by hand, but it's much easier to take it from an existing object (e.g. with the proj4string() function).
+
+Time to get your two polygons datasets into the same CRS.
+
+Instructions
+100 XP
+Transform neighborhoods to have the same CRS as nyc_tracts by using spTransform() with the CRS argument set to proj4string(nyc_tracts).
+Verify the transformation by looking at the head() of coordinates(neighborhoods).
+Check the datasets now line up by plotting neighborhoods, then plotting nyc_tracts with add = TRUE and col = "red", and finally plotting water with add = TRUE and col = "blue".
+
+```{r cfoCRSta}
+library(sp)
+library(raster)
+
+# Use spTransform on neighborhoods: neighborhoods
+neighborhoods <- spTransform(neighborhoods,   
+                             proj4string(nyc_tracts))
+
+# head() on coordinates() of neighborhoods
+head(coordinates(neighborhoods))
+
+# Plot neighborhoods, nyc_tracts and water
+plot(neighborhoods)
+plot(nyc_tracts, add = TRUE, col = "red")
+load(file = "water.rda")
+plot(water, add = TRUE, col = "blue")
+```
+
+The wrong way
+When a Spatial***DataFrame object is created, there are two ways the spatial objects (e.g. Polygons) might be matched up to the rows of the data. The most robust is to use IDs on the spatial objects that are matched up to row names in the data. This ensures if there are any that don't match you are quickly alerted. The other way is simply by order -- the first spatial object is assumed to correspond to the first row of data.
+
+Once created, the correspondence is based purely on order. If you manipulate the data slot, there is no checking the spatial objects still correspond to the right rows. What does this mean in practice? It's very dangerous to manipulate the data slot directly!
+
+To create your plot of income, you need to match up the income data frame with the tracts SpatialPolygonsDataFrame. To illustrate the danger of manipulating @data directly, let's see what happens if you try to force nyc_income in to nyc_tracts.
+
+Instructions 1/2
+30 XP
+1
+2
+Use str() to look at nyc_income.
+Do the same for the data slot of nyc_tracts.
+They both have the same number of rows, with information about the same tracts (tract in nyc_income and TRACTCE in nyc_tracts), but in different orders.
+
+```{r tww}
+library(sp)
+
+load(file = "nyc_income.rda")
+
+# Use str() on nyc_income 
+str(nyc_income)
+
+# ...and on nyc_tracts@data
+str(nyc_tracts@data)
+
+# Highlight tract 002201 in nyc_tracts
+plot(nyc_tracts)
+plot(nyc_tracts[nyc_tracts$TRACTCE == "002201", ], 
+     col = "red", add = TRUE)
+     
+# Set nyc_tracts@data to nyc_income
+nyc_tracts@data <- nyc_income
+
+# Highlight tract 002201 again
+plot(nyc_tracts)
+plot(nyc_tracts[nyc_tracts$tract == "002201", ], 
+     col = "red", add = TRUE)
+```
+
+Checking data will match
+Forcing your data into the data slot doesn't work because you lose the correct correspondence between rows and spatial objects. How do you add the income data to the polygon data? The merge() function in sp is designed exactly for this purpose.
+
+You might have seen merge() before with data frames. sp::merge() has almost the exact same structure, but you pass it a Spatial*** object and a data frame and it returns a new Spatial*** object where the data slot is now a merge of the original data slot and the data frame. To do this merge, you'll require both the spatial object and data frame to have a column that contains IDs to match on.
+
+Both nyc_tracts and nyc_income have columns with tract IDs, so these are great candidates for merging the two datasets. However, it's always a good idea to check that the proposed IDs are unique and that there is a match for every row in both datasets.
+
+Let's check this before moving on to the merge.
+
+Instructions
+100 XP
+Use any() with duplicated() on nyc_income$tract to check if every row in nyc_income has a unique tract ID.
+Use any() with duplicated() on nyc_tracts$TRACTCE to check if every row in nyc_tracts has a unique tract ID.
+Use all() on nyc_tracts$TRACTCE %in% nyc_income$tract to check the nyc_tracts tracts are all in nyc_income.
+Use all() on nyc_income$tract %in% nyc_tracts$TRACTCE to check the nyc_income tracts are all in nyc_tracts.
+
+```{r cdwm}
+# Check for duplicates in nyc_income
+any(duplicated(nyc_income$tract))
+
+# Check for duplicates in nyc_tracts
+any(duplicated(nyc_tracts$TRACTCE))
+
+# Check nyc_tracts in nyc_income
+all((nyc_tracts$TRACTCE %in% nyc_income$tract))
+
+# Check nyc_income in nyc_tracts
+all((nyc_income$tract %in% nyc_tracts$TRACTCE))
+```
+
+Merging data attributes
+merge() by default merges based on columns with the same name in both datasets. In your case, this isn't appropriate since the column of IDs is called tract in one dataset and TRACTCE in the other. To handle this, merge() has the optional arguments by.x and by.y, where you can specify the names of the column to merge on in the two datasets, respectively.
+
+merge() returns a new Spatial___DataFrame object, so you can take a look at the result by plotting it with tmap.
+
+Let's go ahead and merge.
+
+Instructions
+100 XP
+Use merge(), passing the spatial object nyc_tracts first and the data frame nyc_income second. Specify by.x = "TRACTCE" and by.y = "tract". Store the result in nyc_tracts_merge.
+Use summary() on nyc_tracts_merge to verify the object is a SpatialPolygonsDataFrame and the data also contain the needed estimate column from nyc_income.
+Use tm_shape() and add a tm_fill() layer to create a choropleth map of nyc_tracts_merge, mapping color to estimate.
+
+```{r mda}
+library(sp)
+library(tmap)
+
+# Merge nyc_tracts and nyc_income: nyc_tracts_merge
+nyc_tracts_merge <- merge(nyc_tracts, nyc_income, by.x = "tract", by.y = "tract")
+
+# Call summary() on nyc_tracts_merge
+summary(nyc_tracts_merge)
+
+# Choropleth with col mapped to estimate
+tm_shape(nyc_tracts_merge) +
+  tm_fill(col = "estimate.x") 
+```
+
+A first plot
+So far, you've read in some spatial files, transformed spatial data to the same projection, and merged a data frame with a spatial object. Time to put your work together and see how your map looks. For each dataset, you need a tm_shape() call to specify the data source, followed by a tm_* layer (like tm_fill(), tm_borders() or tm_bubbles()) to draw on the map.
+
+First, you'll add the neighborhoods and water areas to your plot from the previous exercise.
+
+Instructions
+100 XP
+Add a layer for the water object with tm_shape(). Then use tm_fill() and set the color to "grey90".
+Similarly, add a layer for the neighborhoods object. Use tm_borders() to draw the neighborhood outlines.
+
+```{r afp}
+library(tmap)
+
+tm_shape(nyc_tracts_merge) +
+  tm_fill(col = "estimate.x") +
+  # Add a water layer, tm_fill() with col = "grey90"
+  tm_shape(water) +
+  tm_fill(col = "grey90") +
+  # Add a neighborhood layer, tm_borders()
+  tm_shape(neighborhoods) +
+  tm_borders() 
+```
 

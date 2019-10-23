@@ -3,13 +3,14 @@ title: "Working With Geospacial Data"
 author: "Ken Harmon"
 date: "`r format(Sys.time(), '%Y %B %d')`"
 output:
-  html_document:  
-    keep_md: true
+  pdf_document: default
+  html_document:
     code_folding: hide
+    fig_align: center
     fig_height: 6
     fig_width: 12
-    fig_align: 'center'
-editor_options: 
+    keep_md: yes
+editor_options:
   chunk_output_type: console
 ---
 
@@ -903,7 +904,7 @@ Add scale_fill_gradientn() and pass the vir palette as the colors argument.
 Create a palette called mag from 9 steps on the magma() palette from viridisLite.
 Add scale_fill_gradientn() and pass the mag palette as the colors argument.
 
-```{r accc}
+```{r accc2}
 library(RColorBrewer)
 # 9 steps on the RColorBrewer "BuPu" palette: blups
 blups <- brewer.pal(9, "BuPu")
@@ -1414,5 +1415,119 @@ tm_shape(nyc_tracts_merge) +
   # Add a neighborhood layer, tm_borders()
   tm_shape(neighborhoods) +
   tm_borders() 
+```
+
+Subsetting the neighborhoods
+You don't need all those extraneous neighborhoods in New York, so you'll subset out just the neighborhoods in New York County. You already know how!
+
+neighborhoods is a SpatialPolygonsDataFrame and you learned back in Chapter 2 how to subset based on the column in the data slot. The key was creating a logical vector, then subsetting the SpatialPolygonsDataFrame like a data frame.
+
+How can you identify the right neighborhoods? Check out:
+
+head(neighborhoods@data)
+The CountyFIPS is a numeric code that identifies the county. If you can figure out the code for New York County, you can keep just the rows with that value.
+
+Instructions
+100 XP
+The nyc_tracts_merge object also has country codes in the column COUNTYFP. Find the unique() values to find the code for New York County.
+Subset neighborhoods by adding a logical that tests if neighborhoods$CountyFIPS has the right value.
+Edit your plot to use manhat_hoods instead of neighborhoods.
+Add a tm_text() layer, mapping text to "NTAName".
+
+```{r stn}
+library(tmap)
+
+# Find unique() nyc_tracts_merge$COUNTYFP
+unique(nyc_tracts_merge$COUNTYFP)
+
+# Add logical expression to pull out New York County
+manhat_hoods <- neighborhoods[neighborhoods$CountyFIPS == "061", ]
+
+tm_shape(nyc_tracts_merge) +
+  tm_fill(col = "estimate.x") +
+  tm_shape(water) +
+  tm_fill(col = "grey90") +
+  # Edit to use manhat_hoods instead
+  tm_shape(manhat_hoods) +
+  tm_borders() +
+  # Add a tm_text() layer
+  tm_text(text = "NTAName")
+```
+
+Adding neighborhood labels
+The neighborhood labels are so long and big they are obscuring our data. Take a look at manhat_hoods$NTAName. You'll see some neighborhoods are really the combination of a couple of places. One option to make the names a little more concise is to split them into a few lines. For example, turning
+
+Midtown-Midtown South
+into
+
+Midtown /
+Midtown 
+South
+To do this, you can make use of the gsub() function in base R. gsub() replaces the first argument by the second argument in the strings provided in the third argument. For example, gsub("a", "A", x) replaces all the "a"s in x with "A".
+
+You also might play with the size of the text to shrink the impact of the neighborhood names.
+
+Instructions
+100 XP
+Create a new column name in manhat_hoods by using gsub() to replace all the spaces (" ") with newlines ("\n") in manhat_hoods$NTAName.
+Update name in manhat_hoods by using gsub() to replace all the dashes ("-") with a forward slash then newline ("/\n") in manhat_hoods$name.
+Edit your plot to map text to "name" and set the size to 0.5.
+
+```{r anl}
+library(tmap)
+
+# gsub() to replace " " with "\n"
+manhat_hoods$name <- gsub(" ", "\n", manhat_hoods$NTAName)
+
+# gsub() to replace "-" with "/\n"
+manhat_hoods$name <- gsub("-", "/\n", manhat_hoods$name)
+
+# Edit to map text to name, set size to 0.5
+tm_shape(nyc_tracts_merge) +
+    tm_fill(col = "estimate.x") +
+  tm_shape(water) +
+    tm_fill(col = "grey90") +
+  tm_shape(manhat_hoods) +
+    tm_borders() +
+    tm_text(text = "name", size = 0.5)
+```
+
+Tidying up the legend and some final tweaks
+Time for some final tweaks and then to save your plot.
+
+Every element in your plot is a target for tweaks. Is it the right color? Is it the right size? Does it have intuitive labels? Your goal is to emphasize the data and de-emphasise the non-data elements.
+
+We've got some ideas for this plot. Let's tweak a few things.
+
+Instructions
+100 XP
+Make it clear what the color represents by adding title = "Median Income" and palette = "Greens" in the tm_fill() call, which will map income to a green color scale.
+Add subtle borders to the tracts to make it more clear where their boundaries are by adding a tm_borders() layer with col = "grey60" and lwd = 0.5.
+Make the neighborhood boundaries a little more important than tract boundaries by setting col = "grey40" and lwd = 2.
+Add a data source credit using a tm_credits() call with first argument "Source: ACS 2014 5-year Estimates, \n accessed via acs package" and second argument position = c("right", "bottom").
+Finally, save your plot as "nyc_income_map.png" using the save_tmap() function with arguments width = 4 and height = 7.
+
+```{r tutl}
+library(tmap)
+
+tm_shape(nyc_tracts_merge) +
+  # Add title and change palette
+  tm_fill(col = "estimate.x", 
+          title = "Median Income",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) +
+  tm_shape(water) +
+  tm_fill(col = "grey90") +
+  tm_shape(manhat_hoods) +
+  # Change col and lwd of neighborhood boundaries
+  tm_borders(col = "grey40", lwd = 2) +
+  tm_text(text = "name", size = 0.5) +
+  # Add tm_credits()
+  tm_credits("Source: ACS 2014 5-year Estimates, \n accessed via acs package", 
+             position = c("right", "bottom"))
+
+# Save map as "nyc_income_map.png"
+save_tmap(filename = "nyc_income_map.png", width = 4, height = 7)
 ```
 

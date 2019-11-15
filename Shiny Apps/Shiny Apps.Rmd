@@ -1,0 +1,246 @@
+---
+title: "Building Web Applications in R with Shiny: Case Studies"
+author: "Ken Harmon"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  pdf_document: default
+  html_document:
+    code_folding: hide
+    fig_align: center
+    fig_height: 6
+    fig_width: 12
+    keep_md: yes
+editor_options:
+  chunk_output_type: console
+---
+
+# {.tabset .tabset-fade}
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+pacman::p_load(tidyverse, shiny)
+theme_set(theme_bw())
+
+
+```
+
+https://www.datacamp.com/courses/building-web-applications-in-r-with-shiny-case-studies
+
+## Google Mapping API
+
+https://cloud.google.com/maps-platform/
+
+```{r swd, eval=FALSE, echo=FALSE}
+# this is set to not run during the knit process
+# this sets the working directory to the file location
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+```
+
+## Shiny Review
+
+Simple text
+Every Shiny app has a UI (User Interface) portion and a server portion. The UI is where the visual elements are placed—it controls the layout and appearance of your app. The server is where the logic of the app is implemented—for example, where calculations are performed and plots are generated.
+
+An empty UI is created using the fluidPage() function. Adding text to a Shiny app is done by adding text inside fluidPage() as an argument. In fact, the entire UI is built by supplying the fluidPage() function with as many arguments as you want.
+
+Instructions
+100 XP
+Create a Shiny app that displays the text "Shiny is fun" by following these specific instructions:
+
+Load the shiny package.
+Create the UI for the Shiny app using the fluidPage() function.
+Add the text "Shiny is fun" to the UI.
+
+```{r st}
+# Load the shiny package
+library(shiny)
+
+# Define UI for the application
+ui <- fluidPage(
+  # Add the text "Shiny is fun"
+  "Shiny is fun"
+)
+
+# Define the server logic
+server <- function(input, output) {}
+
+# Run the application
+shinyApp(ui = ui, server = server)
+```
+
+Formatted text
+Shiny has many functions that can transform plain text into formatted text. Simply place text inside the h1() function to create a primary header (e.g. a title), h2() for a secondary header, strong() to make text bold, em() to make text italicized, or any of the other formatting functions.
+
+You can also intermingle plain text and formatted text as much as you'd like—just remember to separate all the elements with commas!
+
+Instructions
+100 XP
+Place the following text inside the Shiny app:
+
+The word "DataCamp" as a primary header.
+The words "Shiny use cases course" as a secondary header.
+The word "Shiny" in italics.
+The words "is fun" as bold text.
+After completing the instructions, your Shiny app should render the following text:
+
+DataCamp
+Shiny use cases course
+Shiny is fun
+
+```{r ft}
+# Load the shiny package
+library(shiny)
+
+# Define UI for the application
+ui <- fluidPage(
+  # "DataCamp" as a primary header
+  h1("DataCamp"),
+  # "Shiny use cases course" as a secondary header
+  h2("Shiny use cases course"),
+  # "Shiny" in italics
+  em("Shiny"),
+  # "is fun" as bold text
+  strong("is fun")
+)
+
+# Define the server logic
+server <- function(input, output) {}
+
+# Run the application
+shinyApp(ui = ui, server = server)
+```
+
+Adding structure to your app
+Layouts in Shiny are used to give your app some structure by placing elements in certain desired positions.
+
+A sidebar layout, created with the sidebarLayout() function, provides a basic two-column structure with a smaller sidebar on the left and a larger main panel on the right.
+
+The sidebar layout function takes two arguments: sidebarPanel() and mainPanel(). Each of these panels can contain any arbitrary mix of text/HTML elements, in a similar fashion to how you can mix these elements inside a fluidPage().
+
+Instructions
+100 XP
+Your task is to add a sidebar layout to the existing app, such that the inputs will be on the left side and the outputs will be in the main panel. Specifically, you need to:
+
+Define the UI for the Shiny application.
+Add a sidebar layout to the page.
+Add a sidebar panel to the layout, and place the inputs and text in it.
+Add a main panel to the layout, and place the plot and table in it.
+
+```{r astya}
+# Load the shiny package
+library(shiny)
+
+# Define UI for the application
+ui <- fluidPage(
+  # Add a sidebar layout to the application
+  sidebarLayout(
+    # Add a sidebar panel around the text and inputs
+    sidebarPanel(
+      h4("Plot parameters"),
+      textInput("title", "Plot title", "Car speed vs distance to stop"),
+      numericInput("num", "Number of cars to show", 30, 1, nrow(cars)),
+      sliderInput("size", "Point size", 1, 5, 2, 0.5)
+    ),
+    # Add a main panel around the plot and table
+    mainPanel(
+      plotOutput("plot"),
+      tableOutput("table")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  output$plot <- renderPlot({
+    plot(cars[1:input$num, ], main = input$title, cex = input$size)
+  })
+  output$table <- renderTable({
+    cars[1:input$num, ]
+  })
+}
+
+# Run the application
+shinyApp(ui = ui, server = server)
+```
+
+Adding inputs
+Inputs are Shiny's way of allowing users to interact with an app. For example, textInput() is used to let the user enter text and numericInput() lets the user select a number. In the next chapter we will see many other types of inputs.
+
+To add an input to your app, simply add the input function inside fluidPage(). Recall from the video that all input functions have the same first two arguments: inputId and label.
+
+Instructions
+100 XP
+Define the UI for the Shiny application.
+Create a numeric input with ID "age" and a descriptive label of "How old are you?".
+Create a text input with ID "name" and a label of "What is your name?".
+
+```{r ai}
+library(shiny)
+
+# Define UI for the application
+ui <- fluidPage(
+  # Create a numeric input with ID "age" and label of
+  # "How old are you?"
+  numericInput("age", "How old are you?", value = 20),
+  
+  # Create a text input with ID "name" and label of 
+  # "What is your name?"
+  textInput("name", "What is your name?")
+)
+
+# Define the server logic
+server <- function(input, output) {}
+
+# Run the application
+shinyApp(ui = ui, server = server)
+```
+
+Adding placeholders for outputs
+Outputs are any object that should be displayed to the user and is generated in R, such as a plot or a table.
+
+To add an output to a Shiny app, the first thing you need to do is add a placeholder for the output that tells Shiny where to place the output.
+
+There are several output placeholder functions provided by Shiny, one for each type of output. For example, plotOutput() is for displaying plots, tableOutput() is for outputting tables, and textOutput() is for dynamic text.
+
+Instructions
+100 XP
+Create a text input with an ID of "name" in the sidebar panel.
+Add three output placeholders to the main panel:
+A text output with ID "greeting" (line 14).
+A plot output with ID "cars_plot" (line 16).
+A table output with ID "iris_table" (line 18).
+
+```{r apfo}
+library(shiny)
+
+# Define UI for the application
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      # Create a text input with an ID of "name"
+      textInput("name", "What is your name?", "Dean"),
+      numericInput("num", "Number of flowers to show data for",
+                   10, 1, nrow(iris))
+    ),
+    mainPanel(
+      # Add a placeholder for a text output with ID "greeting"
+      textOutput(outputId = "greeting"),
+      # Add a placeholder for a plot with ID "cars_plot"
+      plotOutput("cars_plot"),
+      # Add a placeholder for a table with ID "iris_table"
+      tableOutput("iris_table")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {}
+
+# Run the application
+shinyApp(ui = ui, server = server)
+```
+

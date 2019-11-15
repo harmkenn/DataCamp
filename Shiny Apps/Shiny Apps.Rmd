@@ -244,3 +244,113 @@ server <- function(input, output) {}
 shinyApp(ui = ui, server = server)
 ```
 
+Constructing output objects
+There are three rules to build an output in Shiny:
+
+Build the object with the appropriate render*() function.
+
+Save the result of the render function into the output list, which is a parameter of the server function. Specifically, save it into output$<outputId> in order to replace the output placeholder in the UI that has ID outputId.
+
+If the output relies on any user-modified input values, you can access any of the inputs using the input parameter of the server function. Specifically, input$<inputId> will always return the current value of the input field that has ID inputId.
+
+Instructions
+100 XP
+You are given a Shiny app with a fully functional UI portion. Your task is to construct all the outputs. Specifically:
+
+Create a plot of the cars dataset in the plot output placeholder with ID "cars_plot" (line 23).
+In the "greeting" text output, render a text greeting in the form of "Hello NAME", where NAME is the value of the name input (line 28).
+In the "iris_table" output, show a table of the first n rows of the iris dataset, where n is the value of the numeric input (line 33).
+
+```{r coo}
+# Load the shiny package
+library(shiny)
+
+# Define UI for the application
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      textInput("name", "What is your name?", "Dean"),
+      numericInput("num", "Number of rows to show in the table",
+                   10, 1, nrow(iris))
+    ),
+    mainPanel(
+      textOutput("greeting"),
+      plotOutput("cars_plot"),
+      tableOutput("iris_table")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  # Create a plot of the "cars" dataset 
+  output$cars_plot <- renderPlot({
+    plot(cars)
+  })
+  
+  # Render a text greeting as "Hello <name>"
+  output$greeting <- renderText({
+    paste("Hello", input$name)
+  })
+  
+  # Show a table of the first n rows of the "iris" data
+  output$iris_table <- renderTable({
+    data <- iris[1:input$num, ]
+    data
+  })
+}
+
+# Run the application
+shinyApp(ui = ui, server = server)
+```
+
+Reactive contexts
+Reactive values are special constructs in Shiny; they are not seen anywhere else in R programming. As such, they cannot be used in just any R code, reactive values can only be accessed within a reactive context.
+
+This is the reason why any variable that depends on a reactive value must be created using the reactive() function, otherwise you will get an error. The shiny server itself is not a reactive context, but the reactive() function, the observe() function, and all render*() functions are.
+
+Instructions
+100 XP
+You are provided with a Shiny app containing two numeric inputs, num1 and num2, and a text output. Your task is to:
+
+In a reactive variable called my_sum, calculate the sum of the two numeric inputs (line 10).
+In a reactive variable called my_average, calculate the average of the two inputs (line 14).
+In the text output, display the calculated average using the reactive variables (line 23).
+
+```{r rc}
+ui <- fluidPage(
+  numericInput("num1", "Number 1", 5),
+  numericInput("num2", "Number 2", 10),
+  textOutput("result")
+)
+
+server <- function(input, output) {
+  # Calculate the sum of the inputs
+  my_sum <- reactive({
+    input$num1 + input$num2
+  })
+
+  # Calculate the average of the inputs
+  my_average <- reactive({
+    my_sum() / 2
+  })
+  
+  output$result <- renderText({
+    paste(
+      # Print the calculated sum
+      "The sum is", my_sum(),
+      # Print the calculated average
+      "and the average is", my_average()
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+
+
+
+
+
+

@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, shiny, gapminder)
+pacman::p_load(tidyverse, shiny, gapminder, colourpicker, plotly)
 theme_set(theme_bw())
 
 
@@ -563,6 +563,306 @@ server <- function(input, output) {
 }
 
 # Run the application
+shinyApp(ui = ui, server = server)
+```
+
+Add a continent selector: select input
+When there are many options to let the user choose from, radio buttons can take up a lot of space and may not be ideal. Select inputs—also called 'dropdown lists'—can also be used to ask the user to choose an option from a list of choices, but in a more compact way. With a select input, all the options appear in a scrollable list, so it can be used even if you have many choices.
+
+Similar to radio buttons, select inputs also have choices and selected parameters. Additionally, select inputs have a multiple argument, which, when set to TRUE, allows the user to select more than one value.
+
+The code for the Shiny app from the last exercise is provided with slight modifications.
+
+Instructions
+100 XP
+Add a selectInput() to the UI with ID "continents" and a label of "Continents", with the default continent set to "Europe".
+The choices in the list should be all the different continents that exist in the gapminder dataset.
+Allow the user to select multiple continents simultaneously.
+Add code to the server such that only data for the selected continent is shown, by subsetting the gapminder dataset (line 23).
+
+```{r acssi}
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      textInput("title", "Title", "GDP vs life exp"),
+      numericInput("size", "Point size", 1, 1),
+      checkboxInput("fit", "Add line of best fit", FALSE),
+      radioButtons("color", "Point color",
+                   choices = c("blue", "red", "green", "black")),
+      # Add a continent dropdown selector
+      selectInput("continents", "Continents",
+                  choices = levels(gapminder$continent),
+                  multiple = TRUE,
+                  selected = "Europe")
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  output$plot <- renderPlot({
+    # Subset the gapminder dataset by the chosen continents
+    data <- subset(gapminder,
+                   continent %in% input$continents)
+
+    p <- ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point(size = input$size, col = input$color) +
+      scale_x_log10() +
+      ggtitle(input$title)
+    
+    if (input$fit) {
+      p <- p + geom_smooth(method = "lm")
+    }
+    p
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+Add a year filter: numeric slider input
+Slider inputs can be used for similar purposes to numeric inputs, as they both provide the user with a way to select a number.
+
+If the initial provided value (the value argument) of the slider is a single number, then the slider will be used to select single numbers. However, if the initial value is a vector of two numbers, then the slider will be used to select two numbers instead of just a single value.
+
+We have already seen that different inputs may have different arguments. It can be difficult to remember the exact arguments each input uses. The only way to find out what arguments you can use with a specific input function is by looking at its documentation or help file.
+
+Instructions
+100 XP
+Add a sliderInput() to the UI with ID "years" and a label of "Years" (line 14).
+Set the minimum value to the earliest year in the dataset, and the maximum value to the latest year in the dataset.
+By default, the endpoints of the slider should be set to 1977 and 2002, so that only data between these two years (inclusive) is shown.
+Add code to the server such that the years that are chosen in the input are used to subset the gapminder data, and only records within these years will show up (line 28).
+
+```{r ayfasi}
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      textInput("title", "Title", "GDP vs life exp"),
+      numericInput("size", "Point size", 1, 1),
+      checkboxInput("fit", "Add line of best fit", FALSE),
+      radioButtons("color", "Point color",
+                   choices = c("blue", "red", "green", "black")),
+      selectInput("continents", "Continents",
+                  choices = levels(gapminder$continent),
+                  multiple = TRUE,
+                  selected = "Europe"),
+      # Add a slider selector for years to filter
+      sliderInput("years", "Years",
+                  min(gapminder$year), max(gapminder$year),
+                  value = c(1977, 2002), step = 1)
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  output$plot <- renderPlot({
+    # Subset the gapminder data by the chosen years
+    data <- subset(gapminder,
+                   continent %in% input$continents &
+                   year >= input$years[1] & year <= input$years[2])
+    
+    p <- ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point(size = input$size, col = input$color) +
+      scale_x_log10() +
+      ggtitle(input$title)
+    
+    if (input$fit) {
+      p <- p + geom_smooth(method = "lm")
+    }
+    p
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+Add colours to your plot: color input
+The colourpicker package provides a color input, available through the colourInput() function. Even though color inputs are not part of the shiny package, they behave in the same way as any other input.
+
+A color input can have many different arguments you can explore, but we will only use the basic arguments: inputId, label, and value. The value argument accepts a color to use as the initial value. Colours can be specified in several different formats, but the easiest one is to simply use English color names such as "red" or "yellow".
+
+Instructions
+100 XP
+The code for the Shiny app from the last exercise is provided. Your task is to replace the radio buttons that are used to select a color with a color input. Specifically:
+
+Load the colourpicker package.
+Find the UI function that creates the radio buttons that are used for selecting a colour, and replace it with a color input (line 12).
+The color input should have ID "color", a label of "Point color", and a default color of "blue".
+
+```{r actypci}
+# Load the colourpicker package
+library(colourpicker)
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      textInput("title", "Title", "GDP vs life exp"),
+      numericInput("size", "Point size", 1, 1),
+      checkboxInput("fit", "Add line of best fit", FALSE),
+
+      # Replace the radio buttons with a color input
+      colourInput("color", "Point color", value = "blue", showColour = c("both", "text", "background")),
+      selectInput("continents", "Continents",
+                  choices = levels(gapminder$continent),
+                  multiple = TRUE,
+                  selected = "Europe"),
+      sliderInput("years", "Years",
+                  min(gapminder$year), max(gapminder$year),
+                  value = c(1977, 2002))
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  output$plot <- renderPlot({
+    data <- subset(gapminder,
+                   continent %in% input$continents &
+                   year >= input$years[1] & year <= input$years[2])
+    
+    p <- ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point(size = input$size, col = input$color) +
+      scale_x_log10() +
+      ggtitle(input$title)
+    
+    if (input$fit) {
+      p <- p + geom_smooth(method = "lm")
+    }
+    p
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+Making your plot larger
+Just as input functions can have different arguments depending on the type of input, so can output placeholder functions have different arguments to modify their appearance or behaviour.
+
+For example, when displaying a plot in a Shiny app using plotOutput(), the height of the plot by default will be 400 pixels. The plotOutput() function has some parameters that can be used to modify the height or width of a plot.
+
+Instructions
+100 XP
+The code for the Shiny app from the last exercise is provided. Your task is to make the plot larger. Specifically:
+
+600 pixels tall and 600 pixels wide. You can consult the plotOutput() documentation to find out what parameters to use (line 18).
+
+```{r mypl}
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      textInput("title", "Title", "GDP vs life exp"),
+      numericInput("size", "Point size", 1, 1),
+      checkboxInput("fit", "Add line of best fit", FALSE),
+      colourInput("color", "Point color", value = "blue"),
+      selectInput("continents", "Continents",
+                  choices = levels(gapminder$continent),
+                  multiple = TRUE,
+                  selected = "Europe"),
+      sliderInput("years", "Years",
+                  min(gapminder$year), max(gapminder$year),
+                  value = c(1977, 2002))
+    ),
+    mainPanel(
+      # Make the plot 600 pixels wide and 600 pixels tall
+      plotOutput("plot", width = "600px", height = "600px")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  output$plot <- renderPlot({
+    data <- subset(gapminder,
+                   continent %in% input$continents &
+                     year >= input$years[1] & year <= input$years[2])
+    
+    p <- ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point(size = input$size, col = input$color) +
+      scale_x_log10() +
+      ggtitle(input$title)
+    
+    if (input$fit) {
+      p <- p + geom_smooth(method = "lm")
+    }
+    p
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+Make your plot interactive
+plotly is a popular package for creating interactive plots in Shiny. There are several other packages for interactive visualizations, but we will use plotly largely because of its function ggplotly(), which converts a ggplot2 plot into an interactive one.
+
+Instructions
+100 XP
+The code for the Shiny app from the last exercise is provided. Your task is to replace the ggplot2 plot with a plotly plot. Specifically:
+
+Load the plotly package.
+Replace the plot output function with plotlyOutput (line 20).
+Replace the plot render function with renderPlotly (line 29).
+Convert the existing ggplot2 plot to a plotly plot (line 31).
+
+```{r mypi}
+# Load the plotly package
+library(plotly)
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      textInput("title", "Title", "GDP vs life exp"),
+      numericInput("size", "Point size", 1, 1),
+      checkboxInput("fit", "Add line of best fit", FALSE),
+      colourInput("color", "Point color", value = "blue"),
+      selectInput("continents", "Continents",
+                  choices = levels(gapminder$continent),
+                  multiple = TRUE,
+                  selected = "Europe"),
+      sliderInput("years", "Years",
+                  min(gapminder$year), max(gapminder$year),
+                  value = c(1977, 2002))
+    ),
+    mainPanel(
+      # Replace the `plotOutput()` with the plotly version
+      plotlyOutput("plot")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  # Replace the `renderPlot()` with the plotly version
+  output$plot <- renderPlotly({
+    # Convert the existing ggplot2 to a plotly plot
+    ggplotly({
+      data <- subset(gapminder,
+                     continent %in% input$continents &
+                       year >= input$years[1] & year <= input$years[2])
+      
+      p <- ggplot(data, aes(gdpPercap, lifeExp)) +
+        geom_point(size = input$size, col = input$color) +
+        scale_x_log10() +
+        ggtitle(input$title)
+      
+      if (input$fit) {
+        p <- p + geom_smooth(method = "lm")
+      }
+      p
+    })
+  })
+}
+
 shinyApp(ui = ui, server = server)
 ```
 

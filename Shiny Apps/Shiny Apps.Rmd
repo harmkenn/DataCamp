@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, shiny, gapminder, colourpicker, plotly)
+pacman::p_load(tidyverse, shiny, gapminder, colourpicker, plotly, DT)
 theme_set(theme_bw())
 
 
@@ -864,5 +864,623 @@ server <- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)
+```
+
+See the data in a table
+An easy first step in exploring a dataset is to simply view it as a table.
+
+So far we have focused mostly on inputs—interactive widgets that allow the user to select values. Now we want to have a table in our app, and send data to display in the table. To display objects in Shiny, we need to use output and render functions.
+
+Instructions
+100 XP
+Given a minimal Shiny app, add a table that will show the gapminder dataset. Specifically:
+
+Add a placeholder for the table by creating a table output with ID "table" in the UI.
+Use the corresponding render function in the server code to render the table.
+
+```{r sdt}
+ui <- fluidPage(
+  h1("Gapminder"),
+  # Add a placeholder for a table output
+  tableOutput("table")
+)
+
+server <- function(input, output) {
+  # Call the appropriate render function 
+  output$table <- renderTable({
+    # Show the gapminder object in the table
+    gapminder
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Filter by life expectancy
+The real benefit of using Shiny comes when inputs are combined with outputs. The table created in the last exercise is static—it cannot be changed—but for exploration, it would be better if the user could decide what subset of the data to see.
+
+This can be achieved by adding an input that lets the user select a value to filter the data. This way, the table we created in the previous exercise can be made dynamic.
+
+One of the variables in the gapminder dataset is lifeExp (life expectancy). Your task is to add a slider input to the Shiny app that lets the user choose a minimum and maximum life expectancy, and the table will only show data that matches these values.
+
+Instructions
+100 XP
+Add a slider input to the UI with ID "life", a minimum value of 0, maximum value of 120, and default selection of 30-50.
+Inside the render function, use the input value to subset the gapminder data to only include records with a lifeExp that is between the minimum and maximum values (both inclusive).
+
+```{r fle}
+ui <- fluidPage(
+  h1("Gapminder"),
+  # Add a slider for life expectancy filter
+  sliderInput(inputId = "life", label = "Life expectancy",
+      min = 0, max = 120,
+      value = c(30, 50)),
+  tableOutput("table")
+)
+
+server <- function(input, output) {
+  output$table <- renderTable({
+    data <- gapminder
+    data <- subset(
+      data,
+      # Use the life expectancy input to filter the data
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    data
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Select a continent to view
+When exploring a dataset, it is often useful to experiment with filtering more than one variable. For example, you might be interested in only seeing data for African countries that had a specific life expectancy.
+
+Instructions
+100 XP
+Add a select input that allows the user to select a specific continent to view. Specifically:
+
+Add a select input to the UI with ID "continent" and a label of "Continent".
+Inside the render function, use the continent input value to only select data from the chosen continent (line 21).
+
+```{r scv}
+ui <- fluidPage(
+  h1("Gapminder"),
+  sliderInput(inputId = "life", label = "Life expectancy",
+              min = 0, max = 120,
+              value = c(30, 50)),
+  # Add a continent selector dropdown
+  selectInput("continent", "Continent", choices = levels(gapminder$continent)),
+  tableOutput("table")
+)
+
+server <- function(input, output) {
+  output$table <- renderTable({
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    data <- subset(
+      data,
+      # Filter the data according to the continent input value
+      continent == input$continent
+    )
+    data
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Allow "All" continents to be viewed
+Before adding the continent selector, the Shiny app showed data for all continents. Now that the continent selector was added, the data can be viewed per continent. But what if the user decides they actually don't want to filter for a specific continent, and they prefer to see all of them? Unfortunately, adding the continent selector removed that ability.
+
+The choices argument of the selectInput() function can be modified to add another value to the continent list, and when this value is chosen, continent filtering can be turned off.
+
+Instructions
+100 XP
+Add an option in the select input to select "All" continents. When that option is selected, do not perform any continent filtering. Specifically:
+
+Add an "All" value to the list of options that are provided to the select input in the UI.
+In the server, use an if statement to check if the continent is set to "All". If "All" is chosen, then do not perform any filtering on continents (line 20).
+
+```{r aacv}
+ui <- fluidPage(
+  h1("Gapminder"),
+  sliderInput(inputId = "life", label = "Life expectancy",
+              min = 0, max = 120,
+              value = c(30, 50)),
+  # Add an "All" value to the continent list
+  selectInput("continent", "Continent",
+              choices = c("All", levels(gapminder$continent))),
+  tableOutput("table")
+)
+
+server <- function(input, output) {
+  output$table <- renderTable({
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    # Don't subset the data if "All" continent are chosen
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    data
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Plot the data
+Recall that plots are output objects, and as such they are added to a Shiny app using the plotOutput() + renderPlot() functions. The output function is added to the UI to determine where to place the plot, and the render function in the server code is responsible for generating the plot.
+
+Your task is to add a plot of GDP per capita vs life expectancy to the app. The data used in the plot should be the same data that is shown in the table; that is, the data in the plot should only show records that match the input filters.
+
+Instructions
+100 XP
+Add a placeholder for a plot output to the UI with an ID of "plot".
+In the server, use the appropriate render function to create the plot (line 30).
+Re-use the same data-filtering code that the output table uses for the plot data (line 32).
+
+```{r ptd}
+ui <- fluidPage(
+  h1("Gapminder"),
+  sliderInput(inputId = "life", label = "Life expectancy",
+              min = 0, max = 120,
+              value = c(30, 50)),
+  selectInput("continent", "Continent",
+              choices = c("All", levels(gapminder$continent))),
+  # Add a plot output
+  plotOutput("plot"),
+  tableOutput("table")
+)
+
+server <- function(input, output) {
+  output$table <- renderTable({
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    data
+  })
+
+  # Create the plot render function  
+  output$plot <- renderPlot({
+    # Use the same filtered data that the table uses
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point() +
+      scale_x_log10()
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Download the filtered data
+Downloading files is achieved using the pair of functions downloadButton() and downloadHandler(). These two functions pair together similarly to how output and render functions are paired: downloadButton() determines where in the UI it will show up, while downloadHandler() needs to be saved into the output list and has the actual R code to create the downloaded file.
+
+Instructions
+100 XP
+Add the ability to download the data that is currently viewed in the table as a CSV file. Specifically:
+
+Add a download button to the UI with ID "download_data" and a label of "Download".
+Add a download handler to the server (line 31).
+Give the downloaded file a name of "gapminder_data.csv" (line 33).
+Write the filtered data into a CSV file (line 50).
+
+```{r dfd}
+ui <- fluidPage(
+  h1("Gapminder"),
+  sliderInput(inputId = "life", label = "Life expectancy",
+              min = 0, max = 120,
+              value = c(30, 50)),
+  selectInput("continent", "Continent",
+              choices = c("All", levels(gapminder$continent))),
+  # Add a download button
+  downloadButton(outputId = "download_data", label = "Download"),
+  plotOutput("plot"),
+  tableOutput("table")
+)
+
+server <- function(input, output) {
+  output$table <- renderTable({
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    data
+  })
+
+  # Create a download handler
+  output$download_data <- downloadHandler(
+    # The downloaded file is named "gapminder_data.csv"
+    filename = "gapminder_data.csv",
+    content = function(file) {
+      # The code for filtering the data is copied from the
+      # renderTable() function
+      data <- gapminder
+      data <- subset(
+        data,
+        lifeExp >= input$life[1] & lifeExp <= input$life[2]
+      )
+      if (input$continent != "All") {
+        data <- subset(
+          data,
+          continent == input$continent
+        )
+      }
+      
+      # Write the filtered data into a CSV file
+      write.csv(data, file, row.names = FALSE)
+    }
+  )
+
+  output$plot <- renderPlot({
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point() +
+      scale_x_log10()
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Reactive variables reduce code duplication
+In the previous exercises, the code to filter gapminder according to the input values is duplicated three times: once in the table, once in the plot, and once in the download handler.
+
+Reactive variables can be used to reduce code duplication, which is generally a good idea because it makes maintenance easier.
+
+Instructions
+100 XP
+The duplicated code chunks that filter the data have been removed. Your task is to add a reactive variable that filters the data, and use this variable instead. Specifically:
+
+Create a reactive variable named filtered_data by using the reactive() function that uses the filtering code from the previous exercise (line 15).
+Use the reactive variable to render the table output, the plot output, and the download file (lines 33, 42, and 50).
+
+```{r rvrcd}
+ui <- fluidPage(
+  h1("Gapminder"),
+  sliderInput(inputId = "life", label = "Life expectancy",
+              min = 0, max = 120,
+              value = c(30, 50)),
+  selectInput("continent", "Continent",
+              choices = c("All", levels(gapminder$continent))),
+  downloadButton(outputId = "download_data", label = "Download"),
+  plotOutput("plot"),
+  tableOutput("table")
+)
+
+server <- function(input, output) {
+  # Create a reactive variable named "filtered_data"
+  filtered_data <- reactive({
+    # Filter the data (copied from previous exercise)
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    data
+  })
+  
+  output$table <- renderTable({
+    # Use the filtered_data variable to render the table output
+    data <- filtered_data()
+    data
+  })
+
+  output$download_data <- downloadHandler(
+    filename = "gapminder_data.csv",
+    content = function(file) {
+      # Use the filtered_data variable to create the data for
+      # the downloaded file
+      data <- filtered_data()
+      write.csv(data, file, row.names = FALSE)
+    }
+  )
+
+  output$plot <- renderPlot({
+    # Use the filtered_data variable to create the data for
+    # the plot
+    data <- filtered_data()
+    ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point() +
+      scale_x_log10()
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Make the table interactive
+Datatables from the DT package are often a better way to display data in a Shiny app when compared to the built-in tables. Shiny tables can be converted to datatables with two simple code modifications: instead of using tableOutput() and renderTable(), you use DT::dataTableOutput() and DT::renderDataTable(). Datatables have a wide variety of customization options, but we will not be using any special options.
+
+Note that with the DT package, the convention is to not load the DT package, and instead use the DT:: prefix when calling the datatable functions.
+
+Instructions
+100 XP
+The code for the Shiny app from the last coding exercise is provided without any modifications. Your task is to replace the basic Shiny table with a DT table. Specifically:
+
+In the UI, replace the table output function with the DT datatable output (line 11).
+In the server, replace the table rendering function with a DT datatable render funtion (line 31).
+
+```{r mti}
+ui <- fluidPage(
+  h1("Gapminder"),
+  sliderInput(inputId = "life", label = "Life expectancy",
+              min = 0, max = 120,
+              value = c(30, 50)),
+  selectInput("continent", "Continent",
+              choices = c("All", levels(gapminder$continent))),
+  downloadButton("download_data"),
+  plotOutput("plot"),
+  # Replace the tableOutput() with DT's version
+  DT::dataTableOutput("table")
+)
+
+server <- function(input, output) {
+  filtered_data <- reactive({
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    data
+  })
+  
+  # Replace the renderTable() with DT's version
+  output$table <- DT::renderDataTable({
+    data <- filtered_data()
+    data
+  })
+
+  output$download_data <- downloadHandler(
+    filename = "gapminder_data.csv",
+    content = function(file) {
+      data <- filtered_data()
+      write.csv(data, file, row.names = FALSE)
+    }
+  )
+
+  output$plot <- renderPlot({
+    data <- filtered_data()
+    ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point() +
+      scale_x_log10()
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Place different outputs on different tabs
+Tabs are useful when you have too much content and want to split it up. To create a tab, you simply wrap UI elements in the tabPanel() function, and you need to supply a title for the tab using the title argument.
+
+In order for tabs to appear in the UI, the tab panels need to be grouped into a tabset "container", by wrapping all the tab panels inside tabsetPanel().
+
+Your task is to add tabs to the Shiny app, such that the inputs and download button are in one tab, the plot is in another tab, and the table is in a third tab. Since this is purely a visual change, all the code changes are to be done in the UI portion only.
+
+Instructions
+100 XP
+Use the tabsetPanel() function to create a container for three tab panels:
+A first tab for the inputs, and name the tab "Inputs".
+A second tab that shows the plot, and name the tab "Plot" (line 16).
+A third tab that shows the table, and name the tab "Table" (line 21).
+
+```{r pdodt}
+ui <- fluidPage(
+    h1("Gapminder"),
+    # Create a container for tab panels
+    tabsetPanel(
+        # Create an "Inputs" tab
+        tabPanel(
+            title = "Inputs",
+            sliderInput(inputId = "life", label = "Life expectancy",
+                        min = 0, max = 120,
+                        value = c(30, 50)),
+            selectInput("continent", "Continent",
+                        choices = c("All", levels(gapminder$continent))),
+            downloadButton("download_data")
+        ),
+        # Create a "Plot" tab
+        tabPanel(
+            title = "Plot",
+            plotOutput("plot")
+        ),
+        # Create "Table" tab
+        tabPanel(
+            title = "Table",
+            DT::dataTableOutput("table")
+        )
+    )
+)
+
+server <- function(input, output) {
+  filtered_data <- reactive({
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    data
+  })
+  
+  output$table <- DT::renderDataTable({
+    data <- filtered_data()
+    data
+  })
+
+  output$download_data <- downloadHandler(
+    filename = "gapminder_data.csv",
+    content = function(file) {
+      data <- filtered_data()
+      write.csv(data, file, row.names = FALSE)
+    }
+  )
+
+  output$plot <- renderPlot({
+    data <- filtered_data()
+    ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point() +
+      scale_x_log10()
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Add CSS to modify the look of the app
+CSS is an extremely popular markup language that is used to tell the browser how to display elements on a page. You need to use CSS if you want to deviate from the default look-and-feel of Shiny and want to customize the appearance of different items in your app.
+
+Recall that CSS is comprised of a set of rules, where each rule is a property: value pair associated with an element on the page. It's possible to include CSS in your app by writing it in a separate file and importing it with includeCSS(), but in this course we will use the simpler approach of placing the CSS code inside tags$style() in the UI.
+
+Instructions
+100 XP
+Write CSS rules to modify the app in the following ways:
+Change the background color of the download button to orange (line 5).
+Change the text size of the download button to 20 pixels (line 8).
+Change the text color of the table to red (line 13).
+Add these CSS rules to the Shiny app (line 20).
+
+```{r addCSS}
+my_css <- "
+#download_data {
+  /* Change the background color of the download button
+     to orange. */
+  background: orange;
+
+  /* Change the text size to 20 pixels. */
+  font-size: 20px;
+}
+
+#table {
+  /* Change the text color of the table to red. */
+  color: red;
+}
+"
+
+ui <- fluidPage(
+  h1("Gapminder"),
+  # Add the CSS that we wrote to the Shiny app
+  tags$style(my_css),
+  tabsetPanel(
+    tabPanel(
+      title = "Inputs",
+      sliderInput(inputId = "life", label = "Life expectancy",
+                  min = 0, max = 120,
+                  value = c(30, 50)),
+      selectInput("continent", "Continent",
+                  choices = c("All", levels(gapminder$continent))),
+      downloadButton("download_data")
+    ),
+    tabPanel(
+      title = "Plot",
+      plotOutput("plot")
+    ),
+    tabPanel(
+      title = "Table",
+      DT::dataTableOutput("table")
+    )
+  )
+)
+
+server <- function(input, output) {
+  filtered_data <- reactive({
+    data <- gapminder
+    data <- subset(
+      data,
+      lifeExp >= input$life[1] & lifeExp <= input$life[2]
+    )
+    if (input$continent != "All") {
+      data <- subset(
+        data,
+        continent == input$continent
+      )
+    }
+    data
+  })
+  
+  output$table <- DT::renderDataTable({
+    data <- filtered_data()
+    data
+  })
+
+  output$download_data <- downloadHandler(
+    filename = "gapminder_data.csv",
+    content = function(file) {
+      data <- filtered_data()
+      write.csv(data, file, row.names = FALSE)
+    }
+  )
+
+  output$plot <- renderPlot({
+    data <- filtered_data()
+    ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point() +
+      scale_x_log10()
+  })
+}
+
+shinyApp(ui, server)
 ```
 

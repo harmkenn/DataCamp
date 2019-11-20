@@ -2125,6 +2125,37 @@ shinyApp(ui = ui, server = server)
 ```
 
 
+```{r pc}
+ui <- fluidPage(
+    column(
+        width = 6,
+        plotOutput("map", click = "clickMap", width = 385, height = 400)
+    )
+)
+
+server <- function(input, output) {
+    # initial plot with and without projection
+    output$map <- renderPlot({
+        ggmap(map) + ggtitle("without map projection")
+    })
+    
+    # plot after clicking on map with projection
+
+    
+    # plot after cliking on map without projection
+    observeEvent(input$clickMap, {
+        x <- input$clickMap$x
+        y <- input$clickMap$y
+        df <- data.frame(long = x, lat = y)
+        output$map <- renderPlot({
+            ggmap(map)  + ggtitle("without map projection") +
+                geom_point(data = df, aes(long, lat), size = 5)
+        })
+    })
+}
+
+shinyApp(ui, server)
+```
 
 
 

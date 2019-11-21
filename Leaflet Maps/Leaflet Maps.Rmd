@@ -371,6 +371,138 @@ map2 %>%
                      radius = 2, color = "red")
 ```
 
+Making our Map Pop
+Similar to building a plot with ggplot2 or manipulating data with dplyr, your map needs to be stored in an object if you reference it later in your code.
+
+Speaking of dplyr, the %>% operator can pipe data into the function chain that creates a leaflet map.
+
+ipeds %>% 
+    leaflet()  %>% 
+        addTiles() %>% 
+        addCircleMarkers(popup = ~name, color = "#FF0000")
+
+Piping makes our code more readable and allows us to refer to variables using the ~ operator rather than repeatedly specifying the data frame.
+
+The color argument in addCircleMarkers() takes the name of a color or a hex code. For example, red or #FF0000.
+
+map has been printed for you. Notice the circle markers are gone!
+
+```{r momp}
+# Add circle markers with popups for college names
+map %>%
+    addCircleMarkers(data = ca, radius = 2, popup = ~name)
+
+# Change circle color to #2cb42c and store map in map_color object
+map_color <- map %>% 
+    addCircleMarkers(data = ca, radius = 2, color = "#2cb42c", popup = ~name)
+
+# Print map_color
+map_color
+```
+
+Building a Better Pop-up
+With the paste0() function and a few html tags, we can customize our popups. paste0() converts its arguments to characters and combines them into a single string without separating the arguments.
+
+addCircleMarkers(popup = ~paste0(name,
+                                 "<br/>",
+                                 sector_label))
+We can use the <br/> tag to create a line break to have each element appear on a separate line.
+
+To distinguish different data elements, we can make the name of each college italics by wrapping the name variable in <i></i>
+
+addCircleMarkers(popup = ~paste0("<i>",
+                                 name,
+                                 "</i>", 
+                                 "<br/>", 
+                                 sector_label))
+                                 
+```{r bbpu}
+# Clear the bounds and markers on the map object and store in map2
+map2 <- map %>% 
+            clearBounds() %>% 
+            clearMarkers()
+
+# Add circle markers with popups that display both the institution name and sector
+map2 %>% 
+    addCircleMarkers(data = ca, radius = 2, 
+                     popup = ~paste0(name, "<br/>", sector_label))
+
+# Make the institution name in each popup bold
+map2 %>% 
+    addCircleMarkers(data = ca, radius = 2, 
+                     popup = ~paste0("<b>", name, "</b>", "<br/>", sector_label))
+```
+
+Swapping Popups for Labels
+Popups are great, but they require a little extra effort. That is when labels come to our the aid. Using the label argument in the addCircleMarkers() function we can get more information about one of our markers with a simple hover!
+
+ipeds %>% 
+    leaflet()  %>% 
+    addProviderTiles("CartoDB")  %>% 
+    addCircleMarkers(label = ~name, radius = 2)
+Labels are especially helpful when mapping more than a few locations as they provide quick access to detail about what each marker represents.
+
+```{r spfl}
+# Add circle markers with labels identifying the name of each college
+map %>% 
+    addCircleMarkers(data = ca, radius = 2, label = ~name)
+
+# Use paste0 to add sector information to the label inside parentheses 
+map %>% 
+    addCircleMarkers(data = ca, radius = 2, label = ~paste0(name, " (", sector_label, ")"))
+```
+
+Creating a Color Palette using colorFactor
+So far we have only used color to customize the style of our map. With colorFactor() we can create a color palette that maps colors the levels of a factor variable.
+
+pal <- 
+   colorFactor(palette = c("blue", "red", "green"), 
+               levels = c("Public", "Private", "For-Profit"))
+
+m %>% 
+    addCircleMarkers(color = ~pal(sector_label))
+Why might we not want to use this particular color palette?
+
+If you are interested in using a continuous variable to color a map see colorNumeric().
+
+pal <- colorNumeric(palette = "RdBu", domain = c(25:50))
+
+ipeds %>% 
+    leaflet() %>% 
+        addProviderTiles("CartoDB")  %>% 
+        addCircleMarkers(radius = 2, color = ~pal(lat))
+
+```{r ccpucf}
+# Make a color palette called pal for the values of `sector_label` using `colorFactor()`  
+# Colors should be: "red", "blue", and "#9b4a11" for "Public", "Private", and "For-Profit" colleges, respectively
+pal <- colorFactor(palette = c("red", "blue", "#9b4a11"), 
+                   levels = c("Public", "Private", "For-Profit"))
+
+# Add circle markers that color colleges using pal() and the values of sector_label
+map2 <- 
+    map %>% 
+        addCircleMarkers(data = ca, radius = 2, 
+                         color = ~pal(sector_label), 
+                         label = ~paste0(name, " (", sector_label, ")"))
+
+# Print map2
+m <- map2
+map2
+```
+
+A Legendary Map
+Adding information to our map using color is great, but it is only helpful if we remember what the colors represent. With addLegend() we can add a legend to remind us.
+
+There are several arguments we can use to custom the legend to our liking, including opacity, title, and position. To create a legend for our colorNumeric() example, we would do the following.
+
+```{r alm}
+# Customize the legend
+map2 %>% 
+    addLegend(pal = pal, 
+              values = c("Public", "Private", "For-Profit"),
+              # opacity of .5, title of Sector, and position of topright
+              opacity = 0.5, title = "Sector", position = "topright")
+```
 
 ## Layers
 

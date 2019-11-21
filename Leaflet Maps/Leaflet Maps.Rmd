@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, leaflet, ggmap)
+pacman::p_load(tidyverse, leaflet, ggmap, leaflet.extras, htmltools)
 
 theme_set(theme_bw())
 ```
@@ -505,5 +505,220 @@ map2 %>%
 ```
 
 ## Layers
+
+Middle America
+Starting from scratch, our first step is to create a base map and to set our map's view. Rather than using the geocode() function from ggmaps, we'll add an extra feature to our map so we can use the map to geocode.
+
+After creating the map in Step 1, search for "U.S. Center Chapel " in Kansas and click the marker to add a pin.
+
+When you hover over the pin what are the coordinates?
+
+```{r ma}
+library(leaflet.extras)
+
+leaflet() %>%
+  addTiles() %>% 
+  addSearchOSM() %>% 
+  addReverseSearchOSM() 
+```
+
+Building a Base
+Now that we know where to center our map (Lat = 39.8282, Lng = -98.5795), let's build a new basemap. Remember that we can use either addTiles() or addProviderTiles() to add a map tile to our leaflet object.
+
+Since we are working toward mapping all of America's colleges, we can include the ipeds data at the start of the chain of functions that will create our base map. This way the ipeds data will be stored with our base map so that we can easily access it. Once we have built a solid base, we can map every college in America with just two lines of R code.
+
+The ipeds data and leaflet and tidyverse libraries have been loaded for you.
+
+```{r bab}
+m2 <- 
+    ipeds %>% 
+        leaflet() %>% 
+            # use the CartoDB provider tile
+            addProviderTiles("CartoDB") %>% 
+            # center on the middle of the US with zoom of 3
+            setView(lat = 39.8282, lng = -98.5795, zoom = 3)
+
+# Map all American colleges 
+m2 %>% 
+    addCircleMarkers(lng = ~lng, lat = ~lat,
+                     radius = 1, color = "red") 
+```
+
+Mapping Public Colleges
+We can add each sector to our map as a layer providing users with the ability to select which sectors are displayed. To do this we will make use of a new argument to the addCircleMarkers() function, called a group.
+
+leaflet() %>% 
+        addProviderTiles("CartoDB") %>% 
+        addCircleMarkers(data = public, 
+                         label = ~htmlEscape(name), 
+                         group = "Public")
+We'll integrate another feature into our map from the htmltools library. Wrapping our labels with the htmlEscape() function will sanitize characters that may be interpreted as HTML. This will prevent any of the college names from appearing with unintended formatting.
+
+The color palette pal we created in Chapter 2 has been loaded for you.
+
+```{r mpc}
+# Load the htmltools package
+library(htmltools)
+
+# Create data frame called public with only public colleges
+public <- subset(ipeds, sector_label == "Public")  
+
+# Create a leaflet map of public colleges called m3 
+m3 <- leaflet() %>% 
+        addProviderTiles("CartoDB") %>% 
+        addCircleMarkers(data = public, radius = 1, label = ~htmlEscape(name),
+                         color = ~pal(sector_label), group = "Public")
+
+m3
+```
+
+Mapping Public and Private Colleges
+We can add private colleges exactly how we added public colleges. Then using the addLayersControl() function with the overlayGroups argument we can give our users the ability to display public and/or private colleges. The overlayGroups argument takes a vector of groups that we have defined while creating our layers (i.e., public and private). As a reminder, here is how we can add public colleges to our map as a layer:
+
+# Create data frame called public with only public colleges
+public <- filter(ipeds, sector_label == "Public")  
+
+# Add public colleges as a layer and save map as `m3`
+m3 <- leaflet() %>% 
+        addProviderTiles("CartoDB") %>% 
+        addCircleMarkers(data = public, radius = 2, 
+                         label = ~htmlEscape(name),
+                         color = ~pal(sector_label),
+                         group = "Public") %>% 
+        addLayersControl(overlayGroups = c("Public"))
+The htmltools library, color palette pal and the m3 map with public colleges have been loaded for you.
+
+```{r mppc}
+# Create data frame called private with only private colleges
+private <- filter(ipeds, sector_label == "Private")  
+
+# Add private colleges to `m3` as a new layer
+m3 <- m3 %>% 
+        addCircleMarkers(data = private, radius = .5, label = ~htmlEscape(name),
+                         color = ~pal(sector_label), group = "Private") %>% 
+        addLayersControl(overlayGroups = c("Public", "Private"))
+
+m3
+```
+
+Mapping All Colleges
+Let's keep layering up and add for-profit colleges to our leaflet map that is stored in the m3 object.
+
+After you print() the m3 map with public, private, and for-profit colleges as their own layers, then try removing all three layers and adding them back to the map in a different order.
+
+The different college sectors are added back to the map as layers in the order you specify (i.e., the last sector that you select will be on top).
+
+The color palette pal and the m3 map with public and private colleges have been loaded for you.
+
+```{r mac}
+# Create data frame called profit with only For-Profit colleges
+profit <- filter(ipeds, sector_label == "For-Profit")  
+
+# Add For-Profit colleges to `m3` as a new layer
+m3 <- m3 %>% 
+        addCircleMarkers(data = profit, radius = 2, label = ~htmlEscape(name),
+                         color = ~pal(sector_label),   group = "For-Profit")  %>% 
+        addLayersControl(overlayGroups = c("Public", "Private", "For-Profit"))  
+
+# Center the map on the middle of the US with a zoom of 4
+m4 <- m3 %>%
+        setView(lat = 39.8282, lng = -98.5795, zoom = 4) 
+        
+m4
+```
+
+Change up the Base
+Similar to how we added overlay groups (i.e., college sectors), we can allow our users to toggle between different base maps using the baseGroups argument to the addLayersControl() function.
+
+First we will need to add multiple basemaps and specify the name of a group for each.
+
+leaflet() %>% 
+  addTiles(group = "OSM") %>% 
+  addProviderTiles("CartoDB", group = "CartoDB") 
+Try running the above code in the console. You should see a leaflet map in the viewer with the CartoDB basemap. This is because we added the CartoDB base map after the default OpenStreetMap tile. If we add addLayerControl(), our users will be able to toggle between the two base maps (you can include many base maps, but only one can be selected at a time).
+
+```{r cutb}
+leaflet() %>% 
+  # Add the OSM, CartoDB and Esri tiles
+  addTiles(group = "OSM") %>% 
+  addProviderTiles("CartoDB", group = "CartoDB") %>% 
+  addProviderTiles("Esri", group = "Esri") %>% 
+  # Use addLayersControl to allow users to toggle between basemaps
+  addLayersControl(baseGroups = c("OSM", "CartoDB", "Esri"))
+```
+
+Putting it all Together
+Let's try putting this all together at one time. Building our interactive map of every four-year college in America can be broken down into four steps:
+
+Initialize the web map
+Lay down our base maps
+Plot each sector of colleges as its own layer
+Add layer controls so users can toggle base and overlay groups
+The public, private, and profit data frames as well as the color palette pal have been loaded for you.
+
+```{r piat}
+m4 <- leaflet() %>% 
+        addTiles(group = "OSM") %>% 
+        addProviderTiles("CartoDB", group = "Carto") %>% 
+        addProviderTiles("Esri", group = "Esri") %>% 
+        addCircleMarkers(data = public, radius = 2, label = ~htmlEscape(name),
+                         color = ~pal(sector_label),  group = "Public") %>% 
+        addCircleMarkers(data = private, radius = 2, label = ~htmlEscape(name),
+                           color = ~pal(sector_label), group = "Private")  %>% 
+        addCircleMarkers(data = profit, radius = 2, label = ~htmlEscape(name),
+                         color = ~pal(sector_label), group = "For-Profit")  %>% 
+        addLayersControl(baseGroups = c("OSM", "Carto", "Esri"), 
+                         overlayGroups = c("Public", "Private", "For-Profit")) %>% 
+        setView(lat = 39.8282, lng = -98.5795, zoom = 4) 
+
+m4
+```
+
+Adding a Piece of Flair
+Earlier in this chapter, we used addSearchOSM() to find the middle of the US. To search for markers, rather than locations, we can use the addSearchFeatures() function. addSearchFeatures() will add a search box that you can use to find markers in the group(s) passed to the targetGroups argument. For example, to search our map for public colleges we could use the following code.
+
+m4  %>% 
+  addSearchFeatures(
+    targetGroups = 'Public',
+    options = searchFeaturesOptions(zoom = 10)) 
+The m4 map and the leaflet.extras package have been loaded for you.
+
+```{r aipof}
+# Make each sector of colleges searchable 
+m4_search <- m4  %>% 
+  addSearchFeatures(
+    targetGroups = c("Public", "Private", "For-Profit"), 
+    # Set the search zoom level to 18
+    options = searchFeaturesOptions(zoom = 18)) 
+
+# Try searching the map for a college
+m4_search
+```
+
+A Cluster Approach
+Rather than using layers to improve the usability of our map, we could elect to cluster the colleges by clustering groups of nearby colleges together to reduce the number of points on the map. Zooming in will cause the clusters to break apart and the individual colleges to appear. This can be a useful tactic for mapping a large number of points in a user-friendly manner.
+
+We can cluster all of our colleges by setting the clusterOptions argument of addCircleMarkers() as follows.
+
+ipeds %>% 
+  leaflet() %>%
+    addTiles() %>% 
+    addCircleMarkers(clusterOptions = markerClusterOptions())
+The ipeds data, htmltools library, and color palette pal have been loaded for you.
+
+```{r aca}
+ipeds %>% 
+    leaflet() %>% 
+        addTiles() %>% 
+        # Sanitize any html in our labels
+        addCircleMarkers(radius = 2, label = ~htmlEscape(name),
+                         # Color code colleges by sector using the `pal` color palette
+                         color = ~pal(sector_label),
+                         # Cluster all colleges using `clusterOptions`
+                         clusterOptions = markerClusterOptions()) 
+```
+
+
+
 
 ## Polygons

@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, leaflet, ggmap, leaflet.extras, htmltools)
+pacman::p_load(tidyverse, leaflet, ggmap, leaflet.extras, htmltools, scales, htmlwidgets)
 
 theme_set(theme_bw())
 ```
@@ -718,7 +718,207 @@ ipeds %>%
                          clusterOptions = markerClusterOptions()) 
 ```
 
-
-
-
 ## Polygons
+
+Introduction to Spatial Data
+We have been mapping points, but there are several spatial features that can be mapped, including polygons. In R, polygons are often stored in a SpatialPolygonsDataFrame that holds the polygon, coordinate information, and a data frame with one row per polygon.
+
+A SpatialPolygonsDataFrame called shp that contains the zip code boundaries for North Carolina has been loaded for you. shp has five slots that store various types of information:
+
+data: data associated with each polygon
+polygons: coordinates to plot polygons
+plotOrder: order in which polygons are plotted
+bbox: bounding box for geographic data (i.e., a rectangle)
+proj4string: coordinate reference system
+Let's take a closer look inside the shp object.
+
+```{r itsd}
+load("nc_zips.rda")
+summary(shp)
+class(shp)
+slotNames(shp)
+glimpse(shp@data)
+class(shp@data)
+shp@data$GEOID10
+nc_income <- read.csv("nc_income.csv")
+nc_income <- as.data.frame(nc_income)
+nc_income$zipcode<-as.factor(nc_income$zipcode)
+```
+
+Joining Spatial Data
+We can join data onto the data frame stored in the data slot of our SpatialPolygonsDataFrame. In this chapter, we are interested in the mean income at the zip code level as reported by the IRS. Once we have the income data joined onto the information in the data slot of shp we can map the mean income of zip codes on our leaflet map.
+
+A data frame called nc_income has been loaded for you. Let's get started by taking a look at the nc_income data. Then we'll join it onto the information in the data slot of shp and see if there are any zip codes in our data that are missing income information.
+
+```{r jsd}
+# Glimpse the nc_income data
+glimpse(nc_income)
+
+# Summarize the nc_income data
+summary(nc_income)
+
+# Left join nc_income onto shp@data and store in shp_nc_income
+shp_nc_income <- shp@data %>% 
+                left_join(nc_income, by = c("GEOID10" = "zipcode"))
+
+# Print the number of missing values of each variable in shp_nc_income
+shp_nc_income  %>%
+  summarize_all(funs(sum(is.na(.))))
+```
+
+addPolygons() Function
+Let's look at those zip codes with missing data to hypothesize why they do not have income data.
+
+We are mapping ZCTAs (not actual zip codes) so not every part of NC will have a boundary. Our boundaries may overlap because the file was simplified to reduce size. These are trade offs to consider when mapping polygons.
+
+Enough nuance, let's make a map. You can pipe the shp data directly into our calls to leaflet(), addTiles(), and addPolygons() without supplying any additional arguments to map North Carolina's zip codes. To get you started, the shp SpatialPolygonsDataFrame including the IRS income variables has been loaded for you.
+
+```{r apf}
+# map the polygons in shp
+nc_income <- as_tibble(nc_income)
+shp2 <- shp
+shp2@data <- as_tibble(shp2@data)
+shp2@data <- shp2@data %>% rename(zipcode = GEOID10)
+shp2@data <- left_join(shp2@data,nc_income)
+
+shp <- shp2
+
+shp %>% 
+    leaflet() %>% 
+    addTiles() %>% 
+    addPolygons()
+
+# which zips were not in the income data?
+shp_na <- shp[is.na(shp$mean_income),]
+
+# map the polygons in shp_na
+shp_na %>% 
+    leaflet() %>% 
+    addTiles() %>% 
+    addPolygons()
+```
+
+NC High Income Zips
+Did you have a hypothesis of why certain zip codes are missing income information? It looks to me like many of them are areas that likely have low populations (e.g., parks, colleges, etc.) and the IRS only reports income data on zip codes with more than 100 filers.
+
+Now let's focus in on a subset of zip codes with income data, namely the 25% of zip codes in NC with the highest mean incomes. Where do think these will fall within the states?
+
+Let's take a look and find out.
+
+```{r NChiz}
+# summarize the mean income variable
+summary(shp$mean_income)
+
+# subset shp to include only zip codes in the top quartile of mean income
+high_inc <- shp[!is.na(shp@data$mean_income) & shp$mean_income > 55917,]
+
+# map the boundaries of the zip codes in the top quartile of mean income
+high_inc %>%
+  leaflet() %>%
+  addProviderTiles("OpenTopoMap") %>% 
+  addPolygons()
+```
+
+addPolygon() Options
+So far we have used the default appearance for addPolygons(). There are several more ways to customize the polygons.
+
+The arguments to addPolygons() we will focus on are:
+
+weight: the thickness of the boundary lines in pixels
+color: the color of the polygons
+label: the information to appear on hover
+highlightOptions: options to highlight a polygon on hover
+addPolygons(weight = 2,
+           color = "red",
+           label = ~paste0("Total Income: ", dollar(income)),
+           highlight = highlightOptions(weight = 10,
+                                       color = "blue",
+                                       bringToFront = TRUE))
+The high_inc SpatialPolygonsDataFrame you created in the previous exercise has been loaded for you.
+
+```{r apo}
+# create color palette with colorNumeric()
+nc_pal <- colorNumeric("YlGn", domain = high_inc@data$mean_income)
+
+high_inc %>%
+  leaflet() %>%
+  addTiles() %>%
+  # set boundary thickness to 1 and color polygons
+  addPolygons(weight = 1, color = ~nc_pal(mean_income),
+              # add labels that display mean income
+              label = ~paste0("Mean Income: ", dollar(mean_income)),
+              # highlight polygons on hover
+              highlight = highlightOptions(weight = 5, color = "white",
+              bringToFront = TRUE))
+```
+
+Let's do some Logging
+Let's look at the quartiles of mean zip code incomes in NC.
+
+summary(high_inc$mean_income)
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  55947   62380   71655   83682   90695  550849
+The range is nearly $500,000! However, the median is much closer to the min than to the max, indicating a right-skew. Since the mean income variable contains exceptionally large values, the continuous color gradient is not very helpful. Log transforming a right-skewed variable pulls large values closer to the mean and yields a more symmetrically distributed variable.
+
+Log transforming the mean income on our map increases the variation in the color gradient across the high income zip codes and enables better visualization of the distribution of mean income across the state.
+
+```{r ldsl}
+# Use the log function to create a new version of nc_pal
+nc_pal <- colorNumeric("YlGn", domain = log(high_inc@data$mean_income))
+
+# comment out the map tile
+high_inc %>%
+  leaflet() %>%
+  addProviderTiles("CartoDB") %>%
+  # apply the new nc_pal to the map
+  addPolygons(weight = 1, color = ~nc_pal(log(mean_income)), fillOpacity = 1,
+              label = ~paste0("Mean Income: ", dollar(mean_income)),
+              highlightOptions = highlightOptions(weight = 5, color = "white", bringToFront = TRUE))
+```
+
+Wealthiest Zip Codes in America
+Zooming out from North Carolina, let's put together a polygon layer for the entire country. Then we will work to add this layer to our map of American colleges.
+
+According to the 2015 IRS data, there are 427 zip codes in America with a mean income of $200,000 or more. It might be interesting to know which colleges are located in these affluent areas. Let's map these 427 polygons and explore our leaflet map to better understand where the highest income zip codes in America are. To get us started, a SpatialPolygonsDataFrame called wealthy_zip that contains information on each zip code in America with a mean income of $200,000 or more has been loaded for you.
+
+Before we work with this data, take a minute to hypothesize where many of these zip codes are located.
+
+```{r wzia}
+#load("wealthiest_zips.Rda")
+
+# plot zip codes with mean incomes >= $200k
+wealthy_zips %>% 
+  leaflet() %>% 
+  addProviderTiles("CartoDB") %>% 
+  # set color to green and create Wealth Zipcodes group
+  addPolygons(weight = 1, fillOpacity = .7, color = "green",  group = "Wealthy Zipcodes", 
+              label = ~paste0("Mean Income: ", dollar(mean_income)),
+              highlightOptions = highlightOptions(weight = 5, color = "white", bringToFront = TRUE))
+```
+
+Final Map
+Because our leaflet map is built in layers, we can add different types of information to the same base map (e.g., points and polygons). When adding new layers based on different data to an existing leaflet object we must specify the data argument with the function that creates the new layer to override the data that is piped through the chain of functions.
+
+m4  %>% 
+    addCircleMarkers(data = private)
+Let's combine our point and polygon maps to add a layer highlighting America's wealthiest zip codes to our map of every college in America. To get us started, the last layered version of the college map m4 has been printed for you and the wealthy_zips SpatialPolygonsDataFrame is pre-loaded.
+
+After you create the final map, take a few minutes to explore (and enjoy) your leaflet map!
+
+```{r}
+# Add polygons using wealthy_zips
+final_map <- m4 %>% 
+   addPolygons(data = wealthy_zips, weight = 1, fillOpacity = .5, color = "Grey",  group = "Wealthy Zip Codes", 
+              label = ~paste0("Mean Income: ", dollar(mean_income)),
+              highlightOptions = highlightOptions(weight = 5, color = "white", bringToFront = TRUE)) %>% 
+    # Update layer controls including "Wealthy Zip Codes"
+    addLayersControl(baseGroups = c("OSM", "Carto", "Esri"), 
+                         overlayGroups = c("Public", "Private", "For-Profit", "Wealthy Zip Codes"))     
+
+# Print and explore your very last map of the course!
+final_map
+```
+
+
+

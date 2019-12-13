@@ -249,6 +249,8 @@ ui <- dashboardPage(header = dashboardHeader(),
 shinyApp(ui, server)
 ```
 
+## Dynamic
+
 Review selectInput and sliderInput
 As a quick refresher, using the dashboardSidebar() function along with selectInput() and sliderInput() from the shiny package, you can create select lists and sliders. For example, to create a select list in the sidebar, you can do the following:
 
@@ -392,24 +394,709 @@ ui <- dashboardPage(header = dashboardHeader(),
 shinyApp(ui, server)
 ```
 
+Create reactive menu items
+We have added dynamic content via subsetting a data frame based on using input and reading in real-time data. Now we are going to allow the user to input task_data to determine task items. Recall that we can use an apply() function to iterate over a data frame, applying the taskItem() function to each row.
+
+tasks <- apply(task_data, 1, function(row) { 
+  taskItem(text = row[["text"]],
+           value = row[["value"]])
+})
+dropdownMenu(type = "tasks", .list = tasks)
+You have a data frame (already loaded) called task_data with columns text and value. Use this to create a task drop down menu.
+
+```{r 205}
+task_data <- read.csv("task_data.csv")
+
+server <- function(input, output) {
+  output$task_menu <- renderMenu({
+      tasks <- apply(task_data, 1, function(row) {
+        taskItem(text = row[["text"]],
+                 value = row[["value"]])
+                 })
+    
+      dropdownMenu(type = "tasks", .list = tasks)
+  })
+}
+
+header <- dashboardHeader(dropdownMenuOutput("task_menu"))
+
+ui <- dashboardPage(header = header,
+                    sidebar = dashboardSidebar(),
+                    body = dashboardBody()
+                    )
+shinyApp(ui, server)
+```
+
+Create reactive boxes
+In addition to updating the task drop down menus reactively, it is possible to create reactive boxes in the body. Here, you have a clickable action button in your sidebar. You want to update a value box each time the user clicks the action button. The valueBox() function will create a value box in the body. This takes the following form:
+
+valueBox(value = 10,
+        subtitle = "There are ten things here!"
+        )
+        
+```{r 206}
+library("shiny")
+
+sidebar <- dashboardSidebar(
+  actionButton("click", "Update click box")
+) 
+
+server <- function(input, output) {
+  output$click_box <- renderValueBox({
+    valueBox(
+      input$click, 
+     "Click Box"
+    )
+  })
+}
+
+body <- dashboardBody(
+      valueBoxOutput("click_box")
+ )
+
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = sidebar,
+                    body = body
+                    )
+shinyApp(ui, server)
+```
+
+## Customize
+
+Create body with row-based layout
+Recall that you can create a dashboard with row-based layout using the fluidRow() function from shiny within the dashboardBody(). We want to create two rows, one with the following content:
+
+# Row 1
+  box(
+    width = 12,
+    title = "Regular Box, Row 1",
+    "Star Wars"
+    )
+and a second row with the following content:
+
+# Row 2
+  box(
+    width = 12,
+    title = "Regular Box, Row 2",
+    "Nothing but Star Wars"
+    )
+    
+```{r 301}
+library("shiny")
+
+body <- dashboardBody(
+  fluidRow(
+# Row 1
+    box(
+      width = 12,
+      title = "Regular Box, Row 1",
+      "Star Wars"
+    )
+  ),
+  fluidRow(
+# Row 2
+    box(
+      width = 12,
+      title = "Regular Box, Row 2",
+      "Nothing but Star Wars"
+    )
+  )
+)
 
 
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = dashboardSidebar(),
+                    body = body
+                    )
+shinyApp(ui, server)
+```
+ 
+Create body with column-based layout
+Recall that you can create your contents in columns using a combination of the fluidRow() and column() functions from the shiny package. For example, for two columns of content in the body, you can do the following:
+
+body <- dashboardBody(
+  fluidRow(
+    column(width = 6,
+      "This is one column"
+      ),
+    column(width = 6,
+      "This is a second column"
+    )
+  )
+)
+Let's create two columns where the first column includes the following content:
+
+# Column 1
+  infoBox(
+    width = NULL,
+    title = "Regular Box, Column 1",
+    subtitle = "Gimme those Star Wars"
+    )
+and a second column with the following content:
+
+# Column 2
+  infoBox(
+    width = NULL,
+    title = "Regular Box, Column 2",
+    subtitle = "Don't let them end"
+    )
+Recall that with column layouts, you want to set the width = NULL within the boxes (this is true for box(), infoBox(), and valueBox()), and control the width with the column() function.
+
+```{r 302}
+library("shiny")
+
+body <- dashboardBody(
+  fluidRow(
+# Column 1
+    column(width = 6,
+      infoBox(
+        width = NULL,
+        title = "Regular Box, Column 1",
+        subtitle = "Gimme those Star Wars"
+      )
+    ),
+# Column 2
+    column(width = 6,
+      infoBox(
+        width = NULL,
+        title = "Regular Box, Column 2",
+        subtitle = "Don't let them end"
+      )
+    )
+  )
+)
+
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = dashboardSidebar(),
+                    body = body
+                    )
+shinyApp(ui, server)
+```
+
+Create body with mixed layout
+In addition to having layouts specified using rows and columns, we can have mixed layouts that combine the two.
+
+Let's create two rows where the first row includes the following content:
+
+# Row 1
+  box(
+    width = 12,
+    title = "Regular Box, Row 1",
+    "Star Wars, nothing but Star Wars"
+    )
+and a second row has two columns, where each column has the following content:
+
+# Row 2, Column 1
+  infoBox(
+    width = NULL,
+    title = "Regular Box, Row 2, Column 1",
+    subtitle = "Gimme those Star Wars"
+    )
+# Row 2, Column 2
+  infoBox(
+    width = NULL,
+    title = "Regular Box, Row 2, Column 2",
+    subtitle = "Don't let them end"
+    )
+    
+```{r 303}
+library("shiny")
+
+body <- dashboardBody(
+  fluidRow(
+# Row 1
+    box(
+      width = 12,
+      title = "Regular Box, Row 1",
+      "Star Wars, nothing but Star Wars"
+    )
+  ),
+  fluidRow(
+# Row 2, Column 1
+    column(width = 6,
+      infoBox(
+        width = NULL,
+        title = "Regular Box, Row 2, Column 1",
+        subtitle = "Gimme those Star Wars"
+    )
+   ),
+# Row 2, Column 2
+    column(width = 6,
+      infoBox(
+        width = NULL,
+        title = "Regular Box, Row 2, Column 2",
+        subtitle = "Don't let them end"
+    )
+  )
+ )
+)
+
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = dashboardSidebar(),
+                    body = body
+                    )
+shinyApp(ui, server)
+```
+
+Change the appearance of the dashboard
+Walt Disney's favorite color is purple (mine too!). Using the application you've just created, let's change the color by updating the skin parameter to "purple". The body you just created is already loaded.
+
+```{r 304}
+# Update the skin
+ui <- dashboardPage(
+  skin = "purple",
+  header = dashboardHeader(),
+  sidebar = dashboardSidebar(),
+  body = body)
+  
+# Run the app
+shinyApp(ui, server)
+```
+
+Customize the body with CSS
+You can customize the CSS by using the tags() function, for example you can add css to headers in the body in the following manner.
+
+body <- dashboardBody(
+    tags$head(
+        tags$style(
+            HTML('
+            \\Add CSS here
+            ')
+        )
+    )
+)
+Add the following CSS to make the box title bold by updating the font in the h3 header in the body:
+
+h3 {
+    font-weight: bold;
+}
+
+```{r 305}
+library("shiny")
+
+body <- dashboardBody(
+# Update the CSS
+  tags$head(
+    tags$style(
+      HTML('
+      h3 {
+        font-weight: bold;
+      }
+      ')
+    )
+  ),
+  fluidRow(
+    box(
+      width = 12,
+      title = "Regular Box, Row 1",
+      "Star Wars, nothing but Star Wars"
+    )
+  ),
+  fluidRow(
+    column(width = 6,
+      infoBox(
+        width = NULL,
+        title = "Regular Box, Row 2, Column 1",
+        subtitle = "Gimme those Star Wars"
+    )
+   ),
+    column(width = 6,
+      infoBox(
+        width = NULL,
+        title = "Regular Box, Row 2, Column 2",
+        subtitle = "Don't let them end"
+    )
+  )
+ )
+)
+
+ui <- dashboardPage(
+  skin = "purple",
+  header = dashboardHeader(),
+  sidebar = dashboardSidebar(),
+  body = body)
+shinyApp(ui, server)
+```
+
+Incorporate icons
+Icons are a great way to make your dashboard look more polished! Remember the notification menu we created in Chapter 1? Spruce it up with a rocket icon! You can find other possible icons on the Font Awesome website. Recall that icons can be rendered using the icon() function in shiny; for example, the following will render a coffee icon:
+
+icon("coffee")
+The Font Awesome name for the rocket icon is "rocket".
+
+```{r 306}
+library("shiny")
+
+header <- dashboardHeader(
+  dropdownMenu(
+    type = "notifications",
+    notificationItem(
+      text = "The International Space Station is overhead!",
+      icon = icon("rocket")
+    )
+  )
+)
+ui <- dashboardPage(header = header,
+                    sidebar = dashboardSidebar(),
+                    body = dashboardBody()
+                    )
+shinyApp(ui, server)
+```
+
+Add some life to your layouts
+In this exercise you'll jazz up a shinydashboard by adding some color. There's a dashboard with three different boxes already written for you. All you have to do is make the indicated changes to the boxes.
+
+It might be useful to know that some valid statuses and their corresponding colors are:
+
+primary Blue (sometimes dark blue)
+success Green
+info Blue
+warning Orange
+danger Red
+
+```{r 307}
+library("shiny")
+
+body <- dashboardBody(
+  tags$head(
+    tags$style(
+      HTML('
+      h3 {
+        font-weight: bold;
+      }
+      ')
+    )
+  ),
+  fluidRow(
+    box(
+      width = 12,
+      title = "Regular Box, Row 1",
+      "Star Wars, nothing but Star Wars",
+# Make the box red
+      status = "danger"
+    )
+  ),
+  fluidRow(
+    column(width = 6,
+      infoBox(
+        width = NULL,
+        title = "Regular Box, Row 2, Column 1",
+        subtitle = "Gimme those Star Wars",
+# Change the icon to a star
+        icon = icon("star")
+    )
+   ),
+    column(width = 6,
+      infoBox(
+        width = NULL,
+        title = "Regular Box, Row 2, Column 2",
+        subtitle = "Don't let them end",
+# Make the box yellow
+        color = "yellow"
+    )
+  )
+ )
+)
+
+ui <- dashboardPage(
+  skin = "purple",
+  header = dashboardHeader(),
+  sidebar = dashboardSidebar(),
+  body = body)
+shinyApp(ui, server)
+```
+
+## Case Study
+
+Examine the variables in the data set
+For the following exercises we are using the nasa_fireball data, a data set of reported fireball events. Explore the variables in this data set. The nasa_fireball data frame is already loaded.
+
+```{r 401}
+# Print the nasa_fireball data frame
+nasa_fireball <- read.csv("nasa_fireball.csv")
+
+# Examine the types of variables present
+sapply(nasa_fireball, class)
+
+# Observe the number of observations in this data frame
+nrow(nasa_fireball)
+
+# Check for missing data
+sapply(nasa_fireball, anyNA)
+```
+
+Create a value box for the maximum velocity
+Now you can begin building your dashboard! First, create a value box for the maximum velocity of a fireball at peak brightness (the variable vel in your nasa_fireball data frame). There are many ways to find the maximum value in R; be sure to remove NA values when doing so.
+
+The nasa_fireball data frame has already been loaded.
+
+```{r 402}
+library("shiny")
+max_vel <- max(nasa_fireball$vel, na.rm = TRUE)
+
+body <- dashboardBody(
+  fluidRow(
+    # Add a value box for maximum velocity
+    valueBox(
+      value = max_vel,
+      subtitle = "Maximum pre-impact velocity", 
+      icon = icon("fire")
+    )
+  )
+)
+
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = dashboardSidebar(),
+                    body = body
+                    )
+shinyApp(ui, server)
+```
+
+Create a value box for the maximum impact
+Let's add another value box for the maximum log total impact energy. The variable in the nasa_fireball data frame corresponding to this is impact_e. The nasa_fireball data frame is again already loaded.
+
+```{r 403}
+library("shiny")
+
+max_impact_e <- max(nasa_fireball$impact_e)
+
+body <- dashboardBody(
+  fluidRow(
+    # Add a value box for maximum impact
+    valueBox(
+      value = max_impact_e, 
+      subtitle = "Maximum impact energy (kilotons of TNT)",
+      icon = icon("star")
+    ),
+    valueBox(
+      value = max_vel,
+      subtitle = "Maximum pre-impact velocity", 
+      icon = icon("fire")
+    )
+  )
+)
+
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = dashboardSidebar(),
+                    body = body
+                    )
+shinyApp(ui, server)
+```
+
+Create a value box for the maximum energy
+Let's create a third value box for the maximum total optical radiated energy. The variable for this in the nasa_fireball data frame is energy. Again, the nasa_fireball data frame is loaded.
+
+```{r 404}
+library("shiny")
+
+max_energy <- max(nasa_fireball$energy)
+
+body <- dashboardBody(
+  fluidRow(
+    # Add a value box for maximum energy
+    valueBox(
+      value = max_energy, 
+      subtitle = "Maximum total radiated energy (Joules)", 
+      icon = icon("lightbulb-o")
+    ),
+    valueBox(
+      value = max_impact_e, 
+      subtitle = "Maximum impact energy (kilotons of TNT)",
+      icon = icon("star")
+    ),
+    valueBox(
+      value = max_vel,
+      subtitle = "Maximum pre-impact velocity", 
+      icon = icon("fire")
+    )
+  )
+)
+
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = dashboardSidebar(),
+                    body = body
+                    )
+shinyApp(ui, server)
+```
+
+Make the value boxes dynamic
+The data frame contains the latitude and longitude of the location of the fireballs. Begin to build a dynamic value box containing the number of fireballs in the US. The approximate range of latitude for US cities is 19.5 to 64.9 and the range for longitude is -161.8 to -68.0. Count the number of fireballs in the current data frame that fall within this range. This count can be obtained a variety of ways in R. You may use the code below, or write you own and check it with the one provided.
+
+n_us <- sum(
+  ifelse(
+    nasa_fireball$lat < 64.9 & nasa_fireball$lat > 19.5
+      & nasa_fireball$lon < -68.0 & nasa_fireball$lon > -161.8,
+    1, 0),
+  na.rm = TRUE)
+Then use the color parameter such that if n_us is less than 10, the value box is blue, otherwise it is fuchsia. The following logic can be used to determine the color.
+
+if (n_us < 10) {
+  "blue"
+} else {
+  "fuchsia"
+}
+
+```{r 405}
+n_us <- sum(
+  ifelse(
+    nasa_fireball$lat < 64.9 & nasa_fireball$lat > 19.5
+      & nasa_fireball$lon < -68.0 & nasa_fireball$lon > -161.8,
+    1, 0),
+  na.rm = TRUE)
+  
+server <- function(input, output) {
+  output$us_box <- renderValueBox({
+    valueBox(
+      value = n_us,
+      subtitle = "Number of Fireballs in the US",
+      icon = icon("globe"),
+      color = if (n_us < 10) {
+                "blue"
+              } else {
+              "fuchsia"
+              }
+    )
+  })
+}
+
+body <- dashboardBody(
+  fluidRow(
+    valueBoxOutput("us_box")
+  )
+)
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = dashboardSidebar(),
+                    body = body
+                    )
+shinyApp(ui, server)
+```
+
+Allow the user to input an alert threshold
+Perhaps the people using your application would rather have a different threshold for changing the color of your value box. Create a slider in the sidebar to allow the user to input the threshold for the value box color.
+
+```{r 406}
+sidebar <- dashboardSidebar(
+  sliderInput(
+    inputId = "threshold",
+    label = "Color Threshold",
+    min = 0,
+    max = 100,
+    value = 10)
+)
+
+server <- function(input, output) {
+  output$us_box <- renderValueBox({
+    valueBox(
+      value = n_us,
+      subtitle = "Number of Fireballs in the US",
+      icon = icon("globe"),
+      color = if (n_us < input$threshold) {
+                "blue"
+              } else {
+              "fuchsia"
+              }
+    )
+  })
+}
 
 
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = sidebar,
+                    body = body
+                    )
+shinyApp(ui, server)
+```
 
+Create a dynamic plot of the location of fireballs
+Rather than just examining how many fireballs have landed in the United States, you can plot each of the fireballs on a map! Here is some example code, for an example data set named df we can plot the fireball incidents as circles with the radius of the circle based on the velocity.
 
+ output$plot <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%  
+      addCircleMarkers(lng = df$lon, lat = df$lat, radius = df$vel, label = df$date, weight = 3)
+    })
+This code belongs in the server function. Using code similar to that above with the nasa_fireball data frame, create a plot of the fireball events with the radius equal to the log of the impact energy. To remove any warnings, I have subset the nasa_fireball data frame to remove any rows missing latitude or longitude.
 
+```{r 407}
+library("leaflet")
 
+server <- function(input, output) {
+  output$plot <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%  
+      addCircleMarkers(
+        lng = nasa_fireball$lon,
+        lat = nasa_fireball$lat, 
+        radius = log(nasa_fireball$impact_e), 
+        label = nasa_fireball$date, 
+        weight = 2)
+    })
+}
 
+body <- dashboardBody( 
+ leafletOutput("plot")
+)
 
+ui <- dashboardPage(
+  header = dashboardHeader(),
+  sidebar = dashboardSidebar(),
+  body = body
+)
 
+shinyApp(ui, server)
+```
 
+Update the look of your new application
+Now let's put it all together. You have created an application for viewing fireball locations. The full application is shown in the sample code. Update the skin of the dashboard page to a color of your choosing.
 
+```{r 408}
+library("leaflet")
 
+server <- function(input, output) {
+  output$plot <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%  
+      addCircleMarkers(
+        lng = nasa_fireball$lon,
+        lat = nasa_fireball$lat, 
+        radius = log(nasa_fireball$impact_e), 
+        label = nasa_fireball$date, 
+        weight = 2)
+    })
+}
 
+body <- dashboardBody(
+ fluidRow(
+    valueBox(
+      value = max_energy, 
+      subtitle = "Maximum total radiated energy (Joules)", 
+      icon = icon("lightbulb-o")
+    ),
+    valueBox(
+      value = max_impact_e, 
+      subtitle = "Maximum impact energy (kilotons of TNT)",
+      icon = icon("star")
+    ),
+    valueBox(
+      value = max_vel,
+      subtitle = "Maximum pre-impact velocity", 
+      icon = icon("fire")
+    )
+  ),
+  fluidRow(
+    leafletOutput("plot")
+  )
+)
 
+ui <- dashboardPage(
+  skin = "purple",
+  header = dashboardHeader(),
+  sidebar = dashboardSidebar(),
+  body = body
+)
 
-
+shinyApp(ui, server)
+```
 
 
 

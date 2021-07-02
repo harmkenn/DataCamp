@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```{r clt}
 # Load packages -----------------------------------------------------
 library(shiny)
-library(openintro)
+require(openintro)
 library(gridExtra)
 library(BHH2)
 

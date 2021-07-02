@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```{r load_libraries, include=FALSE}
 # Use this R-Chunk to load all your libraries!
-pacman::p_load(tidyverse, leaflet, leaflet.extras, tidycensus)
+pacman::p_load(tidyverse, leaflet, leaflet.extras, tidycensus, ggmap)
 
 theme_set(theme_bw())
 ```
@@ -49,7 +49,7 @@ readRenviron("~/.Renviron")
 1. Chipotle locations from Thinknum
 Some of us have thought about opening a business and most of us have thought about grabbing a burrito from Chipotle. To do either of these things we need to know where the current Chipotle stores are (and are not) located.
 
-In this notebook, the leaflet package in R and data from Thinknum are used to find potential locations for new Chipotle restaurants as well as the closest place to grab a burrito.
+In this notebook, the leaflet package in R and data from Thinknum (https://www.thinknum.com/) are used to find potential locations for new Chipotle restaurants as well as the closest place to grab a burrito.
 
 Thinknum tracks thousands of websites capturing and indexing vast amounts of public data. Let's get started by loading and exploring data on every Chipotle restaurant tracked in the Thinknum data. Then we will build several leaflet maps that we can use to explore the data and to see where we might recommend opening a Chipotle.
 
